@@ -1,0 +1,12 @@
+.Form {
+  flex: 1;
+}
+
+.SuperButtonContainer {
+  text-align: right;
+  margin-bottom: 28px;
+}
+
+.SuperButton {
+  font-style: italic;
+}

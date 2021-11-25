@@ -1,0 +1,29 @@
+.HeaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 36px;
+}
+
+.Actions {
+  display: flex;
+  align-items: center;
+}
+
+.AuthButton {
+  margin-left: 6px;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .HeaderContainer {
+    padding: 0 14px 0 48px;
+  }
+
+  .AuthButton {
+    margin-left: 2px;
+    margin-right: -10px;
+  }
+}

@@ -1,0 +1,16 @@
+.Logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+  margin: 24px 24px 16px 24px;
+}
+
+.Logo:hover {
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.LogoCollapsed {
+  justify-content: center;
+}

@@ -1,0 +1,11 @@
+# Dependencies
+/node_modules
+
+# Testing
+/coverage
+
+# Production
+/build
+
+# compiled, minified stylesheets
+public/*.css

@@ -1,0 +1,14 @@
+.Collapse {
+  margin-bottom: 24px;
+}
+
+.Panel {
+  margin-right: -16px;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .Panel {
+    margin-left: -16px;
+  }
+}

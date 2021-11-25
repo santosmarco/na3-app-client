@@ -1,0 +1,14 @@
+.DashboardRow {
+  height: 100%;
+}
+
+.DashboardCol {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.MobileAlert {
+  margin-bottom: 26px;
+}

@@ -1,0 +1,9 @@
+.Container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.Text {
+  font-size: 10px;
+  margin-left: 5px;
+}

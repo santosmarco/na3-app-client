@@ -1,0 +1,6 @@
+.SpinnerContainer {
+  flex: 0.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

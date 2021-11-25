@@ -1,0 +1,11 @@
+.QuickLink {
+  height: 100%;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .Logo {
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+}

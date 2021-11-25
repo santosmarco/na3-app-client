@@ -1,0 +1,18 @@
+.InputNumber {
+  width: 100%;
+}
+
+.RadioGroup {
+  width: 100%;
+}
+
+.SwitchContainer {
+  text-align: right;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .SwitchContainer {
+    text-align: left;
+  }
+}

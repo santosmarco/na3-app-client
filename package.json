@@ -1,32 +1,90 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@na3-app/client",
+  "version": "1.0.0",
+  "author": "santosmarco <eu@marco.rio.br>",
+  "scripts": {
+    "start": "craco start",
+    "test": "craco test",
+    "lint": "yarn eslint src/ --ext .ts,.tsx",
+    "lint:fix": "yarn lint --fix",
+    "prettier:check": "yarn prettier --check src/",
+    "prettier:write": "yarn prettier --write src/",
+    "build": "yarn lint:fix && yarn prettier:write && craco build",
+    "build:assets": "pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
+    "@craco/craco": "^6.4.1",
+    "@ryuuji3/react-mask-hook": "^1.0.1",
+    "@sentry/browser": "^6.15.0",
+    "@sentry/integrations": "^6.15.0",
+    "@sentry/react": "^6.15.0",
+    "@sentry/rrweb": "^0.3.1",
+    "@sentry/tracing": "^6.15.0",
+    "animate.css": "^4.1.1",
+    "antd": "^4.16.13",
+    "axios": "^0.24.0",
+    "dayjs": "^1.10.7",
+    "detect-browser": "^5.2.1",
+    "firebase": "^8.9.1",
+    "formik": "^2.2.9",
+    "history": "^4.10.1",
+    "jsbarcode": "^3.11.5",
+    "jspdf": "^2.4.0",
+    "nanoid": "^3.1.30",
+    "qrcode": "^1.4.4",
+    "react": "^17.0.2",
+    "react-animated-css": "^1.2.1",
+    "react-css-theme-switcher": "^0.3.0",
+    "react-div-100vh": "^0.6.0",
+    "react-dom": "^17.0.2",
+    "react-firebase-hooks": "^3.0.4",
+    "react-helmet": "^6.1.0",
+    "react-hook-form": "^7.19.0",
+    "react-icons": "^4.3.1",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^5.3.0",
+    "react-scripts": "4.0.3",
+    "react-use-localstorage": "^3.5.3",
+    "redux": "^4.1.2",
+    "rrweb": "^1.0.7",
+    "web-vitals": "^1.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^8.11.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/detect-browser": "^4.0.0",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
+    "@types/qrcode": "^1.4.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "@types/react-helmet": "^6.1.4",
+    "@types/react-router-dom": "^5.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "autoprefixer": "^9.8.4",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sort-keys-fix": "^1.1.2",
+    "eslint-plugin-typescript-sort-keys": "^2.1.0",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-debug": "^4.0.0",
+    "gulp-less": "^4.0.1",
+    "gulp-postcss": "^8.0.0",
+    "less-plugin-npm-import": "^2.1.0",
+    "prettier": "^2.4.1",
+    "react-app-rewire-alias": "^1.1.5",
+    "react-app-rewired": "^2.0.0",
+    "redux-devtools-extension": "^2.13.9",
+    "type-fest": "^2.5.2",
     "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "utility-types": "^3.10.0"
   },
   "browserslist": {
     "production": [
@@ -39,5 +97,7 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "license": "MIT",
+  "private": true
 }

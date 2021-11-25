@@ -1,0 +1,10 @@
+.Timeline {
+  margin-top: 7px;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .Timeline {
+    margin-top: 8px;
+  }
+}
