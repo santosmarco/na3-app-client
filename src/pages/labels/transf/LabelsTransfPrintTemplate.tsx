@@ -210,7 +210,7 @@ export function LabelsTransfPrintTemplatePage({
     </>
   ) : (
     <Result404 backUrl="/etiquetas/imprimir" isLoading={loading}>
-      O modelo de etiqueta solicitado não existe ou foi desabilitado.
+      O modelo de etiqueta requisitado não existe ou foi desabilitado.
     </Result404>
   );
 }

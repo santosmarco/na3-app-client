@@ -6,6 +6,7 @@ import type { LabelTemplatesState } from "./LabelTemplates";
 import type { MaintProjectsState } from "./MaintProjects";
 import type { Na3PeopleState } from "./Na3People";
 import type { Na3ProductsState } from "./Na3Products";
+import type { Na3UsersState } from "./Na3Users";
 import type { ServiceOrdersState } from "./ServiceOrders";
 
 export type RootState = {
@@ -17,5 +18,6 @@ export type RootState = {
   maintProjects: MaintProjectsState;
   na3People: Na3PeopleState;
   na3Products: Na3ProductsState;
+  na3Users: Na3UsersState;
   serviceOrders: ServiceOrdersState;
 };

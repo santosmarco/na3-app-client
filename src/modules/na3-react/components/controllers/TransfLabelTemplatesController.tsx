@@ -4,8 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3TransfLabelTemplate } from "../../../na3-types";
-import { useStateSlice } from "../../hooks";
-import { useNa3User } from "../../hooks/useNa3User";
+import { useCurrentUser, useStateSlice } from "../../hooks";
 import {
   setTransfLabelTemplatesData,
   setTransfLabelTemplatesError,
@@ -16,7 +15,7 @@ import { resolveCollectionId } from "../../utils";
 export function Na3TransfLabelTemplatesController(): null {
   const { environment } = useStateSlice("config");
 
-  const user = useNa3User();
+  const user = useCurrentUser();
 
   const dispatch = useDispatch();
 

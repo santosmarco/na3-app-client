@@ -1,4 +1,5 @@
 import {
+  ChangePwdModal,
   Content,
   Footer,
   Header,
@@ -6,14 +7,13 @@ import {
   RouteHandler,
   Sider,
   Spinner,
+  ThemeLoadHandler,
 } from "@components";
 import { useAppReady } from "@modules/na3-react";
 import { Layout, message, notification } from "antd";
+import firebase from "firebase";
 import React, { useEffect, useRef } from "react";
-import {
-  ThemeSwitcherProvider,
-  useThemeSwitcher,
-} from "react-css-theme-switcher";
+import { ThemeSwitcherProvider } from "react-css-theme-switcher";
 import Div100vh from "react-div-100vh";
 import useLocalStorage from "react-use-localstorage";
 
@@ -28,26 +28,31 @@ notification.config({ duration: 6 });
 
 function Main(): JSX.Element {
   const appIsReady = useAppReady();
-  const { status: themeStatus } = useThemeSwitcher();
 
   const connectionStatus = useRef<"offline" | "online">("online");
 
   useEffect(() => {
     function handleIsOnline(): void {
       if (connectionStatus.current === "offline") {
-        void message.success("Você está online");
-        message.destroy("offlineMsg");
-        connectionStatus.current = "online";
+        void (async (): Promise<void> => {
+          await firebase.firestore().enableNetwork();
+          void message.success("Você está online");
+          message.destroy("offlineMsg");
+          connectionStatus.current = "online";
+        })();
       }
     }
     function handleIsOffline(): void {
       if (connectionStatus.current === "online") {
-        void message.warn({
-          content: "Você está offline",
-          duration: 0,
-          key: "offlineMsg",
-        });
-        connectionStatus.current = "offline";
+        void (async (): Promise<void> => {
+          await firebase.firestore().disableNetwork();
+          void message.warn({
+            content: "Você está offline",
+            duration: 0,
+            key: "offlineMsg",
+          });
+          connectionStatus.current = "offline";
+        })();
       }
     }
 
@@ -77,13 +82,9 @@ function Main(): JSX.Element {
             </Layout>
           </Layout>
         </Div100vh>
-      </Spinner>
 
-      {themeStatus === "loading" && (
-        <div className={classes.ThemeLoadingModal}>
-          <Spinner color="#fff" text={null} />
-        </div>
-      )}
+        <ChangePwdModal />
+      </Spinner>
     </>
   );
 }
@@ -97,6 +98,7 @@ export function App(): JSX.Element {
       insertionPoint={document.getElementById("themes-insertion-point")}
       themeMap={themes}
     >
+      <ThemeLoadHandler />
       <Main />
     </ThemeSwitcherProvider>
   );

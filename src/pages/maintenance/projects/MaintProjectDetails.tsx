@@ -5,7 +5,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import {
-  DataInfo,
+  DataItem,
   MaintCreateProjectForm,
   MaintEmployeeTag,
   MaintProjectActionModal,
@@ -210,17 +210,20 @@ export function MaintProjectDetails({
                 onClick={handleActionModalDeliverOpen}
                 type="primary"
               >
-                Entregar {isPredPrev ? "Pred/Prev" : "projeto"}
+                Entregar
+                {breakpoint.md && ` ${isPredPrev ? "Pred/Prev" : "projeto"}`}
               </Button>
             </>
           }
           right={
             <Button
+              className={classes.EditButton}
               icon={<EditOutlined />}
               onClick={handleEditModalOpen}
               type="link"
             >
               Editar
+              {breakpoint.md && ` ${isPredPrev ? "Pred/Prev" : "projeto"}`}
             </Button>
           }
         />
@@ -230,30 +233,30 @@ export function MaintProjectDetails({
 
       <Row gutter={12}>
         <Col lg={6} xs={12}>
-          <DataInfo label="Status" marginBottom={!breakpoint.lg}>
+          <DataItem label="Status" marginBottom={!breakpoint.lg}>
             <MaintProjectStatusBadge
               isPredPrev={isPredPrev}
               status={projectStatus || "running"}
             />
-          </DataInfo>
+          </DataItem>
         </Col>
 
         <Col lg={6} xs={12}>
-          <DataInfo label="Prioridade">
+          <DataItem label="Prioridade">
             <PriorityTag priority={project.priority} />
-          </DataInfo>
+          </DataItem>
         </Col>
 
         <Col lg={6} xs={12}>
-          <DataInfo icon={<UserOutlined />} label="Responsável">
+          <DataItem icon={<UserOutlined />} label="Responsável">
             <MaintEmployeeTag maintainer={project.team.manager.trim()} />
-          </DataInfo>
+          </DataItem>
         </Col>
 
         <Col lg={6} xs={12}>
-          <DataInfo icon={<TeamOutlined />} label="Equipe">
+          <DataItem icon={<TeamOutlined />} label="Equipe">
             {project.team.others.trim()}
-          </DataInfo>
+          </DataItem>
         </Col>
       </Row>
 
@@ -262,7 +265,7 @@ export function MaintProjectDetails({
       {breakpoint.lg ? (
         <Row className={classes.TimelineLgContainer}>
           <Col span={4}>
-            <DataInfo label="Histórico" />
+            <DataItem label="Histórico" />
           </Col>
           <Col className={classes.TimelineLg} span={19}>
             <Page scrollTopOffset={24}>
@@ -277,7 +280,7 @@ export function MaintProjectDetails({
         <Page scrollTopOffset={24}>
           <Row>
             <Col span={24}>
-              <DataInfo label="Histórico" />
+              <DataItem label="Histórico" />
             </Col>
 
             <Col span={23}>
@@ -323,7 +326,7 @@ export function MaintProjectDetails({
       isLoading={loading}
     >
       {isPredPrev ? "A Pred/Prev" : "O projeto de manutenção"}{" "}
-      {isPredPrev ? "solicitada" : "solicitado"} não existe ou foi{" "}
+      {isPredPrev ? "requisitada" : "requisitado"} não existe ou foi{" "}
       {isPredPrev ? "desabilitada" : "desabilitado"}.
     </Result404>
   );

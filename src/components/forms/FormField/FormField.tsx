@@ -5,12 +5,13 @@ import type {
   SwitchProps,
 } from "antd";
 import { Form, Input, Radio, Switch } from "antd";
+import { isArray } from "lodash";
 import { nanoid } from "nanoid";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { UseControllerProps } from "react-hook-form";
 import { useController } from "react-hook-form";
 
-import { isArray, isTouchDevice } from "../../../utils";
+import { isTouchDevice } from "../../../utils";
 import { FieldHelp } from "../components/FieldHelp/FieldHelp";
 import { FieldLabel } from "../components/FieldLabel/FieldLabel";
 import { FieldPreSuffix } from "../components/FieldPreSuffix/FieldPreSuffix";
@@ -82,6 +83,7 @@ type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
   max?: Type extends "number" ? number : never;
   min?: Type extends "number" ? number : never;
   noDecimal?: Type extends "number" ? boolean : never;
+  onBlur?: (value: Value) => void;
   onValueChange?: (value: Value) => void;
   placeholder?: string;
   required?: boolean;
@@ -169,23 +171,24 @@ export function FormField<SelectValue extends string = string>(
     // select
     sortValues,
     /* Value-based props */
+    onBlur,
     onValueChange,
   } = props;
 
   const {
-    field: { name, onChange, onBlur, ...field },
+    field: { name, onChange, onBlur: onFieldBlur, ...field },
     fieldState: { error, isTouched, invalid },
     formState: { isSubmitting },
   } = useController({
     name: nameProp,
     rules: rules
       ? {
+          ...rules,
           required:
-            required &&
+            required !== false &&
             (typeof rules.required === "string"
               ? rules.required
               : "Campo obrigatório"),
-          ...rules,
         }
       : undefined,
     shouldUnregister: true,
@@ -195,6 +198,8 @@ export function FormField<SelectValue extends string = string>(
     (): FieldValue => field.value as FieldValue,
     [field.value]
   );
+
+  const [prevValue, setPrevValue] = useState(value);
 
   const hasValue = useMemo(
     () => (isArray(value) ? !!value[0] : !!value),
@@ -268,8 +273,9 @@ export function FormField<SelectValue extends string = string>(
   );
 
   const handleBlur = useCallback(() => {
-    onBlur();
-  }, [onBlur]);
+    onFieldBlur();
+    onBlur?.(value as never);
+  }, [onFieldBlur, onBlur, value]);
 
   const handleFilterSelectOptions = useCallback(
     (input: string, option?: { label?: unknown; value?: unknown }) => {
@@ -297,10 +303,14 @@ export function FormField<SelectValue extends string = string>(
         type === "radio" ||
         type === "date")
     ) {
-      handleBlur();
+      onFieldBlur();
     }
-    onValueChange?.(value as never);
-  }, [value, type, isTouched, hasValue, onValueChange, handleBlur]);
+
+    if (prevValue !== value) {
+      setPrevValue(value);
+      onValueChange?.(value as never);
+    }
+  }, [value, prevValue, type, isTouched, hasValue, onValueChange, onFieldBlur]);
 
   const placeholder = useMemo((): string => {
     if (placeholderProp) return placeholderProp;

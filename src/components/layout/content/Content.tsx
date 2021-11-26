@@ -1,7 +1,7 @@
+import { useTheme } from "@hooks";
 import { Layout } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
 
-import { useTheme } from "../../../hooks";
 import { Breadcrumb } from "../breadcrumb/Breadcrumb";
 import classes from "./Content.module.css";
 
@@ -12,11 +12,15 @@ type ContentProps = {
 export function Content({ children }: ContentProps): JSX.Element {
   const [theme] = useTheme();
 
+  const contentStyle = useMemo(
+    () => ({
+      backgroundColor: theme === "light" ? "#fff" : "#111",
+    }),
+    [theme]
+  );
+
   return (
-    <Layout.Content
-      className={classes.Container}
-      style={{ backgroundColor: theme === "light" ? "#fff" : "#111" }}
-    >
+    <Layout.Content className={classes.Container} style={contentStyle}>
       <Breadcrumb />
 
       <div className={classes.Screen}>{children}</div>

@@ -1,0 +1,19 @@
+.AccountHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-left: 6px;
+}
+
+.PositionsMobile {
+  margin-left: 6px;
+}
+
+/* md and up */
+@media screen and (min-width: 768px) {
+  .AccountHeader {
+    margin-top: 0;
+    padding-left: 0;
+  }
+}

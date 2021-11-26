@@ -21,6 +21,7 @@
     "@sentry/react": "^6.15.0",
     "@sentry/rrweb": "^0.3.1",
     "@sentry/tracing": "^6.15.0",
+    "@types/lodash": "^4.14.177",
     "animate.css": "^4.1.1",
     "antd": "^4.16.13",
     "axios": "^0.24.0",
@@ -31,6 +32,7 @@
     "history": "^4.10.1",
     "jsbarcode": "^3.11.5",
     "jspdf": "^2.4.0",
+    "lodash": "^4.17.21",
     "nanoid": "^3.1.30",
     "qrcode": "^1.4.4",
     "react": "^17.0.2",
@@ -49,6 +51,7 @@
     "react-use-localstorage": "^3.5.3",
     "redux": "^4.1.2",
     "rrweb": "^1.0.7",
+    "validator": "^13.7.0",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
@@ -64,6 +67,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-helmet": "^6.1.4",
     "@types/react-router-dom": "^5.3.2",
+    "@types/validator": "^13.7.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "autoprefixer": "^9.8.4",

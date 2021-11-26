@@ -2,11 +2,11 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import type { ButtonProps } from "antd";
 import { Button, Col, Divider, Grid, Row } from "antd";
 import { nanoid } from "nanoid";
-import React from "react";
+import React, { useMemo } from "react";
 import type { Falsy } from "utility-types";
 
-import { PageDescription } from "../..";
 import { PageActionButtons } from "../components/PageActionButtons";
+import { PageDescription } from "../components/PageDescription";
 import { PageTitle } from "../components/PageTitle";
 import { Page } from "../Page";
 import classes from "./ListFormPage.module.css";
@@ -44,6 +44,17 @@ export function ListFormPage({
 }: ListFormPageProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
+  const rowStyle = useMemo(
+    () => ({
+      height: breakpoint.lg
+        ? "calc(100% - 15px)"
+        : actions
+        ? "calc(100% - 95px)"
+        : "calc(100% - 50px)",
+    }),
+    [breakpoint.lg, actions]
+  );
+
   return (
     <>
       <PageTitle>{title}</PageTitle>
@@ -66,16 +77,7 @@ export function ListFormPage({
         </PageActionButtons>
       )}
 
-      <Row
-        gutter={28}
-        style={{
-          height: breakpoint.lg
-            ? "calc(100% - 15px)"
-            : actions
-            ? "calc(100% - 95px)"
-            : "calc(100% - 50px)",
-        }}
-      >
+      <Row gutter={28} style={rowStyle}>
         <Col className={classes.PageGridCol} lg={8} xl={7} xs={24} xxl={6}>
           <div className={classes.ListTitle}>
             <Divider orientation="left">{listTitle}</Divider>

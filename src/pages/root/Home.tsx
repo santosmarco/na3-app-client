@@ -1,6 +1,6 @@
 import { blue, green, magenta, red } from "@ant-design/colors";
-import { HomeLogo, StaticListItem } from "@components";
-import { useNa3User } from "@modules/na3-react";
+import { Logo, StaticListItem } from "@components";
+import { useCurrentUser } from "@modules/na3-react";
 import type { MenuPageAction } from "@types";
 import { Col, Divider, Row } from "antd";
 import { nanoid } from "nanoid";
@@ -15,11 +15,11 @@ import {
 import classes from "./Home.module.css";
 
 export function HomePage(): JSX.Element {
-  const user = useNa3User();
+  const user = useCurrentUser();
 
   return (
     <>
-      {user && <HomeLogo className={classes.Logo} />}
+      {user && <Logo className={classes.Logo} />}
 
       <div>
         <Divider orientation="left">Acesso rápido</Divider>

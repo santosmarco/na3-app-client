@@ -1,3 +1,4 @@
+import { FormItem } from "@components";
 import { Collapse } from "antd";
 import React from "react";
 
@@ -17,15 +18,17 @@ export function FormCollapse({
   children,
 }: FormCollapseProps): JSX.Element {
   return (
-    <Collapse className={classes.Collapse} ghost={true}>
-      <Collapse.Panel
-        className={classes.Panel}
-        header={title}
-        key="form-collapse"
-      >
-        {children}
-      </Collapse.Panel>
-    </Collapse>
+    <FormItem>
+      <Collapse ghost={true}>
+        <Collapse.Panel
+          className={classes.Panel}
+          header={title}
+          key="form-collapse"
+        >
+          {children}
+        </Collapse.Panel>
+      </Collapse>
+    </FormItem>
   );
 }
 

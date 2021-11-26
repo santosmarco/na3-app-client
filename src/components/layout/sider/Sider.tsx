@@ -14,10 +14,11 @@ export type SiderItemChild = {
 };
 
 export type SiderItem = {
-  children?: SiderItemChild[];
+  children: SiderItemChild[] | undefined;
   icon: React.ReactNode;
+  isPublic: boolean;
   path: string;
-  superOnly?: boolean;
+  section: "admin" | 1 | 2;
   title: string;
 };
 
@@ -47,7 +48,10 @@ export function Sider(): JSX.Element {
   const siderItems = useMemo(
     (): (SiderItem | null)[] =>
       Object.entries(ROUTES).map(
-        ([path, { siderConfig, title, icon, requiredPrivileges }]) => {
+        ([
+          path,
+          { siderConfig, title, icon, requiredPrivileges, isPublic },
+        ]) => {
           const itemTitle = title || siderConfig?.title;
 
           if (!siderConfig || !itemTitle) return null;
@@ -56,8 +60,11 @@ export function Sider(): JSX.Element {
               children: siderConfig.children,
               icon,
               path,
-              superOnly: requiredPrivileges?.includes("_super"),
               title: itemTitle,
+              section: requiredPrivileges?.includes("_super")
+                ? "admin"
+                : siderConfig.section || 1,
+              isPublic: isPublic || false,
             };
         }
       ),

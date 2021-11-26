@@ -1,3 +1,7 @@
+.EditButton {
+  padding-right: 0;
+}
+
 .TimelineLgContainer {
   height: calc(100% - 190px);
 }

@@ -1,15 +1,11 @@
+import type { AutoCompleteOptionBase, SelectOptionBase } from "@components";
+import type { SelectOptionGroup } from "@components";
+import { EMPLOYEES } from "@constants";
+import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
 import { Tag } from "antd";
 import React from "react";
 import type { ConditionalPick } from "type-fest";
 import type { Falsy } from "utility-types";
-
-import type {
-  AutoCompleteOptionBase,
-  SelectOptionBase,
-} from "../../components";
-import type { SelectOptionGroup } from "../../components";
-import { EMPLOYEES } from "../../constants";
-import type { Na3Department, Na3DepartmentId } from "../../modules/na3-types";
 
 type OptionsGeneratorExtractor<Data, FnReturn> =
   | Extract<keyof ConditionalPick<Data, FnReturn>, string>

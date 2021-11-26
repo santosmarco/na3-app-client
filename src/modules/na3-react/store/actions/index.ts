@@ -6,4 +6,5 @@ export * from "./labelTemplates";
 export * from "./maintProjects";
 export * from "./na3/people";
 export * from "./na3/products";
+export * from "./na3/users";
 export * from "./serviceOrders";

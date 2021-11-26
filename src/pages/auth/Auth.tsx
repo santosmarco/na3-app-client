@@ -10,13 +10,20 @@ import { useForm } from "@hooks";
 import { useNa3Auth } from "@modules/na3-react";
 import { message } from "antd";
 import React, { useCallback } from "react";
+import { useHistory } from "react-router";
+
+type PageProps = {
+  redirectUrl?: string;
+};
 
 type AuthFormValues = {
   password: string;
   registrationId: string;
 };
 
-export function AuthPage(): JSX.Element {
+export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
+  const history = useHistory();
+
   const {
     helpers: { signIn },
   } = useNa3Auth();
@@ -42,9 +49,17 @@ export function AuthPage(): JSX.Element {
         }
       } else {
         void message.success("Autenticado");
+        redirectUrl && history.replace(redirectUrl);
       }
     },
-    [form, signIn]
+    [form, signIn, history, redirectUrl]
+  );
+
+  const handleRegistrationIdBlur = useCallback(
+    (value: string) => {
+      form.setValue("registrationId", value.padStart(4, "0"));
+    },
+    [form]
   );
 
   return (
@@ -58,10 +73,14 @@ export function AuthPage(): JSX.Element {
         <FormField
           label="Matrícula"
           labelCol={{ span: 6 }}
+          maxLength={4}
           name={form.fieldNames.registrationId}
           noDecimal={true}
+          onBlur={handleRegistrationIdBlur}
           prefix={<IdcardOutlined />}
-          rules={{ required: "Digite sua matrícula" }}
+          rules={{
+            required: "Digite sua matrícula",
+          }}
           tooltip={{
             arrowPointAtCenter: true,
             placement: "topLeft",

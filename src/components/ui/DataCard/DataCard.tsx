@@ -7,7 +7,7 @@ import classes from "./DataCard.module.css";
 
 type DataCardProps<T> = {
   bodyStyle?: CSSProperties;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   data: T;
   header?: React.ReactNode;
@@ -16,15 +16,13 @@ type DataCardProps<T> = {
   title: string;
 };
 
-const defaultProps: Omit<
-  DataCardProps<unknown>,
-  "children" | "data" | "title"
-> = {
+const defaultProps = {
   bodyStyle: undefined,
   className: undefined,
   header: undefined,
   onClick: undefined,
   preTitle: undefined,
+  children: undefined,
 };
 
 export function DataCard<T>({
@@ -58,7 +56,9 @@ export function DataCard<T>({
       bodyStyle={cardBodyStyle}
       className={`${
         classes.Card
-      } animate__animated animate__fadeIn animate__faster ${className || ""}`}
+      } animate__animated animate__fadeIn animate__faster ${
+        className || ""
+      }`.trim()}
       hoverable={!!onClick}
       onClick={handleClick}
     >
@@ -76,9 +76,12 @@ export function DataCard<T>({
         {title}
       </Typography.Title>
 
-      <Divider className={classes.Divider} />
-
-      {children}
+      {children && (
+        <>
+          <Divider className={classes.Divider} />
+          {children}
+        </>
+      )}
     </Card>
   );
 }

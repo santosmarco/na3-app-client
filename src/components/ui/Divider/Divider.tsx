@@ -1,6 +1,6 @@
 import type { DividerProps as AntdDividerProps } from "antd";
 import { Divider as AntdDivider } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
 
 type DividerProps = AntdDividerProps & {
   children?: React.ReactNode;
@@ -24,8 +24,17 @@ export function Divider({
   plain,
   prefixCls,
   type,
-  style,
+  style: styleProp,
 }: DividerProps): JSX.Element {
+  const style = useMemo(
+    () => ({
+      ...styleProp,
+      marginBottom: marginBottom ?? styleProp?.marginBottom,
+      marginTop: marginTop ?? styleProp?.marginTop,
+    }),
+    [styleProp, marginBottom, marginTop]
+  );
+
   return (
     <AntdDivider
       className={className}
@@ -33,11 +42,7 @@ export function Divider({
       orientation={orientation}
       plain={plain}
       prefixCls={prefixCls}
-      style={{
-        ...style,
-        marginBottom: marginBottom ?? style?.marginBottom,
-        marginTop: marginTop ?? style?.marginTop,
-      }}
+      style={style}
       type={type}
     >
       {children}

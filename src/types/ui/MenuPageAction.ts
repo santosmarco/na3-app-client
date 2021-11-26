@@ -1,4 +1,4 @@
-import type { ROUTES } from "../../constants";
+import type { ROUTES } from "@constants";
 
 export type MenuPageAction = {
   colors: { background: string; foreground: string };

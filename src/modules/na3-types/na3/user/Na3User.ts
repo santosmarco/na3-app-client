@@ -3,6 +3,7 @@ import type { Na3UserEvent } from "./Na3UserEvent";
 
 export type Na3User = {
   readonly activityHistory: Na3UserEvent[];
+  readonly bio: string | null;
   readonly createdAt: string;
   readonly displayName: string;
   readonly email: string | null;
@@ -10,8 +11,10 @@ export type Na3User = {
   readonly id: string;
   readonly isActive: boolean;
   readonly isEmailVerified: boolean;
+  readonly isPasswordDefault: boolean;
   readonly isSuper: boolean;
   readonly lastName: string;
+  readonly lastSeenAt: string;
   readonly middleName: string | null;
   readonly notificationTokens: string[];
   readonly photoUrl: string | null;

@@ -8,6 +8,7 @@ import { labelTemplatesReducer } from "./labelTemplates";
 import { maintProjectsReducer } from "./maintProjects";
 import { na3PeopleReducer } from "./na3/people";
 import { na3ProductsReducer } from "./na3/products";
+import { na3UsersReducer } from "./na3/users";
 import { serviceOrdersReducer } from "./serviceOrders";
 
 export const rootReducer = combineReducers({
@@ -19,5 +20,6 @@ export const rootReducer = combineReducers({
   maintProjects: maintProjectsReducer,
   na3People: na3PeopleReducer,
   na3Products: na3ProductsReducer,
+  na3Users: na3UsersReducer,
   serviceOrders: serviceOrdersReducer,
 });

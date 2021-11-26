@@ -119,6 +119,8 @@ export const dictionary: Record<FirebaseErrorCode, FirebaseErrorMessage> = {
     "firestore",
     "failed-precondition"
   ),
+  "auth/requires-recent-login":
+    "Sua sessão venceu. Por favor, autentique-se novamente.",
   internal: buildDefaultMessage("firestore", "internal"),
   "invalid-argument": buildDefaultMessage("firestore", "invalid-argument"),
   "not-found":

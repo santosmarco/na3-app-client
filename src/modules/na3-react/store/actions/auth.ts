@@ -1,5 +1,6 @@
 import type {
   AuthSetErrorAction,
+  AuthSetFirebaseUserAction,
   AuthSetLoadingAction,
   AuthSetUserAction,
   AuthState,
@@ -8,6 +9,13 @@ import type {
 export const setAuthUser = (user: AuthState["user"]): AuthSetUserAction => ({
   type: "AUTH_SET_USER",
   user,
+});
+
+export const setAuthFirebaseUser = (
+  firebaseUser: AuthState["_firebaseUser"]
+): AuthSetFirebaseUserAction => ({
+  type: "AUTH_SET_FIREBASE_USER",
+  _firebaseUser: firebaseUser,
 });
 
 export const setAuthLoading = (

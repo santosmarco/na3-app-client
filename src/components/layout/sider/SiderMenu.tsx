@@ -1,8 +1,8 @@
 import { Menu } from "antd";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useNa3User } from "../../../modules/na3-react";
+import { useCurrentUser } from "../../../modules/na3-react";
 import type { SiderItem, SiderItemChild } from "./Sider";
 
 export type SiderMenuProps = {
@@ -16,7 +16,7 @@ export function SiderMenu({
 }: SiderMenuProps): JSX.Element {
   const location = useLocation();
 
-  const user = useNa3User();
+  const user = useCurrentUser();
 
   const renderSiderItem = useCallback(
     (item: SiderItem | SiderItemChild): JSX.Element => {
@@ -45,6 +45,26 @@ export function SiderMenu({
     [onNavigation]
   );
 
+  const itemsBySection = useMemo((): Record<
+    SiderItem["section"],
+    SiderItem[] | undefined
+  > => {
+    function getSectionItems(
+      section: SiderItem["section"]
+    ): SiderItem[] | undefined {
+      const filtered = items.filter(
+        (item) => (user || item.isPublic) && item.section === section
+      );
+      return filtered.length > 0 ? filtered : undefined;
+    }
+
+    return {
+      1: getSectionItems(1),
+      2: getSectionItems(2),
+      admin: getSectionItems("admin"),
+    };
+  }, [items, user]);
+
   return (
     <Menu
       defaultOpenKeys={[location.pathname.split("/")[1]]}
@@ -52,17 +72,19 @@ export function SiderMenu({
       mode="inline"
       theme="dark"
     >
-      {items
-        .filter((item) => !item?.superOnly)
-        .map((publicItem) => renderSiderItem(publicItem))}
+      {itemsBySection[1]?.map((item) => renderSiderItem(item))}
 
-      {user?.hasPrivileges("_super") && (
+      {itemsBySection[2] && (
         <>
           <Menu.Divider />
+          {itemsBySection[2].map((item) => renderSiderItem(item))}
+        </>
+      )}
 
-          {items
-            .filter((item) => item?.superOnly)
-            .map((adminItem) => renderSiderItem(adminItem))}
+      {itemsBySection.admin && user?.hasPrivileges("_super") && (
+        <>
+          <Menu.Divider />
+          {itemsBySection.admin.map((adminItem) => renderSiderItem(adminItem))}
         </>
       )}
     </Menu>

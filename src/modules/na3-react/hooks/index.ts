@@ -1,4 +1,5 @@
 export * from "./useAppReady";
+export * from "./useCurrentUser";
 export * from "./useNa3/useNa3";
 export * from "./useNa3/useNa3People";
 export * from "./useNa3/useNa3Product";
@@ -8,5 +9,5 @@ export * from "./useNa3Departments";
 export * from "./useNa3MaintProjects";
 export * from "./useNa3ServiceOrders";
 export * from "./useNa3TransfLabelTemplates";
-export * from "./useNa3User";
+export * from "./useNa3Users";
 export * from "./useStateSlice";

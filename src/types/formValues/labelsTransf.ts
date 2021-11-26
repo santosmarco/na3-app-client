@@ -1,4 +1,4 @@
-import type { Na3TransfLabelTemplate } from "../../modules/na3-types";
+import type { Na3TransfLabelTemplate } from "@modules/na3-types";
 
 export type LabelsTransfPrintFormOnSubmitValues = Omit<
   Na3TransfLabelTemplate,

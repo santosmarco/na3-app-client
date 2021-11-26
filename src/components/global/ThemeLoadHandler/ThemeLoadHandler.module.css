@@ -1,0 +1,15 @@
+.ThemeLoadingScreen {
+  background-color: #111;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  padding-bottom: 50vh;
+  z-index: 9999;
+  pointer-events: none;
+}

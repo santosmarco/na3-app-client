@@ -1,17 +1,18 @@
-import type { Na3User } from "@modules/na3-types";
 import dayjs from "dayjs";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseError } from "../../firebase-errors-pt-br";
 import { translateFirebaseError } from "../../firebase-errors-pt-br";
-import type { AppUser } from "../types";
+import type { Na3User } from "../../na3-types";
+import { formatRegistrationId, getAuthEmail } from "../helpers";
+import type { AppUser, AuthState } from "../types";
 import { buildNa3Error, resolveCollectionId } from "../utils";
-import { useNa3User } from "./useNa3User";
+import { useCurrentUser } from "./useCurrentUser";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3AuthResult = {
-  error: FirebaseError | null;
+  error: AuthState["error"];
   helpers: {
     signIn: (
       registrationId: string,
@@ -39,7 +40,7 @@ export function useNa3Auth(): UseNa3AuthResult {
   const { environment } = useStateSlice("config");
   const { error, loading } = useStateSlice("auth");
 
-  const user = useNa3User();
+  const user = useCurrentUser();
 
   const usersCollectionRef = useRef(
     firebase.firestore().collection(
@@ -49,13 +50,41 @@ export function useNa3Auth(): UseNa3AuthResult {
     )
   );
 
-  const getAuthEmail = useCallback(
-    (registrationId: string) =>
-      `${parseInt(registrationId)
-        .toString()
-        .padStart(4, "0")}@novaa3-app.com.br`,
+  const signIn = useCallback(
+    async (
+      registrationId: string,
+      password: string
+    ): Promise<
+      | { error: FirebaseError; user: null }
+      | { error: null; user: firebase.auth.UserCredential }
+    > => {
+      try {
+        const user = await firebase
+          .auth()
+          .signInWithEmailAndPassword(getAuthEmail(registrationId), password);
+        return { error: null, user };
+      } catch (err) {
+        return {
+          error: translateFirebaseError(err as FirebaseError),
+          user: null,
+        };
+      }
+    },
     []
   );
+
+  const signOut = useCallback(async (): Promise<
+    { error: FirebaseError } | { error: null }
+  > => {
+    try {
+      await firebase.auth().signOut();
+      return { error: null };
+    } catch (err) {
+      return {
+        error: translateFirebaseError(err as FirebaseError),
+      };
+    }
+  }, []);
 
   const signUp = useCallback(
     async (
@@ -64,8 +93,10 @@ export function useNa3Auth(): UseNa3AuthResult {
         Na3User,
         "email" | "firstName" | "lastName" | "middleName" | "positionIds"
       >
-    ) => {
-      const formattedRegId = registrationId.trim();
+    ): Promise<
+      { error: FirebaseError; user: null } | { error: null; user: Na3User }
+    > => {
+      const formattedRegId = formatRegistrationId(registrationId);
 
       try {
         const userCandidates = await usersCollectionRef.current
@@ -97,36 +128,30 @@ export function useNa3Auth(): UseNa3AuthResult {
           registrationId: formattedRegId,
           style: { backgroundColor: null, color: null },
           updatedAt: timestamp,
+          isPasswordDefault: true,
+          lastSeenAt: timestamp,
+          bio: null,
         };
 
-        const [, firestoreUser] = await Promise.all([
-          firebase
-            .auth()
-            .createUserWithEmailAndPassword(
-              getAuthEmail(formattedRegId),
-              `novaa3-${formattedRegId}`
-            ),
-          usersCollectionRef.current.add(user),
-        ]);
-
-        return { error: null, user: { ...user, id: firestoreUser.id } };
-      } catch (err) {
-        return {
-          error: translateFirebaseError(err as FirebaseError),
-          user: null,
-        };
-      }
-    },
-    [getAuthEmail]
-  );
-
-  const signIn = useCallback(
-    async (registrationId: string, password: string) => {
-      try {
-        const user = await firebase
+        const credentials = await firebase
           .auth()
-          .signInWithEmailAndPassword(getAuthEmail(registrationId), password);
-        return { error: null, user };
+          .createUserWithEmailAndPassword(
+            getAuthEmail(formattedRegId),
+            `novaa3-${formattedRegId}`
+          );
+
+        if (!credentials.user) {
+          return {
+            error: buildNa3Error("na3/auth/sign-up/user-not-created"),
+            user: null,
+          };
+        }
+
+        await usersCollectionRef.current.doc(credentials.user.uid).set(user);
+
+        await signOut();
+
+        return { error: null, user: { ...user, id: credentials.user.uid } };
       } catch (err) {
         return {
           error: translateFirebaseError(err as FirebaseError),
@@ -134,20 +159,8 @@ export function useNa3Auth(): UseNa3AuthResult {
         };
       }
     },
-    [getAuthEmail]
+    [signOut]
   );
-
-  const signOut = useCallback(async () => {
-    try {
-      await firebase.auth().signOut();
-      return { error: null };
-    } catch (err) {
-      return {
-        error: translateFirebaseError(err as FirebaseError),
-        user: null,
-      };
-    }
-  }, []);
 
   return {
     error: error,

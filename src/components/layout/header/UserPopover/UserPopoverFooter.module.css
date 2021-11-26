@@ -1,0 +1,13 @@
+.Footer {
+  display: flex;
+  margin: -4px -8px;
+}
+
+.AccountBtnContainer {
+  flex: 1;
+  padding-right: 6px;
+}
+
+.HomeBtn {
+  width: 32px !important;
+}

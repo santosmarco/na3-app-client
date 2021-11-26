@@ -1,0 +1,40 @@
+.LabelPreview {
+  position: relative;
+  font-size: 1.5vw;
+  color: black;
+  border: 1px solid black;
+  border-radius: 6px;
+  border-bottom-right-radius: 0px;
+}
+
+.Footer {
+  text-align: right;
+}
+
+/* md */
+@media screen and (min-width: 768px) {
+  .LabelPreview {
+    font-size: 10px;
+  }
+}
+
+/* lg */
+@media screen and (min-width: 992px) {
+  .LabelPreview {
+    font-size: 12px;
+  }
+}
+
+/* xl */
+@media screen and (min-width: 1200px) {
+  .LabelPreview {
+    font-size: 14px;
+  }
+}
+
+/* xxl and up */
+@media screen and (min-width: 1600px) {
+  .LabelPreview {
+    font-size: 18px;
+  }
+}

@@ -1,6 +1,7 @@
 export { Na3Provider } from "./components";
 export {
   useAppReady,
+  useCurrentUser,
   useNa3,
   useNa3Auth,
   useNa3Departments,
@@ -10,6 +11,6 @@ export {
   useNa3ProductCustomers,
   useNa3ServiceOrders,
   useNa3TransfLabelTemplates,
-  useNa3User,
+  useNa3Users,
 } from "./hooks";
 export type { AppUser } from "./types";

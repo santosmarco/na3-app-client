@@ -10,15 +10,17 @@ export function RouteHandler(): JSX.Element {
   return (
     <Switch>
       {Object.entries(ROUTES).map(
-        ([path, { component, requiredPrivileges, notExact }]) => (
+        ([path, { component, requiredPrivileges, isPublic, notExact }]) => (
           <Route exact={!notExact} key={nanoid()} path={path}>
-            <PageContainer requiredPrivileges={requiredPrivileges}>
+            <PageContainer
+              isPublic={isPublic || false}
+              requiredPrivileges={requiredPrivileges}
+            >
               {component || <NotImplementedPage />}
             </PageContainer>
           </Route>
         )
       )}
-
       <Route component={NoMatchPage} path="*" />
     </Switch>
   );

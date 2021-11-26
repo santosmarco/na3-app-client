@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 import { useTheme } from "../../../hooks";
 import { useNa3Auth } from "../../../modules/na3-react";
-import { HomeLogo } from "../../specific/home/HomeLogo";
+import { Logo } from "../../ui/Logo/Logo";
 import classes from "./Header.module.css";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { UserInfo } from "./UserInfo";
@@ -20,7 +20,7 @@ export function Header(): JSX.Element {
 
   const handleSignOut = useCallback(async () => {
     await auth.helpers.signOut();
-    await message.info("Você saiu");
+    void message.info("Você saiu");
     history.push("/");
   }, [auth.helpers, history]);
 
@@ -35,7 +35,7 @@ export function Header(): JSX.Element {
           <UserInfo user={auth.user} />
         ) : (
           <Link to="/">
-            <HomeLogo height={24} />
+            <Logo height={24} />
           </Link>
         )}
       </div>

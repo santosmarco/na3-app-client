@@ -12,8 +12,8 @@ import {
   formatServiceOrderId,
   resolveCollectionId,
 } from "../utils";
+import { useCurrentUser } from "./useCurrentUser";
 import { useNa3Departments } from "./useNa3Departments";
-import { useNa3User } from "./useNa3User";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3ServiceOrdersResult = {
@@ -74,7 +74,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
   const { device } = useStateSlice("global");
   const serviceOrders = useStateSlice("serviceOrders");
 
-  const user = useNa3User();
+  const user = useCurrentUser();
   const departments = useNa3Departments();
 
   const fbCollectionRef = useRef(

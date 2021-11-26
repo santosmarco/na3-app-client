@@ -1,10 +1,10 @@
 import type { SelectProps as AntdSelectProps, TagProps } from "antd";
 import { Tag } from "antd";
 import { Select as AntdSelect } from "antd";
+import { isArray } from "lodash";
 import { nanoid } from "nanoid";
 import React, { useCallback } from "react";
 
-import { isArray } from "../../../../utils";
 import classes from "./Select.module.css";
 
 type SelectValue = string[] | string;

@@ -8,7 +8,7 @@ import type {
   FirebaseOperationResult,
 } from "../types";
 import { resolveCollectionId } from "../utils";
-import { useNa3User } from "./useNa3User";
+import { useCurrentUser } from "./useCurrentUser";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3TransfLabelTemplatesResult = {
@@ -35,7 +35,7 @@ export function useNa3TransfLabelTemplates(): UseNa3TransfLabelTemplatesResult {
   const { environment } = useStateSlice("config");
   const { transf: transfLabelTemplates } = useStateSlice("labelTemplates");
 
-  const user = useNa3User();
+  const user = useCurrentUser();
 
   const fbCollectionRef = useRef(
     firebase

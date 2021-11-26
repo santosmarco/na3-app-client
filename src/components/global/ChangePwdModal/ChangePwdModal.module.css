@@ -1,0 +1,12 @@
+.Alert {
+  margin-bottom: 24px;
+}
+
+.StrengthBarContainer {
+  margin-right: -12px;
+}
+
+.StrengthMessage {
+  display: block;
+  text-align: right;
+}

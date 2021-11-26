@@ -4,7 +4,7 @@ import {
   MaintServiceOrdersList,
 } from "@components";
 import { useQuery } from "@hooks";
-import { useNa3ServiceOrders, useNa3User } from "@modules/na3-react";
+import { useCurrentUser, useNa3ServiceOrders } from "@modules/na3-react";
 import type { Na3ServiceOrder } from "@modules/na3-types";
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
@@ -15,7 +15,7 @@ export function MaintServiceOrdersHomePage(): JSX.Element {
   const history = useHistory();
   const query = useQuery("numero");
 
-  const user = useNa3User();
+  const user = useCurrentUser();
   const serviceOrders = useNa3ServiceOrders();
 
   const userOrders = useMemo(

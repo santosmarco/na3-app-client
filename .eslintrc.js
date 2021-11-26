@@ -51,7 +51,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["src/modules/na3/**/*", "src/modules/na3-types/**/*"],
+      files: ["src/modules/**/*"],
       rules: {
         "@typescript-eslint/consistent-type-definitions": "off",
       },

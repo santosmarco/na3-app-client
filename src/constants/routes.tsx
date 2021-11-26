@@ -6,10 +6,7 @@ import {
   TagsOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import React from "react";
-import type { LiteralUnion } from "type-fest";
-
-import type { Na3UserPrivilegeId } from "../modules/na3-types";
+import type { Na3UserPrivilegeId } from "@modules/na3-types";
 import {
   AdminHomePage,
   AdminUsersCreatePage,
@@ -30,26 +27,33 @@ import {
   MaintProjectsHomePage,
   MaintServiceOrdersCreatePage,
   MaintServiceOrdersHomePage,
-} from "../pages";
+  UserAccountPage,
+} from "@pages";
+import React from "react";
+import type { SiderItem } from "src/components/layout/sider/Sider";
+import type { LiteralUnion } from "type-fest";
 
-export type SiderConfig = {
-  children?: SiderChild[];
-  title?: string;
-};
-
-type SiderChild = {
+type SiderChildConfig = {
   path: string;
   title: string;
+};
+
+export type SiderConfig = {
+  children?: SiderChildConfig[];
+  section?: Exclude<SiderItem["section"], "admin">;
+  title?: string;
 };
 
 export type AppRoute = {
   component: React.ReactNode | null;
   icon?: React.ReactNode;
   notExact?: boolean;
-  requiredPrivileges: Na3UserPrivilegeId[] | null;
   siderConfig?: SiderConfig;
   title: string | null;
-};
+} & (
+  | { isPublic: boolean; requiredPrivileges: null }
+  | { isPublic?: undefined; requiredPrivileges: Na3UserPrivilegeId[] }
+);
 
 type AppRouteMap<Path extends string> = Readonly<
   Record<LiteralUnion<Path, string>, AppRoute>
@@ -59,6 +63,7 @@ export const ROUTES: AppRouteMap<
   | "/"
   | "/admin/usuarios"
   | "/admin/usuarios/criar"
+  | "/conta"
   | "/docs"
   | "/docs/comex"
   | "/docs/modelos"
@@ -84,6 +89,7 @@ export const ROUTES: AppRouteMap<
     component: <HomePage />,
     icon: <HomeOutlined />,
     requiredPrivileges: null,
+    isPublic: true,
     siderConfig: { title: "Início" },
     title: null,
   },
@@ -116,10 +122,20 @@ export const ROUTES: AppRouteMap<
     title: "Criar Usuário",
   },
 
+  "/conta": {
+    component: <UserAccountPage />,
+    requiredPrivileges: null,
+    icon: <UserOutlined />,
+    title: "Conta",
+    isPublic: false,
+    siderConfig: { section: 2 },
+  },
+
   "/docs": {
     component: <DocsHomePage />,
     icon: <FileOutlined />,
     requiredPrivileges: null,
+    isPublic: true,
     siderConfig: {
       children: [
         { path: "/docs/transferencia", title: "Transferência" },
@@ -132,28 +148,33 @@ export const ROUTES: AppRouteMap<
   "/docs/comex": {
     component: null,
     requiredPrivileges: null,
+    isPublic: true,
     title: "Comércio Exterior",
   },
   "/docs/modelos": {
     component: null,
     requiredPrivileges: null,
+    isPublic: true,
     title: "Modelos",
   },
   "/docs/transferencia": {
     component: <DocTransfHomePage />,
     requiredPrivileges: null,
+    isPublic: true,
     title: "Transferência",
   },
   "/docs/transferencia/nova": {
     component: null,
     requiredPrivileges: null,
+    isPublic: true,
     title: "Nova Transferência",
   },
 
   "/entrar": {
-    component: <AuthPage />,
+    component: <AuthPage redirectUrl="/" />,
     icon: <UserOutlined />,
     requiredPrivileges: null,
+    isPublic: true,
     title: "Entrar",
   },
 
@@ -161,6 +182,7 @@ export const ROUTES: AppRouteMap<
     component: <LabelsHomePage />,
     icon: <TagsOutlined />,
     requiredPrivileges: null,
+    isPublic: true,
     siderConfig: {
       children: [
         { path: "/etiquetas/imprimir", title: "Imprimir" },
@@ -199,6 +221,7 @@ export const ROUTES: AppRouteMap<
     component: <MaintenanceHomePage />,
     icon: <SettingOutlined />,
     requiredPrivileges: null,
+    isPublic: true,
     siderConfig: {
       children: [
         { path: "/manutencao/os", title: "Ordens de Serviço" },

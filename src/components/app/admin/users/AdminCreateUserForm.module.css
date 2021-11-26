@@ -1,0 +1,11 @@
+.AddPositionBtn {
+  margin-bottom: 24px;
+}
+
+.RemovePositionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 32px;
+  margin-bottom: 24px;
+}

@@ -27,10 +27,24 @@ export function Result({
   title,
   description,
   children,
+  extra,
+  className,
+  icon,
+  prefixCls,
+  style,
 }: ResultProps): JSX.Element {
   return (
     <div className={classes.Container}>
-      <AntdResult status={status} subTitle={description} title={title}>
+      <AntdResult
+        className={className}
+        extra={extra}
+        icon={icon}
+        prefixCls={prefixCls}
+        status={status}
+        style={style}
+        subTitle={description}
+        title={title}
+      >
         {children}
       </AntdResult>
     </div>

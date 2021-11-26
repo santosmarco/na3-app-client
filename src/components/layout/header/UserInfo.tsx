@@ -1,11 +1,11 @@
 import { UserOutlined } from "@ant-design/icons";
+import type { AppUser } from "@modules/na3-react";
+import { useNa3ServiceOrders } from "@modules/na3-react";
 import { Avatar, Badge, Grid, Popover, Tooltip, Typography } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { AppUser } from "../../../modules/na3-react";
-import { useNa3ServiceOrders } from "../../../modules/na3-react";
 import classes from "./UserInfo.module.css";
-import { UserMessages } from "./UserMessages";
+import { UserPopover } from "./UserPopover/UserPopover";
 
 type UserInfoProps = {
   user: AppUser;
@@ -43,7 +43,7 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
     setPopoverIsVisible(visible);
   }, []);
 
-  const handleActionButtonClick = useCallback(() => {
+  const handleCloseAll = useCallback(() => {
     setPopoverIsVisible(false);
     setTooltipIsVisible(false);
   }, []);
@@ -69,11 +69,11 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
       visible={tooltipIsVisible}
     >
       <Popover
-        className={`${classes.UserInfo} animate__animated animate__fadeIn`}
         content={
-          <UserMessages
-            onActionBtnClick={handleActionButtonClick}
-            serviceOrders={urgentServiceOrders}
+          <UserPopover
+            hasMessages={messageCount > 0}
+            onClose={handleCloseAll}
+            urgentServiceOrders={urgentServiceOrders}
           />
         }
         onVisibleChange={handlePopoverVisibilityChange}
@@ -82,15 +82,19 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
         trigger="click"
         visible={popoverIsVisible}
       >
-        <Badge count={messageCount} size="small">
-          <Avatar icon={<UserOutlined />} size="small" style={user.style} />
-        </Badge>
+        <div
+          className={`${classes.UserInfo} animate__animated animate__fadeIn`}
+        >
+          <Badge count={messageCount} size="small">
+            <Avatar icon={<UserOutlined />} size="small" style={user.style} />
+          </Badge>
 
-        <small>
-          <Typography.Title className={classes.Username} level={5}>
-            {user.displayName.toUpperCase()}
-          </Typography.Title>
-        </small>
+          <small>
+            <Typography.Title className={classes.Username} level={5}>
+              {user.displayName.toUpperCase()}
+            </Typography.Title>
+          </small>
+        </div>
       </Popover>
     </Tooltip>
   );

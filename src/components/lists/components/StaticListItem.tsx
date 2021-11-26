@@ -40,9 +40,11 @@ export function StaticListItem({
 
   return (
     <Card
-      className={`${classes.Card} ${
-        cardClassName ? cardClassName : ""
-      } animate__animated animate__fadeIn animate__faster`}
+      className={`${
+        classes.Card
+      } animate__animated animate__fadeIn animate__faster ${
+        cardClassName || ""
+      }`.trim()}
       hoverable={!!(onClick || href)}
       onClick={handleClick}
       size="small"

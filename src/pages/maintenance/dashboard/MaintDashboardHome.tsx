@@ -82,14 +82,14 @@ export function MaintDashboardHomePage(): JSX.Element {
           <MaintDashboardColumn
             className={classes.DashboardCol}
             data={serviceOrdersByStatus.solved}
-            onSelectOrder={null}
+            onSelectOrder={handleOrderSelect}
             status="solved"
           />
 
           <MaintDashboardColumn
             className={classes.DashboardCol}
             data={serviceOrdersByStatus.closed.reverse()}
-            onSelectOrder={null}
+            onSelectOrder={handleOrderSelect}
             status="closed"
           />
         </Row>

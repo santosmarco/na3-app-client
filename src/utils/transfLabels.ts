@@ -1,5 +1,5 @@
-import type { Na3ApiLabel } from "../modules/na3-types";
-import type { LabelsTransfPrintFormOnSubmitValues } from "../types";
+import type { Na3ApiLabel } from "@modules/na3-types";
+import type { LabelsTransfPrintFormOnSubmitValues } from "@types";
 
 export function formatProductUnit(name: string, abbreviation: string): string {
   return `${name.toUpperCase()} (${abbreviation.toUpperCase()})`;

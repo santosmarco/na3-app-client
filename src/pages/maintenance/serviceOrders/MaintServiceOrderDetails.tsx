@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import {
   ConfirmServiceOrderModal,
-  DataInfo,
+  DataItem,
   Divider,
   MaintEmployeeTag,
   MaintServiceOrderTimelineModal,
@@ -386,13 +386,13 @@ export function MaintServiceOrderDetailsPage({
       <Page scrollTopOffset={24}>
         <Row gutter={12}>
           <Col lg={6} xs={12}>
-            <DataInfo label="Status" marginBottom={!breakpoint.lg}>
+            <DataItem label="Status" marginBottom={!breakpoint.lg}>
               <ServiceOrderStatusBadge status={serviceOrder.status} />
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={12}>
-            <DataInfo label="Prioridade/Responsável">
+            <DataItem label="Prioridade/Responsável">
               {serviceOrder.priority && serviceOrder.assignedMaintainer ? (
                 <Space>
                   <PriorityTag priority={serviceOrder.priority} />
@@ -403,22 +403,22 @@ export function MaintServiceOrderDetailsPage({
               ) : (
                 <em>Não definidos</em>
               )}
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={12}>
-            <DataInfo label="Setor">
+            <DataItem label="Setor">
               <strong>{serviceOrder.dpt.trim().toUpperCase()}</strong>
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={12}>
-            <DataInfo label="Máquina">
+            <DataItem label="Máquina">
               <ServiceOrderMachineTag
                 fallback={serviceOrder.machine.trim().toUpperCase()}
                 machine={getOrderMachine(serviceOrder)}
               />
-            </DataInfo>
+            </DataItem>
           </Col>
         </Row>
 
@@ -426,25 +426,25 @@ export function MaintServiceOrderDetailsPage({
 
         <Row gutter={12}>
           <Col lg={6} xs={8}>
-            <DataInfo label="Tipo" marginBottom={!breakpoint.lg}>
+            <DataItem label="Tipo" marginBottom={!breakpoint.lg}>
               {parseStringId(serviceOrder.maintenanceType)}
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={8}>
-            <DataInfo label="Equipe">
+            <DataItem label="Equipe">
               {parseStringId(serviceOrder.team)}
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={8}>
-            <DataInfo label="Causa">
+            <DataItem label="Causa">
               {parseStringId(serviceOrder.cause)}
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={6} xs={24}>
-            <DataInfo label="Parou">
+            <DataItem label="Parou">
               <Space size="large">
                 <div>
                   <strong>Produção: </strong>
@@ -473,7 +473,7 @@ export function MaintServiceOrderDetailsPage({
                   )}
                 </div>
               </Space>
-            </DataInfo>
+            </DataItem>
           </Col>
         </Row>
 
@@ -481,7 +481,7 @@ export function MaintServiceOrderDetailsPage({
 
         <Row gutter={12}>
           <Col lg={12} xs={24}>
-            <DataInfo
+            <DataItem
               label="Informações adicionais"
               marginBottom={!breakpoint.lg}
             >
@@ -490,17 +490,17 @@ export function MaintServiceOrderDetailsPage({
               ) : (
                 "—"
               )}
-            </DataInfo>
+            </DataItem>
           </Col>
 
           <Col lg={12} xs={24}>
-            <DataInfo label="Solução">
+            <DataItem label="Solução">
               {serviceOrder.solution ? (
                 <strong>{serviceOrder.solution}</strong>
               ) : (
                 <em>Nenhuma disponível</em>
               )}
-            </DataInfo>
+            </DataItem>
           </Col>
         </Row>
 
@@ -553,7 +553,7 @@ export function MaintServiceOrderDetailsPage({
     </>
   ) : (
     <Result404 backUrl={backUrl} isLoading={loading}>
-      A ordem de serviço solicitada não existe ou foi desabilitada.
+      A ordem de serviço requisitada não existe ou foi desabilitada.
     </Result404>
   );
 }

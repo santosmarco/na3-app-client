@@ -1,4 +1,6 @@
+export { UserAccountPage } from "./account/UserAccount";
 export { AdminHomePage } from "./admin/AdminHome";
+export { AdminUserDetailsPage } from "./admin/users/AdminUserDetails";
 export { AdminUsersCreatePage } from "./admin/users/AdminUsersCreate";
 export { AdminUsersHomePage } from "./admin/users/AdminUsersHome";
 export { AuthPage } from "./auth/Auth";
