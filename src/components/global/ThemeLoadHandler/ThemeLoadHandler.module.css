@@ -1,4 +1,4 @@
-.ThemeLoadingScreen {
+.ThemeLoad {
   background-color: #111;
   color: #fff;
   position: absolute;
@@ -11,5 +11,4 @@
   height: 100vh;
   padding-bottom: 50vh;
   z-index: 9999;
-  pointer-events: none;
 }

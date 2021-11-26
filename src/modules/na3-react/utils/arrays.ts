@@ -9,6 +9,10 @@ export function removeNullables<T>(arr: T[]): NonNullable<T>[] {
   return arr.filter((item): item is NonNullable<T> => !!item);
 }
 
+export function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export function sortStateData<
   T extends Record<string, unknown>,
   U extends null | undefined = null | undefined

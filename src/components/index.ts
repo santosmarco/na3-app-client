@@ -1,6 +1,9 @@
+export { AccountAchievements } from "./app/account/AccountAchievements";
 export { AccountAvatar } from "./app/account/AccountAvatar";
-export { AccountName } from "./app/account/AccountName";
+export { AccountDisplayName } from "./app/account/AccountDisplayName";
+export { AccountLastSeen } from "./app/account/AccountLastSeen";
 export { AccountPositionTag } from "./app/account/AccountPositionTag";
+export { AccountRegistrationId } from "./app/account/AccountRegistrationId";
 export { AdminCreateUserForm } from "./app/admin/users/AdminCreateUserForm";
 export { AdminUsersList } from "./app/admin/users/AdminUsersList";
 export { AdminUserCard } from "./app/admin/users/card/AdminUserCard";

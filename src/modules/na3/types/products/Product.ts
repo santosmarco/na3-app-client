@@ -6,8 +6,8 @@ import type {
 
 export interface Product {
   get: () => Na3ApiProduct;
-  getCustomers(options?: {
+  getCustomers: ((options?: {
     ignoreErrors?: false;
-  }): Promise<Na3ApiResponseArray<Na3ApiPerson>>;
-  getCustomers(options?: { ignoreErrors: true }): Promise<Na3ApiPerson[]>;
+  }) => Promise<Na3ApiResponseArray<Na3ApiPerson>>) &
+    ((options?: { ignoreErrors: true }) => Promise<Na3ApiPerson[]>);
 }

@@ -6,8 +6,40 @@
   padding-left: 6px;
 }
 
-.PositionsMobile {
+.Avatar {
+  margin-right: 16px;
+}
+
+.HeaderContent {
+  flex: 1;
+}
+
+.HeaderContentMain {
+  display: flex;
+  align-items: center;
+}
+
+.HeaderRight {
+  flex: 1;
+  text-align: right;
+}
+
+.HeaderSub {
+  margin-top: -8px;
+}
+
+.SettingsButton {
+  margin-left: 8px;
+}
+
+.DataItem {
   margin-left: 6px;
+}
+
+.DataItem textarea {
+  margin-top: 4px;
+  margin-left: 6px;
+  min-width: calc(100vw - 28px);
 }
 
 /* md and up */
@@ -15,5 +47,22 @@
   .AccountHeader {
     margin-top: 0;
     padding-left: 0;
+  }
+
+  .DisplayName {
+    margin-right: 24px;
+  }
+
+  .SettingsButton {
+    margin-left: 16px;
+  }
+
+  .DataItem {
+    margin-left: 0;
+  }
+
+  .DataItem textarea {
+    margin-left: 12px;
+    min-width: 100%;
   }
 }

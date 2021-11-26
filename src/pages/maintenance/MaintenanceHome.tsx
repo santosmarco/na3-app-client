@@ -4,10 +4,10 @@ import { MenuPage } from "@components";
 import type { MenuPageAction } from "@types";
 import React from "react";
 import {
-  IoGitBranchOutline,
-  IoGitNetworkOutline,
+  IoBuildOutline,
+  IoGridOutline,
+  IoHammerOutline,
   IoSettingsOutline,
-  IoSpeedometerOutline,
 } from "react-icons/io5";
 
 export function MaintenanceHomePage(): JSX.Element {
@@ -32,14 +32,14 @@ const maintenancePageActions: MenuPageAction[] = [
     colors: { background: green[2], foreground: green[8] },
     description: "Acessar o dashboard de ordens de serviço",
     href: "/manutencao/dashboard",
-    icon: <IoSpeedometerOutline />,
+    icon: <IoGridOutline />,
     title: "Dashboard",
   },
   {
     colors: { background: blue[2], foreground: blue[8] },
     description: "Gerenciar os projetos de manutenção",
     href: "/manutencao/projetos",
-    icon: <IoGitNetworkOutline />,
+    icon: <IoHammerOutline />,
     title: "Projetos de manutenção",
   },
   {
@@ -47,7 +47,7 @@ const maintenancePageActions: MenuPageAction[] = [
     description:
       "Gerenciar os projetos de preditiva/preventiva e lubrificação da Manutenção",
     href: "/manutencao/predprev",
-    icon: <IoGitBranchOutline />,
+    icon: <IoBuildOutline />,
     title: "Preditiva/Preventiva/Lubrificação",
   },
 ];

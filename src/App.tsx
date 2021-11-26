@@ -98,8 +98,8 @@ export function App(): JSX.Element {
       insertionPoint={document.getElementById("themes-insertion-point")}
       themeMap={themes}
     >
-      <ThemeLoadHandler />
       <Main />
+      <ThemeLoadHandler />
     </ThemeSwitcherProvider>
   );
 }

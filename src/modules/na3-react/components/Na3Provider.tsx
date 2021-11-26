@@ -3,6 +3,7 @@ import { Provider as StoreProvider } from "react-redux";
 
 import { store } from "../store";
 import type { ConfigState } from "../types";
+import { Na3AuthController } from "./controllers/auth/AuthController";
 import { Na3MainController } from "./controllers/MainController";
 import { Na3MaintenanceProjectsController } from "./controllers/MaintProjectsController";
 import { Na3PeopleController } from "./controllers/na3/Na3PeopleController";
@@ -35,12 +36,15 @@ export function Na3Provider({
         env={env || process.env.NODE_ENV}
       />
 
+      {/* Auth */}
+      <Na3AuthController />
+
       {/* Na3 */}
       <Na3UsersController />
       <Na3ProductsController />
       <Na3PeopleController />
 
-      {/* Native */}
+      {/* Firebase */}
       <Na3TransfLabelTemplatesController />
       <Na3ServiceOrdersController />
       <Na3MaintenanceProjectsController />

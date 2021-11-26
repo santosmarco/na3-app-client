@@ -19,7 +19,6 @@ export function FieldPreSuffix({
   if (!children) {
     return null;
   }
-
   return (
     <div className={isPrefix ? classes.IsPrefix : undefined}>
       {typeof children === "string" ? (

@@ -7,7 +7,11 @@ import { translateFirebaseError } from "../../firebase-errors-pt-br";
 import type { Na3User } from "../../na3-types";
 import { formatRegistrationId, getAuthEmail } from "../helpers";
 import type { AppUser, AuthState } from "../types";
-import { buildNa3Error, resolveCollectionId } from "../utils";
+import {
+  buildNa3Error,
+  pickRandomColorCombination,
+  resolveCollectionId,
+} from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
 import { useStateSlice } from "./useStateSlice";
 
@@ -111,6 +115,7 @@ export function useNa3Auth(): UseNa3AuthResult {
         }
 
         const timestamp = dayjs().format();
+        const colors = pickRandomColorCombination();
         const user: Omit<Na3User, "id"> = {
           activityHistory: [],
           createdAt: timestamp,
@@ -126,7 +131,7 @@ export function useNa3Auth(): UseNa3AuthResult {
           photoUrl: null,
           positionIds: userConfig.positionIds,
           registrationId: formattedRegId,
-          style: { backgroundColor: null, color: null },
+          style: { backgroundColor: colors[0], color: colors[1] },
           updatedAt: timestamp,
           isPasswordDefault: true,
           lastSeenAt: timestamp,

@@ -1,14 +1,22 @@
-import { CoffeeOutlined, HeartOutlined } from "@ant-design/icons";
 import {
+  HeartOutlined,
+  SettingOutlined,
+  TrophyOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons";
+import {
+  AccountAchievements,
   AccountAvatar,
-  AccountName,
+  AccountDisplayName,
+  AccountLastSeen,
   AccountPositionTag,
+  AccountRegistrationId,
   DataItem,
   Divider,
   Result404,
 } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
-import { Grid, Space, Typography } from "antd";
+import { Button, Grid, Space, Typography } from "antd";
 import React from "react";
 
 import classes from "./UserAccount.module.css";
@@ -21,28 +29,46 @@ export function UserAccountPage(): JSX.Element {
   return user ? (
     <>
       <div className={classes.AccountHeader}>
-        <Space size="large">
-          <Space size="middle">
-            <AccountAvatar user={user} />
-            <AccountName user={user} />
-          </Space>
+        <AccountAvatar className={classes.Avatar} user={user} />
 
-          {breakpoint.lg && (
-            <Space>
-              {user.positions.map((pos) => (
-                <AccountPositionTag key={pos.id} position={pos} />
-              ))}
-            </Space>
-          )}
-        </Space>
+        <div className={classes.HeaderContent}>
+          <div className={classes.HeaderContentMain}>
+            <AccountDisplayName className={classes.DisplayName}>
+              {user.displayName}
+            </AccountDisplayName>
 
-        {breakpoint.lg && (
-          <div>
-            <Typography.Text italic={true} type="secondary">
-              desde {user.createdAt.format("DD/MM/YYYY")}
-            </Typography.Text>
+            {breakpoint.lg && (
+              <Space>
+                {user.positions.map((pos) => (
+                  <AccountPositionTag key={pos.id} position={pos} />
+                ))}
+              </Space>
+            )}
+
+            <div className={classes.HeaderRight}>
+              <Button
+                className={classes.SettingsButton}
+                icon={<SettingOutlined />}
+                shape={breakpoint.lg ? undefined : "circle"}
+                type="text"
+              >
+                {breakpoint.lg && "Ajustes"}
+              </Button>
+            </div>
           </div>
-        )}
+
+          <div className={classes.HeaderSub}>
+            <Space size={1} split={<Divider type="vertical" />}>
+              <>
+                <AccountRegistrationId>
+                  {user.registrationId}
+                </AccountRegistrationId>
+
+                {breakpoint.lg && <AccountLastSeen at={user.lastSeenAt} />}
+              </>
+            </Space>
+          </div>
+        </div>
       </div>
 
       <Divider
@@ -53,8 +79,10 @@ export function UserAccountPage(): JSX.Element {
       {!breakpoint.lg && (
         <>
           <DataItem
-            className={classes.PositionsMobile}
-            icon={<CoffeeOutlined />}
+            className={classes.DataItem}
+            hasColon={false}
+            icon={<UserSwitchOutlined />}
+            iconMarginRight={4}
             label="Suas posições"
           >
             <Space>
@@ -64,13 +92,15 @@ export function UserAccountPage(): JSX.Element {
             </Space>
           </DataItem>
 
-          <Divider />
+          <Divider marginBottom={16} />
         </>
       )}
 
       <DataItem
-        className={classes.PositionsMobile}
+        className={classes.DataItem}
+        hasColon={false}
         icon={<HeartOutlined />}
+        iconMarginRight={4}
         label="Bio"
       >
         <Typography.Paragraph
@@ -79,8 +109,23 @@ export function UserAccountPage(): JSX.Element {
             autoSize: { maxRows: 5, minRows: 3 },
           }}
         >
-          {user.bio || <em>Você ainda não definiu uma bio.</em>}
+          {user.bio || <em>Você ainda não definiu sua bio</em>}
         </Typography.Paragraph>
+      </DataItem>
+
+      <Divider
+        marginBottom={!breakpoint.lg ? 16 : undefined}
+        marginTop={!breakpoint.lg ? 16 : undefined}
+      />
+
+      <DataItem
+        className={classes.DataItem}
+        hasColon={false}
+        icon={<TrophyOutlined />}
+        iconMarginRight={4}
+        label="Suas conquistas"
+      >
+        <AccountAchievements />
       </DataItem>
     </>
   ) : (

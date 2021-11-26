@@ -37,7 +37,7 @@ export function LabelsTransfPreview({
   onPrint,
   onSave,
   label,
-}: LabelsTransfPreviewProps): JSX.Element | null {
+}: LabelsTransfPreviewProps): JSX.Element {
   const [qrDataUrl, setQrDataUrl] = useState<string>();
   const [barcodeDataUrl, setBarcodeDataUrl] = useState<string>();
 

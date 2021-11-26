@@ -1,11 +1,14 @@
 import "animate.css";
 import "./index.css";
+import "dayjs/locale/pt-br";
 import "web-vitals";
 
 import { ConfigProvider as AntdConfigProvider } from "antd";
 import ptBR from "antd/lib/locale/pt_BR";
 import dayjs from "dayjs";
 import dayOfYear from "dayjs/plugin/dayOfYear";
+import duration from "dayjs/plugin/duration";
+import relativeTime from "dayjs/plugin/relativeTime";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { createBrowserHistory } from "history";
@@ -21,8 +24,12 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { initFirebaseCore, initFirebaseMessaging, initSentry } from "./utils";
 
 dayjs.extend(dayOfYear);
-dayjs.extend(utc);
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 dayjs.extend(timezone);
+dayjs.extend(utc);
+
+dayjs.locale("pt-br");
 
 const routerHistory = createBrowserHistory();
 
