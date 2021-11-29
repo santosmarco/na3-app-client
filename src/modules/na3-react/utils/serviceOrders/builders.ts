@@ -1,10 +1,10 @@
-import { nanoid } from "nanoid";
-
 import type {
   Na3AppDevice,
   Na3ServiceOrder,
   Na3ServiceOrderEvent,
-} from "../../../na3-types";
+} from "@modules/na3-types";
+import { nanoid } from "nanoid";
+
 import { timestamp } from "../../utils";
 
 export type ServiceOrderBuilderData = Required<
