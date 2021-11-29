@@ -1,7 +1,7 @@
 import { Form, FormField, SubmitButton } from "@components";
 import { useForm } from "@hooks";
 import { useNa3Users } from "@modules/na3-react";
-import type { Na3ServiceOrder } from "@modules/na3-types";
+import type { Na3MaintenancePerson, Na3ServiceOrder } from "@modules/na3-types";
 import {
   getMaintEmployeeSelectOptions,
   getPrioritySelectOptions,
@@ -10,7 +10,7 @@ import { Grid, Modal } from "antd";
 import React, { useCallback, useMemo } from "react";
 
 type FormValues = {
-  assignee: string;
+  assigneeUid: string;
   priority: NonNullable<Na3ServiceOrder["priority"]> | "";
 };
 
@@ -19,7 +19,10 @@ type ConfirmServiceOrderModalProps = {
   onClose: () => void;
   onSubmit: (
     data: Na3ServiceOrder,
-    payload: FormValues
+    payload: {
+      assignee: Na3MaintenancePerson;
+      priority: NonNullable<Na3ServiceOrder["priority"]>;
+    }
   ) => Promise<void> | void;
   serviceOrder: Na3ServiceOrder;
 };
@@ -33,18 +36,43 @@ export function ConfirmServiceOrderModal({
   const breakpoint = Grid.useBreakpoint();
 
   const {
-    helpers: { getAllInDepartments: getAllUsersInDepartments },
+    helpers: {
+      getAllInDepartments: getAllUsersInDepartments,
+      getByUid: getUserByUid,
+    },
   } = useNa3Users();
 
   const form = useForm<FormValues>({
-    defaultValues: { assignee: "", priority: "" },
+    defaultValues: { assigneeUid: "", priority: "" },
   });
+
+  const handleAssigneeValidate = useCallback(
+    (assigneeUid: string) => {
+      if (!getUserByUid(assigneeUid))
+        return "Não foi possível vincular um usuário ao manutentor definido.";
+    },
+    [getUserByUid]
+  );
 
   const handleSubmit = useCallback(
     (values: FormValues) => {
-      return onSubmit(serviceOrder, values);
+      const assignee = getUserByUid(values.assigneeUid);
+
+      if (!assignee) {
+        form.setError("assigneeUid", {
+          message:
+            "Não foi possível vincular um usuário ao responsável definido.",
+        });
+        return;
+      }
+      if (values.priority === "") {
+        form.setError("priority", { message: "Defina a prioridade." });
+        return;
+      }
+
+      return onSubmit(serviceOrder, { assignee, priority: values.priority });
     },
-    [onSubmit, serviceOrder]
+    [form, serviceOrder, getUserByUid, onSubmit]
   );
 
   const maintEmployeeSelectOptions = useMemo(
@@ -63,15 +91,18 @@ export function ConfirmServiceOrderModal({
       <Form form={form} onSubmit={handleSubmit}>
         <FormField
           label="Responsável"
-          name="assignee"
+          name={form.fieldNames.assigneeUid}
           options={maintEmployeeSelectOptions}
-          rules={{ required: "Defina o manutentor responsável" }}
+          rules={{
+            required: "Defina o manutentor responsável",
+            validate: handleAssigneeValidate,
+          }}
           type="select"
         />
 
         <FormField
           label="Prioridade"
-          name="priority"
+          name={form.fieldNames.priority}
           options={getPrioritySelectOptions()}
           rules={{ required: "Defina a prioridade" }}
           type={breakpoint.md ? "radio" : "select"}

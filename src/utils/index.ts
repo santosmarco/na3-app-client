@@ -6,4 +6,5 @@ export * from "./initializers/sentry";
 export * from "./maintenance";
 export * from "./notifications";
 export * from "./parsers";
+export * from "./priority";
 export * from "./transfLabels";

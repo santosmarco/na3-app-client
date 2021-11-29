@@ -13,6 +13,7 @@ export { LabelsTransfPreview } from "./app/labels/transfPreview/LabelsTransfPrev
 export { MaintProjectStatusBadge } from "./app/maintenance/projects/card/MaintProjectStatusBadge";
 export { MaintProjectActionModal } from "./app/maintenance/projects/details/MaintProjectActionModal";
 export { MaintProjectTimeline } from "./app/maintenance/projects/details/MaintProjectTimeline";
+export { MaintProjectTimeRemaining } from "./app/maintenance/projects/details/MaintProjectTimeRemaining";
 export { MaintCreateProjectForm } from "./app/maintenance/projects/MaintCreateProjectForm";
 export { MaintProjectsList } from "./app/maintenance/projects/MaintProjectsList";
 export { ConfirmServiceOrderModal } from "./app/maintenance/serviceOrders/actionModals/ConfirmServiceOrderModal";
@@ -70,6 +71,7 @@ export { Spinner } from "./ui/Spinner/Spinner";
 export { MaintEmployeeTag } from "./ui/Tag/MaintEmployeeTag";
 export { PriorityTag } from "./ui/Tag/PriorityTag";
 export { Tag } from "./ui/Tag/Tag";
+export { UserTag } from "./ui/Tag/UserTag";
 export { Timeline } from "./ui/Timeline/Timeline";
 export type { TimelineItemProps } from "./ui/Timeline/TimelineItem";
 export { UserAvatar } from "./user/UserAvatar/UserAvatar";

@@ -1,11 +1,11 @@
 import { MenuOutlined } from "@ant-design/icons";
+import { ROUTES } from "@constants";
+import { useTheme } from "@hooks";
 import { Grid, Layout } from "antd";
 import { isArray } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { ROUTES } from "../../../constants";
-import { useTheme } from "../../../hooks";
 import { SiderLogo } from "./SiderLogo";
 import { SiderMenu } from "./SiderMenu";
 

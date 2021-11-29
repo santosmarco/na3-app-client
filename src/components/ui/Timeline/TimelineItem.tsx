@@ -1,7 +1,12 @@
-import type { TimelineItemProps as AntdTimelineItemProps } from "antd";
-import { Grid, Space, Timeline, Typography } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import type {
+  TimelineItemProps as AntdTimelineItemProps,
+  TooltipProps,
+} from "antd";
+import { Grid, Popover, Space, Timeline, Tooltip, Typography } from "antd";
 import React from "react";
 import type { LiteralUnion } from "type-fest";
+import type { Falsy } from "utility-types";
 
 export type TimelineItemProps = Partial<
   Pick<AntdTimelineItemProps, "className">
@@ -19,6 +24,12 @@ export type TimelineItemProps = Partial<
     | "volcano",
     string
   >;
+  info?:
+    | Falsy
+    | ((Pick<TooltipProps, "arrowPointAtCenter" | "placement"> & {
+        content: React.ReactNode;
+      }) &
+        ({ title?: React.ReactNode; type: "popover" } | { type: "tooltip" }));
   postTitle?: React.ReactNode;
   title: React.ReactNode;
 };
@@ -34,6 +45,7 @@ export function TimelineItem({
   postTitle,
   title,
   isLast,
+  info,
 }: TimelineItemPrivateProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
@@ -46,12 +58,40 @@ export function TimelineItem({
         <Space size={breakpoint.lg ? "large" : "middle"}>
           <Typography.Text>{title}</Typography.Text>
 
-          {postTitle && (
-            <small>
-              <Typography.Text italic={true} type="secondary">
-                {postTitle}
-              </Typography.Text>
-            </small>
+          {(postTitle || info) && (
+            <Space>
+              {postTitle && (
+                <small>
+                  <Typography.Text italic={true} type="secondary">
+                    {postTitle}
+                  </Typography.Text>
+                </small>
+              )}
+
+              {info &&
+                (info.type === "popover" ? (
+                  <Popover
+                    arrowPointAtCenter={info.arrowPointAtCenter ?? true}
+                    content={info.content}
+                    placement={info.placement || "topLeft"}
+                    title={info.title}
+                  >
+                    <Typography.Text type="secondary">
+                      <InfoCircleOutlined />
+                    </Typography.Text>
+                  </Popover>
+                ) : (
+                  <Tooltip
+                    arrowPointAtCenter={info.arrowPointAtCenter ?? true}
+                    overlay={info.content}
+                    placement={info.placement || "topLeft"}
+                  >
+                    <Typography.Text type="secondary">
+                      <InfoCircleOutlined />
+                    </Typography.Text>
+                  </Tooltip>
+                ))}
+            </Space>
           )}
         </Space>
       </div>

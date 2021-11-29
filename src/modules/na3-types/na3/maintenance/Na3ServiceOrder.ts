@@ -47,10 +47,10 @@ export type Na3ServiceOrderEvent = {
     | "ticketCreated"
     | "ticketEdited"
     | "ticketReopened";
-  uid?: Na3MaintenancePerson;
+  user?: Na3MaintenancePerson;
 };
 
-type Na3ServiceOrder = {
+export type Na3ServiceOrder = {
   acceptedAt?: string | null;
   additionalInfo?: string | null;
   assignedMaintainer?: Na3MaintenancePerson | string;

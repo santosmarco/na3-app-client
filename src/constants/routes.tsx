@@ -13,7 +13,6 @@ import {
   AdminUsersHomePage,
   AuthPage,
   DocsHomePage,
-  DocTransfHomePage,
   HomePage,
   LabelsHomePage,
   LabelsManagePage,
@@ -163,7 +162,7 @@ export const ROUTES: AppRouteMap<
     title: "Modelos",
   },
   "/docs/transferencia": {
-    component: <DocTransfHomePage />,
+    component: null,
     requiredPrivileges: null,
     isPublic: true,
     title: "Transferência",

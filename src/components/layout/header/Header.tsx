@@ -1,12 +1,12 @@
 import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Logo } from "@components";
+import { useTheme } from "@hooks";
+import { useNa3Auth } from "@modules/na3-react";
 import { Button, message, Tooltip } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 
-import { useTheme } from "../../../hooks";
-import { useNa3Auth } from "../../../modules/na3-react";
-import { Logo } from "../../ui/Logo/Logo";
 import classes from "./Header.module.css";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { UserInfo } from "./UserInfo";

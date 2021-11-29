@@ -1,8 +1,8 @@
+import { useTheme } from "@hooks";
 import { Switch, Tooltip } from "antd";
 import React from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 
-import { useTheme } from "../../../hooks";
 import classes from "./ThemeSwitch.module.css";
 
 export function ThemeSwitch(): JSX.Element {

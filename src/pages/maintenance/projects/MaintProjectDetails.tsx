@@ -11,8 +11,10 @@ import {
   MaintProjectActionModal,
   MaintProjectStatusBadge,
   MaintProjectTimeline,
+  MaintProjectTimeRemaining,
   Page,
   PageActionButtons,
+  PageAlert,
   PageDescription,
   PageTitle,
   PriorityTag,
@@ -209,6 +211,17 @@ export function MaintProjectDetails({
       <PageTitle pre={formatInternalId(project.internalId)}>
         {project.title}
       </PageTitle>
+
+      {projectStatus !== "finished" && (
+        <PageAlert
+          className={classes.TimeRemainingAlert}
+          closable={false}
+          type={projectStatus === "late" ? "error" : "info"}
+        >
+          <MaintProjectTimeRemaining eta={project.eta} />
+        </PageAlert>
+      )}
+
       <PageDescription>{project.description}</PageDescription>
 
       {projectStatus !== "finished" && (

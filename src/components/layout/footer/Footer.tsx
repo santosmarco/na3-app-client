@@ -1,8 +1,8 @@
+import { APP_VERSION, APP_VERSION_TIMESTAMP } from "@constants";
 import { Col, Layout, Row, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 
-import { APP_VERSION, APP_VERSION_TIMESTAMP } from "../../../constants";
 import classes from "./Footer.module.css";
 
 export function Footer(): JSX.Element {

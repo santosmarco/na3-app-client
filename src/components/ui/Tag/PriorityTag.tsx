@@ -1,20 +1,44 @@
-import React from "react";
+import { Badge } from "antd";
+import React, { useMemo } from "react";
 
-import { PRIORITY_VALUES } from "../../../constants";
 import type { TagProps } from "./Tag";
 import { Tag } from "./Tag";
 
+type Priority = "high" | "low" | "medium";
+
 type PriorityTagProps = Pick<TagProps, "marginRight"> & {
-  priority: keyof typeof PRIORITY_VALUES;
+  priority: Priority;
+  type?: "dot" | "tag";
+};
+
+export const priorityValues: Record<
+  Priority,
+  { color: "error" | "success" | "warning"; text: string }
+> = {
+  high: { color: "error", text: "Alta" },
+  low: { color: "success", text: "Baixa" },
+  medium: { color: "warning", text: "Média" },
 };
 
 export function PriorityTag({
   priority,
   marginRight,
+  type,
 }: PriorityTagProps): JSX.Element {
+  const config = useMemo(
+    () => ({
+      color: priorityValues[priority].color,
+      text: priorityValues[priority].text,
+    }),
+    [priority]
+  );
+
+  if (type === "dot") {
+    return <Badge status={config.color} text={config.text} />;
+  }
   return (
-    <Tag color={PRIORITY_VALUES[priority].color} marginRight={marginRight}>
-      {PRIORITY_VALUES[priority].text}
+    <Tag color={config.color} marginRight={marginRight}>
+      {config.text.toUpperCase()}
     </Tag>
   );
 }

@@ -1,11 +1,11 @@
+import type { AppRoute } from "@constants";
+import { ROUTES } from "@constants";
+import { useBreadcrumb } from "@hooks";
 import { Breadcrumb as AntdBreadcrumb, Row } from "antd";
 import { nanoid } from "nanoid";
 import React, { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import type { AppRoute } from "../../../constants";
-import { ROUTES } from "../../../constants";
-import { useBreadcrumb } from "../../../hooks";
 import classes from "./Breadcrumb.module.css";
 
 type BreadcrumbItem = {

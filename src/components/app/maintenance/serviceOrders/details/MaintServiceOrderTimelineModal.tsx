@@ -1,8 +1,9 @@
 import type { TimelineItemProps } from "@components";
+import { UserTag } from "@components";
 import { Timeline } from "@components";
 import type { Na3ServiceOrderEvent } from "@modules/na3-types";
-import { parseStringId } from "@utils";
-import { Grid, Modal } from "antd";
+import { getMaintPersonDisplayName, parseStringId } from "@utils";
+import { Grid, Modal, Space } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 
@@ -34,12 +35,24 @@ export function MaintServiceOrderTimelineModal({
               ev.type !== "solutionStepAdded" ||
               ev.payload?.solutionStep?.type === "step"
           )
-          .map((ev) => ({
-            body: getTimelineItemBody(ev),
-            color: getTimelineItemColor(ev),
-            postTitle: dayjs(ev.timestamp).format("DD/MM/YY HH:mm"),
-            title: parseStringId(ev.type),
-          }))}
+          .map(
+            (ev): TimelineItemProps => ({
+              body: getTimelineItemBody(ev),
+              color: getTimelineItemColor(ev),
+              postTitle: dayjs(ev.timestamp).format("DD/MM/YY HH:mm"),
+              title: parseStringId(ev.type),
+              info: ev.user && {
+                type: "popover",
+                title: "Origem do evento",
+                content: (
+                  <UserTag
+                    fallbackDisplayName={ev.user.displayName}
+                    uid={ev.user.uid}
+                  />
+                ),
+              },
+            })
+          )}
       />
     </Modal>
   );
@@ -48,12 +61,14 @@ export function MaintServiceOrderTimelineModal({
 function getTimelineItemBody({
   payload,
   type,
-}: Na3ServiceOrderEvent): string | undefined {
+}: Na3ServiceOrderEvent): React.ReactNode {
   if (payload) {
     if (type === "ticketConfirmed") {
       return `Prioridade: ${parseStringId(payload.priority)}${
         payload.assignedMaintainer
-          ? ` • Manutentor: ${payload.assignedMaintainer}`
+          ? ` • Responsável: ${getMaintPersonDisplayName(
+              payload.assignedMaintainer
+            )}`
           : ""
       }`;
     }
@@ -62,16 +77,36 @@ function getTimelineItemBody({
       case "priority":
         return `Nova prioridade: ${parseStringId(payload.priority)}`;
       case "solutionStep":
-        return `${payload.solutionStep?.content || ""}${
-          payload.solutionStep?.who ? ` (${payload.solutionStep.who})` : ""
-        }`;
+        return (
+          <Space size="middle">
+            {payload.solutionStep?.content || ""}
+            {payload.solutionStep?.who && (
+              <small>
+                <em>
+                  (Responsável:{" "}
+                  {getMaintPersonDisplayName(payload.solutionStep.who)})
+                </em>
+              </small>
+            )}
+          </Space>
+        );
       case "solution":
         if (typeof payload.solution === "string") {
           return payload.solution;
         }
-        return `${payload.solution?.content || ""}${
-          payload.solution?.who ? ` (${payload.solution.who})` : ""
-        }`;
+        return (
+          <Space size="middle">
+            {payload.solution?.content || ""}
+            {payload.solution?.who && (
+              <small>
+                <em>
+                  (Responsável:{" "}
+                  {getMaintPersonDisplayName(payload.solution.who)})
+                </em>
+              </small>
+            )}
+          </Space>
+        );
       case "refusalReason":
         if (payload.refusalReason) {
           return payload.refusalReason;

@@ -2,9 +2,15 @@ import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseError } from "../../firebase-errors-pt-br";
-import type { Na3Machine, Na3ServiceOrder } from "../../na3-types";
+import { translateFirebaseError } from "../../firebase-errors-pt-br";
+import type {
+  Na3Machine,
+  Na3MaintenancePerson,
+  Na3ServiceOrder,
+} from "../../na3-types";
 import type { FirebaseOperationResult } from "../types";
 import type { ServiceOrderBuilderData } from "../utils";
+import { buildNa3Error } from "../utils";
 import {
   buildServiceOrder,
   buildServiceOrderEvents,
@@ -30,13 +36,13 @@ export type UseNa3ServiceOrdersResult = {
     confirm: (
       id: string,
       payload: {
-        assignee: string;
+        assignee: Na3MaintenancePerson;
         priority: NonNullable<Na3ServiceOrder["priority"]>;
       }
     ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
     deliver: (
       id: string,
-      payload: { assignee: string; solution: string }
+      payload: { assignee: Na3MaintenancePerson; solution: string }
     ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
     getById: (id: string) => Na3ServiceOrder | undefined;
     getByStatus: (
@@ -57,7 +63,7 @@ export type UseNa3ServiceOrdersResult = {
     ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
     shareStatus: (
       id: string,
-      payload: { assignee: string; status: string }
+      payload: { assignee: Na3MaintenancePerson; status: string }
     ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
     sortById: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
     sortByPriority: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
@@ -219,7 +225,14 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       id: string,
       data: ServiceOrderBuilderData
     ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
-      const serviceOrder = buildServiceOrder(id, data, device);
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
+      const serviceOrder = buildServiceOrder(id, data, { device, user });
 
       try {
         const docRef = fbCollectionRef.current.doc(
@@ -230,14 +243,24 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   const acceptSolution = useCallback(
     async (id: string): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
       try {
         const docRef = fbCollectionRef.current.doc(
           id
@@ -260,17 +283,20 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
                   type: "solutionStepAdded",
                 },
               ],
-              device
+              { device, user }
             )
           ),
         });
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   const rejectSolution = useCallback(
@@ -278,6 +304,13 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       id: string,
       payload: { reason: string }
     ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
       try {
         const docRef = fbCollectionRef.current.doc(
           id
@@ -319,31 +352,46 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
                   type: "solutionStepAdded",
                 },
               ],
-              device
+              { device, user }
             )
           ),
         });
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   const confirmServiceOrder = useCallback(
     async (
       id: string,
       payload: {
-        assignee: string;
+        assignee: Na3MaintenancePerson;
         priority: NonNullable<Na3ServiceOrder["priority"]>;
       }
     ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
       try {
         const docRef = fbCollectionRef.current.doc(
           id
         ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+
+        const sanitizedAssignee = {
+          uid: payload.assignee.uid,
+          displayName: payload.assignee.displayName,
+        };
 
         const update: Required<
           Pick<
@@ -352,7 +400,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           >
         > = {
           acceptedAt: timestamp(),
-          assignedMaintainer: payload.assignee.trim(),
+          assignedMaintainer: sanitizedAssignee,
           priority: payload.priority,
           status: "solving",
         };
@@ -363,33 +411,48 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
             buildServiceOrderEvents(
               {
                 payload: {
-                  assignedMaintainer: payload.assignee.trim(),
+                  assignedMaintainer: sanitizedAssignee,
                   priority: payload.priority,
                 },
                 type: "ticketConfirmed",
               },
-              device
+              { device, user }
             )
           ),
         });
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   const shareStatus = useCallback(
     async (
       id: string,
-      payload: { assignee: string; status: string }
+      payload: { assignee: Na3MaintenancePerson; status: string }
     ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
       try {
         const docRef = fbCollectionRef.current.doc(
           id
         ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+
+        const sanitizedAssignee = {
+          uid: payload.assignee.uid,
+          displayName: payload.assignee.displayName,
+        };
 
         const update: Required<
           Record<
@@ -411,33 +474,48 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
                   solutionStep: {
                     content: payload.status.trim(),
                     type: "step",
-                    who: payload.assignee.trim(),
+                    who: sanitizedAssignee,
                   },
                 },
                 type: "solutionStepAdded",
               },
-              device
+              { device, user }
             )
           ),
         });
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   const deliverServiceOrder = useCallback(
     async (
       id: string,
-      payload: { assignee: string; solution: string }
+      payload: { assignee: Na3MaintenancePerson; solution: string }
     ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
       try {
         const docRef = fbCollectionRef.current.doc(
           id
         ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+
+        const sanitizedAssignee = {
+          uid: payload.assignee.uid,
+          displayName: payload.assignee.displayName,
+        };
 
         const update: Required<
           Pick<Na3ServiceOrder, "solution" | "solvedAt" | "status">
@@ -456,7 +534,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
                   payload: {
                     solution: {
                       content: payload.solution.trim(),
-                      who: payload.assignee.trim(),
+                      who: sanitizedAssignee,
                     },
                   },
                   type: "solutionTransmitted",
@@ -466,23 +544,26 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
                     solutionStep: {
                       content: payload.solution.trim(),
                       type: "solutionTransmitted",
-                      who: payload.assignee.trim(),
+                      who: sanitizedAssignee,
                     },
                   },
                   type: "solutionStepAdded",
                 },
               ],
-              device
+              { device, user }
             )
           ),
         });
 
         return { data: docRef, error: null };
       } catch (error) {
-        return { data: null, error: error as FirebaseError };
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
-    [device]
+    [device, user]
   );
 
   return {

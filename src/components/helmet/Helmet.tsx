@@ -1,10 +1,9 @@
+import type { AppRoute } from "@constants";
+import { ROUTES } from "@constants";
+import { useTheme } from "@hooks";
 import React, { useMemo } from "react";
 import { Helmet as ReactHelmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
-
-import type { AppRoute } from "../../constants";
-import { ROUTES } from "../../constants";
-import { useTheme } from "../../hooks";
 
 export function Helmet(): JSX.Element {
   const { pathname } = useLocation();

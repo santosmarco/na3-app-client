@@ -1,6 +1,6 @@
-import { Tag } from "@components";
 import { useNa3Departments } from "@modules/na3-react";
 import type { Na3Position } from "@modules/na3-types";
+import { Tag, Tooltip } from "antd";
 import React, { useMemo } from "react";
 
 type AccountPositionTagProps = {
@@ -17,5 +17,26 @@ export function AccountPositionTag({
     [departments.helpers, position.departmentId]
   );
 
-  return <Tag color={positionDpt?.style.colors.web}>{position.shortName}</Tag>;
+  return (
+    <Tooltip
+      color={positionDpt?.style.colors.web}
+      overlay={
+        <small>
+          {position.name} <em>({positionDpt?.displayName})</em>
+        </small>
+      }
+      overlayInnerStyle={overlayInnerStyle}
+      placement="topLeft"
+    >
+      <Tag color={positionDpt?.style.colors.web}>{position.shortName}</Tag>
+    </Tooltip>
+  );
 }
+
+const overlayInnerStyle = {
+  display: "flex",
+  alignItems: "center",
+  paddingTop: 0,
+  paddingBottom: 0,
+  minHeight: 28,
+};

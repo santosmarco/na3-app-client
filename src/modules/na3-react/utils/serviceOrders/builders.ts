@@ -5,7 +5,9 @@ import type {
 } from "@modules/na3-types";
 import { nanoid } from "nanoid";
 
+import type { AppUser } from "../../types";
 import { timestamp } from "../../utils";
+import { sanitizeUserToMaintPerson } from "../firebase/firestore";
 
 export type ServiceOrderBuilderData = Required<
   Pick<
@@ -25,11 +27,11 @@ export type ServiceOrderBuilderData = Required<
 export function buildServiceOrder(
   id: string,
   data: ServiceOrderBuilderData,
-  device: Na3AppDevice
+  origin: { device: Na3AppDevice; user: AppUser }
 ): Na3ServiceOrder {
   const creationEvent = buildServiceOrderEvents(
     { type: "ticketCreated" },
-    device
+    origin
   );
   const serviceOrder: Na3ServiceOrder = {
     additionalInfo: data.additionalInfo?.trim(),
@@ -46,7 +48,7 @@ export function buildServiceOrder(
     status: "pending",
     team: data.team.trim(),
     username: data.username.trim(),
-    version: "web-" + device.os.version.trim(),
+    version: "web-" + origin.device.os.version.trim(),
   };
 
   return serviceOrder;
@@ -59,23 +61,24 @@ type EventBuildConfig = {
 
 export function buildServiceOrderEvents(
   event: EventBuildConfig,
-  originDevice: Na3AppDevice
+  origin: { device: Na3AppDevice; user: AppUser }
 ): Na3ServiceOrderEvent;
 export function buildServiceOrderEvents(
   events: EventBuildConfig[],
-  originDevice: Na3AppDevice
+  origin: { device: Na3AppDevice; user: AppUser }
 ): Na3ServiceOrderEvent[];
 export function buildServiceOrderEvents(
   eventOrEvents: EventBuildConfig | EventBuildConfig[],
-  originDevice: Na3AppDevice
+  origin: { device: Na3AppDevice; user: AppUser }
 ): Na3ServiceOrderEvent | Na3ServiceOrderEvent[] {
   function buildOneEvent(config: EventBuildConfig): Na3ServiceOrderEvent {
     return {
-      device: originDevice,
+      device: origin.device,
       id: nanoid(),
       payload: config.payload || null,
       timestamp: timestamp(),
       type: config.type,
+      user: sanitizeUserToMaintPerson(origin.user),
     };
   }
 

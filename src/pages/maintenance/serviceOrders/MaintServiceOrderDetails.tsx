@@ -22,11 +22,26 @@ import {
 } from "@components";
 import { useBreadcrumb } from "@hooks";
 import { useNa3ServiceOrders } from "@modules/na3-react";
-import type { Na3ServiceOrder } from "@modules/na3-types";
-import { createErrorNotifier, parseStringId } from "@utils";
-import { Button, Col, Grid, Modal, notification, Row, Space } from "antd";
+import type { Na3MaintenancePerson, Na3ServiceOrder } from "@modules/na3-types";
+import {
+  createErrorNotifier,
+  getMaintPersonDisplayName,
+  parseStringId,
+} from "@utils";
+import {
+  Button,
+  Col,
+  Grid,
+  Modal,
+  notification,
+  Row,
+  Space,
+  Typography,
+} from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
+
+import classes from "./MaintServiceOrderDetails.module.css";
 
 type PageProps = {
   hasCameFromDashboard: boolean;
@@ -200,26 +215,47 @@ export function MaintServiceOrderDetailsPage({
     (
       data: Na3ServiceOrder,
       payload: {
-        assignee: string;
-        priority: NonNullable<Na3ServiceOrder["priority"]> | "";
+        assignee: Na3MaintenancePerson;
+        priority: NonNullable<Na3ServiceOrder["priority"]>;
       }
     ) => {
       const confirmModal = Modal.confirm({
-        content: `Confirma o aceite da OS #${data.id}?`,
+        content: (
+          <>
+            <>Confirma o aceite da OS #{data.id}?</>
+            <Divider />
+            <Row>
+              <Col span={10}>
+                <strong>Responsável:</strong>
+              </Col>
+              <Col>
+                <Typography.Paragraph
+                  className={classes.ConfirmModalSummaryItem}
+                >
+                  {getMaintPersonDisplayName(payload.assignee)}
+                </Typography.Paragraph>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={10}>
+                <strong>Prioridade:</strong>
+              </Col>
+              <Col>
+                <Typography.Paragraph>
+                  <PriorityTag priority={payload.priority} type="dot" />
+                </Typography.Paragraph>
+              </Col>
+            </Row>
+          </>
+        ),
         okText: "Aceitar OS",
         onOk: async () => {
           const notifyError = createErrorNotifier("Erro ao aceitar a OS");
 
           confirmModal.update({ okText: "Enviando..." });
 
-          if (payload.priority === "") {
-            notifyError("Defina uma prioridade para a OS primeiro.");
-            return;
-          }
-
           const operationRes = await confirmServiceOrder(data.id, {
             ...payload,
-            priority: payload.priority,
           });
 
           if (operationRes.error) {
@@ -244,7 +280,10 @@ export function MaintServiceOrderDetailsPage({
   );
 
   const handleOrderSolutionShareStatus = useCallback(
-    (data: Na3ServiceOrder, payload: { assignee: string; message: string }) => {
+    (
+      data: Na3ServiceOrder,
+      payload: { assignee: Na3MaintenancePerson; message: string }
+    ) => {
       const confirmModal = Modal.confirm({
         content: (
           <>
@@ -257,7 +296,7 @@ export function MaintServiceOrderDetailsPage({
           confirmModal.update({ okText: "Enviando status..." });
 
           const operationRes = await shareOrderSolutionStatus(data.id, {
-            assignee: payload.assignee.trim(),
+            assignee: payload.assignee,
             status: payload.message.trim(),
           });
 
@@ -286,7 +325,10 @@ export function MaintServiceOrderDetailsPage({
   );
 
   const handleOrderDeliver = useCallback(
-    (data: Na3ServiceOrder, payload: { assignee: string; message: string }) => {
+    (
+      data: Na3ServiceOrder,
+      payload: { assignee: Na3MaintenancePerson; message: string }
+    ) => {
       const confirmModal = Modal.confirm({
         content: (
           <>
@@ -299,7 +341,7 @@ export function MaintServiceOrderDetailsPage({
           confirmModal.update({ okText: "Enviando solução..." });
 
           const operationRes = await deliverServiceOrder(data.id, {
-            assignee: payload.assignee.trim(),
+            assignee: payload.assignee,
             solution: payload.message.trim(),
           });
 

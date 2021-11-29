@@ -245,17 +245,35 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
           projectId
         ) as firebase.firestore.DocumentReference<Na3MaintenanceProject>;
 
-        await docRef.update({
-          ...updated,
-          events: firebase.firestore.FieldValue.arrayUnion(ev),
-        });
+        const projectToUpdate = getById(projectId);
+
+        if (
+          projectToUpdate &&
+          projectToUpdate.events[0].author !== updateData.author
+        ) {
+          await docRef.update({
+            ...updated,
+            events: [
+              buildMaintProjectEvents({
+                type: "create",
+                author: updateData.author,
+              }),
+              ...projectToUpdate.events.slice(1),
+            ],
+          });
+        } else {
+          await docRef.update({
+            ...updated,
+            events: firebase.firestore.FieldValue.arrayUnion(ev),
+          });
+        }
 
         return { data: docRef, error: null };
       } catch (error) {
         return { data: null, error: error as FirebaseError };
       }
     },
-    []
+    [getById]
   );
 
   return {

@@ -3,12 +3,15 @@ import type {
   SelectOptionBase,
   SelectOptionGroup,
 } from "@components";
+import { PriorityTag } from "@components";
 import { Tag } from "@components";
 import type { AppUser } from "@modules/na3-react";
 import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
 import React from "react";
 import type { ConditionalPick } from "type-fest";
 import type { Falsy } from "utility-types";
+
+import { getPriorityValuesConfig } from "../priority";
 
 type OptionsGeneratorExtractor<Data, FnReturn> =
   | Extract<keyof ConditionalPick<Data, FnReturn>, string>
@@ -61,23 +64,11 @@ export function getMaintEmployeeSelectOptions(
 }
 
 export function getPrioritySelectOptions(): SelectOptionBase[] {
-  return [
-    {
-      label: "Alta",
-      labelWhenSelected: <Tag color="success">ALTA</Tag>,
-      value: "high",
-    },
-    {
-      label: "Média",
-      labelWhenSelected: <Tag color="warning">Média</Tag>,
-      value: "medium",
-    },
-    {
-      label: "Baixa",
-      labelWhenSelected: <Tag color="error">BAIXA</Tag>,
-      value: "low",
-    },
-  ];
+  return getPriorityValuesConfig({ sorted: true }).map((config) => ({
+    label: <PriorityTag priority={config.value} type="dot" />,
+    labelWhenSelected: <PriorityTag priority={config.value} />,
+    value: config.value,
+  }));
 }
 
 export function getDepartmentSelectOptions(

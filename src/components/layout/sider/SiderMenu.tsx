@@ -1,8 +1,8 @@
+import { useCurrentUser } from "@modules/na3-react";
 import { Menu } from "antd";
 import React, { useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useCurrentUser } from "../../../modules/na3-react";
 import type { SiderItem, SiderItemChild } from "./Sider";
 
 export type SiderMenuProps = {

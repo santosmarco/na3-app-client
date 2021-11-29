@@ -15,7 +15,7 @@ import {
   UserDisplayName,
 } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
-import { Button, Grid, Space, Typography } from "antd";
+import { Button, Grid, Typography } from "antd";
 import React from "react";
 
 import classes from "./UserAccount.module.css";
@@ -43,13 +43,10 @@ export function UserAccountPage(): JSX.Element {
               user={user}
             />
 
-            {breakpoint.lg && (
-              <Space>
-                {user.positions.map((pos) => (
-                  <AccountPositionTag key={pos.id} position={pos} />
-                ))}
-              </Space>
-            )}
+            {breakpoint.lg &&
+              user.positions.map((pos) => (
+                <AccountPositionTag key={pos.id} position={pos} />
+              ))}
 
             <div className={classes.HeaderRight}>
               <Button
@@ -83,11 +80,9 @@ export function UserAccountPage(): JSX.Element {
             iconMarginRight={4}
             label="Suas posições"
           >
-            <Space>
-              {user.positions.map((pos) => (
-                <AccountPositionTag key={pos.id} position={pos} />
-              ))}
-            </Space>
+            {user.positions.map((pos) => (
+              <AccountPositionTag key={pos.id} position={pos} />
+            ))}
           </DataItem>
 
           <Divider marginBottom={16} />

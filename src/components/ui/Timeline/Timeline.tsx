@@ -16,11 +16,12 @@ export function Timeline({ mode, items }: TimelineProps): JSX.Element {
     <AntdTimeline className={classes.Timeline} mode={mode || "left"}>
       {[...items]
         .reverse()
-        .map(({ title, body, postTitle, color, className }, idx) => (
+        .map(({ title, body, postTitle, color, className, info }, idx) => (
           <TimelineItem
             body={body || null}
             className={className || ""}
             color={color || ""}
+            info={info || null}
             isLast={idx === items.length - 1}
             key={nanoid()}
             postTitle={postTitle || null}
