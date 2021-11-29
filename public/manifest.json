@@ -1,6 +1,7 @@
 {
   "name": "Nova A3",
   "short_name": "Nova A3",
+  "description": "Nova A3 • App — Abra ordens de serviço, imprima etiquetas, gere documentos, online.",
   "icons": [
     {
       "src": "assets/manifest-icon-192.maskable.png",
@@ -27,9 +28,30 @@
       "purpose": "maskable"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Documentos",
+      "shortName": "Documentos",
+      "description": "Emita documentos diversos, como o de Transferência de Materiais",
+      "url": "/docs"
+    },
+    {
+      "name": "Etiquetas",
+      "shortName": "Etiquetas",
+      "description": "Imprima etiquetas a partir de modelos pré-definidos pelo PCP",
+      "url": "/etiquetas"
+    },
+    {
+      "name": "Manutenção",
+      "shortName": "Manutenção",
+      "description": "Gerencie ou abra ordens de serviço para o setor de Manutenção",
+      "url": "/manutencao"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "lang": "pt-br"
 }

@@ -1,5 +1,6 @@
 import { MenuOutlined } from "@ant-design/icons";
 import { Grid, Layout } from "antd";
+import { isArray } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -61,9 +62,11 @@ export function Sider(): JSX.Element {
               icon,
               path,
               title: itemTitle,
-              section: requiredPrivileges?.includes("_super")
-                ? "admin"
-                : siderConfig.section || 1,
+              section:
+                isArray(requiredPrivileges) &&
+                requiredPrivileges?.includes("_super")
+                  ? "admin"
+                  : siderConfig.section || 1,
               isPublic: isPublic || false,
             };
         }

@@ -1,44 +1,42 @@
-import { extractRegistrationIdFromEmail } from "@modules/na3-react/helpers";
 import type { Na3User } from "@modules/na3-types";
-import dayjs from "dayjs";
 import firebase from "firebase";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
-import { useStateSlice } from "../../../hooks";
+import { useNa3Users, useStateSlice } from "../../../hooks";
 import {
   setAuthError,
   setAuthFirebaseUser,
   setAuthLoading,
   setAuthUser,
 } from "../../../store/actions";
-import { resolveCollectionId } from "../../../utils";
+import { resolveCollectionId, timestamp } from "../../../utils";
 
 export function Na3AuthController(): null {
   const { environment } = useStateSlice("config");
 
   const [didUpdateLastSeen, setDidUpdateLastSeen] = useState(false);
 
+  const {
+    helpers: { extractRegistrationIdFromEmail },
+  } = useNa3Users();
+
   const dispatch = useDispatch();
 
   const [fbUser, fbUserLoading, fbUserError] = useAuthState(firebase.auth());
   const [na3UserCandidates, na3UserCandidatesLoading, na3UserCandidatesError] =
-    useCollectionData<Na3User, "id", "ref">(
+    useCollectionData<Omit<Na3User, "uid">, "uid", "ref">(
       firebase
         .firestore()
-        .collection(
-          resolveCollectionId("NA3-USERS", environment, {
-            forceProduction: true,
-          })
-        )
+        .collection(resolveCollectionId("users", environment))
         .where(
           "registrationId",
           "==",
-          extractRegistrationIdFromEmail(fbUser?.email || "")
+          extractRegistrationIdFromEmail(fbUser?.email) || null
         ),
-      { idField: "id", refField: "ref" }
+      { idField: "uid", refField: "ref" }
     );
 
   /* Auth state management hooks */
@@ -64,7 +62,7 @@ export function Na3AuthController(): null {
   useEffect(() => {
     if (na3UserCandidates?.[0] && !didUpdateLastSeen) {
       const updatedUser: Pick<Na3User, "lastSeenAt"> = {
-        lastSeenAt: dayjs().format(),
+        lastSeenAt: timestamp(),
       };
       void na3UserCandidates[0].ref.update(updatedUser);
       setDidUpdateLastSeen(true);

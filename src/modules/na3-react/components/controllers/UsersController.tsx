@@ -3,36 +3,33 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
-import type { Na3User } from "../../../../na3-types";
-import { useCurrentUser, useStateSlice } from "../../../hooks";
+import type { Na3User } from "../../../na3-types";
+import { useStateSlice } from "../../hooks";
 import {
   setNa3UsersData,
   setNa3UsersError,
   setNa3UsersLoading,
-} from "../../../store/actions";
-import { resolveCollectionId } from "../../../utils";
+} from "../../store/actions";
+import { resolveCollectionId } from "../../utils";
 
 export function Na3UsersController(): null {
   const { environment } = useStateSlice("config");
-
-  const user = useCurrentUser();
+  const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
     () =>
-      firebase.firestore().collection(
-        resolveCollectionId("NA3-USERS", environment, {
-          forceProduction: true,
-        })
-      ),
+      firebase
+        .firestore()
+        .collection(resolveCollectionId("users", environment)),
     [environment]
   );
 
   const [fbNa3Users, fbNa3UsersLoading, fbNa3UsersError] = useCollectionData<
-    Na3User,
-    "id"
-  >(fbCollectionRef, { idField: "id" });
+    Omit<Na3User, "uid">,
+    "uid"
+  >(fbCollectionRef, { idField: "uid" });
 
   /* Na3Users state management hooks */
 
@@ -55,21 +52,21 @@ export function Na3UsersController(): null {
     dispatch(setNa3UsersError(null));
     dispatch(setNa3UsersData(null));
 
-    if (user) {
+    if (_firebaseUser) {
       const na3UsersSnapshot = await fbCollectionRef.get();
 
       dispatch(
         setNa3UsersData(
           na3UsersSnapshot.docs.map((doc) => ({
             ...(doc.data() as Na3User),
-            id: doc.id,
+            uid: doc.id,
           })) || null
         )
       );
     }
 
     dispatch(setNa3UsersLoading(false));
-  }, [dispatch, user, fbCollectionRef]);
+  }, [dispatch, _firebaseUser, fbCollectionRef]);
 
   useEffect(() => {
     void forceRefreshUsers();

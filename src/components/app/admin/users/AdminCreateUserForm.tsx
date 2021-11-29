@@ -144,12 +144,6 @@ export function AdminCreateUserForm({
       middleName,
       registrationId,
     }: FormValues) => {
-      console.log(
-        positionFields,
-        positionFields
-          .map((posField) => posField.positionId)
-          .filter((posId): posId is Na3PositionId => posId !== "")
-      );
       const signUpRes = await signUp(registrationId, {
         email,
         firstName,

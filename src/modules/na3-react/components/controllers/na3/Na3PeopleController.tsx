@@ -4,7 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3ApiPerson } from "../../../../na3-types";
-import { useCurrentUser, useStateSlice } from "../../../hooks";
+import { useStateSlice } from "../../../hooks";
 import {
   setNa3PeopleData,
   setNa3PeopleError,
@@ -14,8 +14,7 @@ import { resolveCollectionId } from "../../../utils";
 
 export function Na3PeopleController(): null {
   const { environment } = useStateSlice("config");
-
-  const user = useCurrentUser();
+  const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
 
@@ -57,7 +56,7 @@ export function Na3PeopleController(): null {
     dispatch(setNa3PeopleError(null));
     dispatch(setNa3PeopleData(null));
 
-    if (user) {
+    if (_firebaseUser) {
       const na3PeopleSnapshot = await fbCollectionRef.get();
 
       dispatch(
@@ -71,7 +70,7 @@ export function Na3PeopleController(): null {
     }
 
     dispatch(setNa3PeopleLoading(false));
-  }, [dispatch, user, fbCollectionRef]);
+  }, [dispatch, _firebaseUser, fbCollectionRef]);
 
   useEffect(() => {
     void forceRefreshNa3People();

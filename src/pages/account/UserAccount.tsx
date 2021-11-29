@@ -6,14 +6,13 @@ import {
 } from "@ant-design/icons";
 import {
   AccountAchievements,
-  AccountAvatar,
-  AccountDisplayName,
-  AccountLastSeen,
   AccountPositionTag,
   AccountRegistrationId,
   DataItem,
   Divider,
   Result404,
+  UserAvatar,
+  UserDisplayName,
 } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
 import { Button, Grid, Space, Typography } from "antd";
@@ -29,13 +28,20 @@ export function UserAccountPage(): JSX.Element {
   return user ? (
     <>
       <div className={classes.AccountHeader}>
-        <AccountAvatar className={classes.Avatar} user={user} />
+        <UserAvatar
+          size="large"
+          type="initials"
+          user={user}
+          wrapperClassName={classes.Avatar}
+        />
 
         <div className={classes.HeaderContent}>
           <div className={classes.HeaderContentMain}>
-            <AccountDisplayName className={classes.DisplayName}>
-              {user.displayName}
-            </AccountDisplayName>
+            <UserDisplayName
+              className={classes.DisplayName}
+              level={4}
+              user={user}
+            />
 
             {breakpoint.lg && (
               <Space>
@@ -58,15 +64,7 @@ export function UserAccountPage(): JSX.Element {
           </div>
 
           <div className={classes.HeaderSub}>
-            <Space size={1} split={<Divider type="vertical" />}>
-              <>
-                <AccountRegistrationId>
-                  {user.registrationId}
-                </AccountRegistrationId>
-
-                {breakpoint.lg && <AccountLastSeen at={user.lastSeenAt} />}
-              </>
-            </Space>
+            <AccountRegistrationId>{user.registrationId}</AccountRegistrationId>
           </div>
         </div>
       </div>
@@ -105,11 +103,13 @@ export function UserAccountPage(): JSX.Element {
       >
         <Typography.Paragraph
           editable={{
-            onChange: (text): void => console.log(text),
+            onChange: (): void => {
+              return;
+            },
             autoSize: { maxRows: 5, minRows: 3 },
           }}
         >
-          {user.bio || <em>Você ainda não definiu sua bio</em>}
+          {user.bio || <em>Você ainda não definiu sua bio.</em>}
         </Typography.Paragraph>
       </DataItem>
 

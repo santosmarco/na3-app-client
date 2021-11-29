@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
@@ -11,6 +10,7 @@ import {
   buildServiceOrderEvents,
   formatServiceOrderId,
   resolveCollectionId,
+  timestamp,
 } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
 import { useNa3Departments } from "./useNa3Departments";
@@ -244,7 +244,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
 
         const update: Required<Pick<Na3ServiceOrder, "closedAt" | "status">> = {
-          closedAt: dayjs().format(),
+          closedAt: timestamp(),
           status: "closed",
         };
 
@@ -298,7 +298,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           acceptedAt: null,
           priority: null,
           refusalReason: payload.reason.trim(),
-          reopenedAt: dayjs().format(),
+          reopenedAt: timestamp(),
           solution: null,
           solvedAt: null,
           status: "pending",
@@ -351,7 +351,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
             "acceptedAt" | "assignedMaintainer" | "priority" | "status"
           >
         > = {
-          acceptedAt: dayjs().format(),
+          acceptedAt: timestamp(),
           assignedMaintainer: payload.assignee.trim(),
           priority: payload.priority,
           status: "solving",
@@ -443,7 +443,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           Pick<Na3ServiceOrder, "solution" | "solvedAt" | "status">
         > = {
           solution: payload.solution.trim(),
-          solvedAt: dayjs().format(),
+          solvedAt: timestamp(),
           status: "solved",
         };
 

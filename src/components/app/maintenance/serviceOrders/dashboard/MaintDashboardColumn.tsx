@@ -1,9 +1,8 @@
+import { Divider, Page } from "@components";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import { Card, Col, Statistic } from "antd";
 import React, { useMemo } from "react";
 
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
-import { Page } from "../../../../pages/Page";
-import { Divider } from "../../../../ui/Divider/Divider";
 import { ServiceOrderStatusBadge } from "../card/ServiceOrderStatusBadge";
 import { MaintServiceOrdersList } from "../MaintServiceOrdersList";
 import classes from "./MaintDashboardColumn.module.css";

@@ -17,12 +17,5 @@ export function AccountPositionTag({
     [departments.helpers, position.departmentId]
   );
 
-  return (
-    <Tag
-      color={positionDpt?.style.colors.background}
-      textColor={positionDpt?.style.colors.text}
-    >
-      {position.shortName}
-    </Tag>
-  );
+  return <Tag color={positionDpt?.style.colors.web}>{position.shortName}</Tag>;
 }

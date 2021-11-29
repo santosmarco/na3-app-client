@@ -1,8 +1,11 @@
-import type { AutoCompleteOptionBase, SelectOptionBase } from "@components";
-import type { SelectOptionGroup } from "@components";
-import { EMPLOYEES } from "@constants";
+import type {
+  AutoCompleteOptionBase,
+  SelectOptionBase,
+  SelectOptionGroup,
+} from "@components";
+import { Tag } from "@components";
+import type { AppUser } from "@modules/na3-react";
 import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
-import { Tag } from "antd";
 import React from "react";
 import type { ConditionalPick } from "type-fest";
 import type { Falsy } from "utility-types";
@@ -41,33 +44,41 @@ export function generateSelectOptions<T extends Record<string, unknown>>(
   });
 }
 
-export const maintEmployeeSelectOptions: SelectOptionBase[] = [
-  ...EMPLOYEES.MAINTENANCE,
-]
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map((maintainer) => ({
-    label: maintainer.name,
-    labelWhenSelected: <Tag color={maintainer.color}>{maintainer.name}</Tag>,
-    value: maintainer.name,
-  }));
+export function getMaintEmployeeSelectOptions(
+  maintenanceUsers: AppUser[]
+): SelectOptionBase[] {
+  return [...maintenanceUsers]
+    .sort((a, b) => a.compactDisplayName.localeCompare(b.compactDisplayName))
+    .map((maintainer) => ({
+      label: maintainer.compactDisplayName,
+      labelWhenSelected: (
+        <Tag color={maintainer.style.webColor}>
+          {maintainer.compactDisplayName}
+        </Tag>
+      ),
+      value: maintainer.uid,
+    }));
+}
 
-export const serviceOrderPrioritySelectOptions: SelectOptionBase[] = [
-  {
-    label: "Alta",
-    labelWhenSelected: <Tag color="success">ALTA</Tag>,
-    value: "high",
-  },
-  {
-    label: "Média",
-    labelWhenSelected: <Tag color="warning">Média</Tag>,
-    value: "medium",
-  },
-  {
-    label: "Baixa",
-    labelWhenSelected: <Tag color="error">BAIXA</Tag>,
-    value: "low",
-  },
-];
+export function getPrioritySelectOptions(): SelectOptionBase[] {
+  return [
+    {
+      label: "Alta",
+      labelWhenSelected: <Tag color="success">ALTA</Tag>,
+      value: "high",
+    },
+    {
+      label: "Média",
+      labelWhenSelected: <Tag color="warning">Média</Tag>,
+      value: "medium",
+    },
+    {
+      label: "Baixa",
+      labelWhenSelected: <Tag color="error">BAIXA</Tag>,
+      value: "low",
+    },
+  ];
+}
 
 export function getDepartmentSelectOptions(
   departments: Na3Department[]

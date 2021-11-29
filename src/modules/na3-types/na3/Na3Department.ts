@@ -1,3 +1,4 @@
+import type { WebColor } from "../utils";
 import type { Na3App, Na3AppId } from "./Na3App";
 import type { Na3Machine } from "./Na3Machine";
 import type { Na3Position } from "./Na3Position";
@@ -37,6 +38,10 @@ export type Na3DepartmentLocation<
   T extends Na3DepartmentType = Na3DepartmentType
 > = Na3DepartmentLocationMap[T];
 
+export type Na3DepartmentStyle = {
+  colors: { background: string; text: string; web: WebColor };
+};
+
 export type Na3Department<T extends Na3DepartmentType = Na3DepartmentType> = {
   apps: Partial<Record<Na3AppId, Na3App>>;
   displayName: string;
@@ -46,7 +51,7 @@ export type Na3Department<T extends Na3DepartmentType = Na3DepartmentType> = {
   name: string;
   people: Na3User[];
   positions: Na3Position[];
-  style: { colors: { background: string; text: string } };
+  style: Na3DepartmentStyle;
   twoLetterId: T extends "shop-floor" ? string : null;
   type: T;
 };

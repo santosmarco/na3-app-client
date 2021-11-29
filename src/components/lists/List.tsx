@@ -68,16 +68,11 @@ export function List<Item extends Record<string, unknown>>({
     [filterItem, searchInput, loadedData]
   );
 
-  const listStyle = useMemo(
-    () => ({ paddingTop: (verticalSpacing || 8) * 1.5 }),
-    [verticalSpacing]
-  );
-
   useEffect(() => {
-    if (data && loadedData.length === 0) {
-      setLoadedData(data.slice(0, 15));
+    if (data) {
+      setLoadedData((currLoaded) => data.slice(0, currLoaded.length || 15));
     }
-  }, [data, loadedData.length]);
+  }, [data]);
 
   if (error) {
     return <ListError>{error}</ListError>;
@@ -97,7 +92,7 @@ export function List<Item extends Record<string, unknown>>({
           </div>
         )}
 
-        <div className={classes.List} id={listId} style={listStyle}>
+        <div className={classes.List} id={listId}>
           {filteredData.length === 0 ? (
             <Empty description="Nada para mostrar" />
           ) : (
@@ -121,18 +116,15 @@ export function List<Item extends Record<string, unknown>>({
                       item.id) ||
                     nanoid()
                   }
-                  style={
-                    verticalSpacing
-                      ? {
-                          marginBottom:
-                            index < data.length - 1
-                              ? index === filteredData.length - 1
-                                ? 21
-                                : verticalSpacing
-                              : 0,
-                        }
-                      : undefined
-                  }
+                  style={{
+                    marginBottom:
+                      index < data.length - 1 &&
+                      index === filteredData.length - 1
+                        ? 21
+                        : verticalSpacing ?? 0,
+                    marginTop:
+                      index === 0 ? (verticalSpacing || 8) * 1.5 : undefined,
+                  }}
                 >
                   {renderItem(item)}
                 </div>

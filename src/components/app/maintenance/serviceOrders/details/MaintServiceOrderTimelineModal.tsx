@@ -1,11 +1,10 @@
+import type { TimelineItemProps } from "@components";
+import { Timeline } from "@components";
+import type { Na3ServiceOrderEvent } from "@modules/na3-types";
+import { parseStringId } from "@utils";
 import { Grid, Modal } from "antd";
 import dayjs from "dayjs";
 import React from "react";
-
-import type { Na3ServiceOrderEvent } from "../../../../../modules/na3-types";
-import { parseStringId } from "../../../../../utils";
-import { Timeline } from "../../../../ui/Timeline/Timeline";
-import type { TimelineItemProps } from "../../../../ui/Timeline/TimelineItem";
 
 type MaintServiceOrderTimelineModalProps = {
   events: Na3ServiceOrderEvent[];

@@ -18,7 +18,7 @@ type UseFormConfig<
 > = Required<Pick<UseFormOriginalProps<Fields, Context>, "defaultValues">>;
 
 type FieldNames<Fields extends FieldValues> = {
-  readonly [FieldName in keyof Fields]: Fields[FieldName];
+  readonly [FieldName in keyof Fields]: FieldName;
 };
 
 type UseFormReturn<

@@ -31,8 +31,8 @@ export function Header(): JSX.Element {
   return (
     <div className={classes.HeaderContainer}>
       <div className={classes.Header}>
-        {auth.user ? (
-          <UserInfo user={auth.user} />
+        {auth.currentUser ? (
+          <UserInfo user={auth.currentUser} />
         ) : (
           <Link to="/">
             <Logo height={24} />
@@ -45,17 +45,17 @@ export function Header(): JSX.Element {
 
         <Tooltip
           arrowPointAtCenter={true}
-          color={auth.user ? "#ff4d4f" : undefined}
+          color={auth.currentUser ? "#ff4d4f" : undefined}
           placement="bottomRight"
-          title={auth.user ? "Sair" : "Entrar"}
+          title={auth.currentUser ? "Sair" : "Entrar"}
         >
           <Button
             className={`${classes.AuthButton} animate__animated animate__fadeIn`}
-            danger={!!auth.user}
-            icon={auth.user ? <LogoutOutlined /> : <LoginOutlined />}
-            onClick={auth.user ? handleSignOut : handleAuthRedirect}
+            danger={!!auth.currentUser}
+            icon={auth.currentUser ? <LogoutOutlined /> : <LoginOutlined />}
+            onClick={auth.currentUser ? handleSignOut : handleAuthRedirect}
             shape="circle"
-            type={auth.user || theme === "dark" ? "text" : "link"}
+            type={auth.currentUser || theme === "dark" ? "text" : "link"}
           />
         </Tooltip>
       </div>

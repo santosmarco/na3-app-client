@@ -1,6 +1,4 @@
 export { AccountAchievements } from "./app/account/AccountAchievements";
-export { AccountAvatar } from "./app/account/AccountAvatar";
-export { AccountDisplayName } from "./app/account/AccountDisplayName";
 export { AccountLastSeen } from "./app/account/AccountLastSeen";
 export { AccountPositionTag } from "./app/account/AccountPositionTag";
 export { AccountRegistrationId } from "./app/account/AccountRegistrationId";
@@ -73,3 +71,6 @@ export { MaintEmployeeTag } from "./ui/Tag/MaintEmployeeTag";
 export { PriorityTag } from "./ui/Tag/PriorityTag";
 export { Tag } from "./ui/Tag/Tag";
 export { Timeline } from "./ui/Timeline/Timeline";
+export type { TimelineItemProps } from "./ui/Timeline/TimelineItem";
+export { UserAvatar } from "./user/UserAvatar/UserAvatar";
+export { UserDisplayName } from "./user/UserDisplayName/UserDisplayName";

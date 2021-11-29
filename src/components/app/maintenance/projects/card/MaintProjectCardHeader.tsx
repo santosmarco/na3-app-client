@@ -1,10 +1,10 @@
-import React from "react";
-
+import { PriorityTag } from "@components";
 import type {
   Na3MaintenanceProject,
   Na3MaintenanceProjectStatus,
-} from "../../../../../modules/na3-types";
-import { PriorityTag } from "../../../../ui/Tag/PriorityTag";
+} from "@modules/na3-types";
+import React from "react";
+
 import classes from "./MaintProjectCardHeader.module.css";
 import { MaintProjectStatusBadge } from "./MaintProjectStatusBadge";
 

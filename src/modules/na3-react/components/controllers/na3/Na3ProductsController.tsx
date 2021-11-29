@@ -4,7 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3ApiProduct } from "../../../../na3-types";
-import { useCurrentUser, useStateSlice } from "../../../hooks";
+import { useStateSlice } from "../../../hooks";
 import {
   setNa3ProductsData,
   setNa3ProductsError,
@@ -14,8 +14,7 @@ import { resolveCollectionId } from "../../../utils";
 
 export function Na3ProductsController(): null {
   const { environment } = useStateSlice("config");
-
-  const user = useCurrentUser();
+  const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
 
@@ -55,7 +54,7 @@ export function Na3ProductsController(): null {
     dispatch(setNa3ProductsError(null));
     dispatch(setNa3ProductsData(null));
 
-    if (user) {
+    if (_firebaseUser) {
       const na3ProductsSnapshot = await fbCollectionRef.get();
 
       dispatch(
@@ -69,7 +68,7 @@ export function Na3ProductsController(): null {
     }
 
     dispatch(setNa3ProductsLoading(false));
-  }, [dispatch, user, fbCollectionRef]);
+  }, [dispatch, _firebaseUser, fbCollectionRef]);
 
   useEffect(() => {
     void forceRefreshNa3Products();

@@ -1,7 +1,7 @@
+import { PriorityTag } from "@components";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import React from "react";
 
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
-import { PriorityTag } from "../../../../ui/Tag/PriorityTag";
 import classes from "./ServiceOrderCardHeader.module.css";
 import { ServiceOrderStatusBadge } from "./ServiceOrderStatusBadge";
 

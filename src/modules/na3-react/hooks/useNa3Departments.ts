@@ -1,3 +1,4 @@
+import { isArray } from "lodash";
 import { useCallback } from "react";
 import type { LiteralUnion } from "type-fest";
 
@@ -7,6 +8,7 @@ import type {
   Na3DepartmentId,
   Na3DepartmentType,
 } from "../../na3-types";
+import type { MaybeArray } from "../types";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3DepartmentsResult = {
@@ -18,8 +20,8 @@ export type UseNa3DepartmentsResult = {
       id: LiteralUnion<Na3DepartmentId<T>, string>
     ) => Na3Department<T> | undefined;
     getByIdsOrTypes: (
-      idsOrTypes: (Na3DepartmentId | Na3DepartmentType)[]
-    ) => Na3Department[] | undefined;
+      idsOrTypes: MaybeArray<Na3DepartmentId | Na3DepartmentType>
+    ) => Na3Department[];
     getByType: <T extends Na3DepartmentType>(
       type: T
     ) => Na3Department<T>[] | undefined;
@@ -72,11 +74,14 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
 
   const getByIdsOrTypes = useCallback(
     (
-      idsOrTypes: (Na3DepartmentId | Na3DepartmentType)[]
-    ): Na3Department[] | undefined =>
-      departments.data?.filter(
-        (dpt) => idsOrTypes.includes(dpt.type) || idsOrTypes.includes(dpt.id)
-      ),
+      idsOrTypes: MaybeArray<Na3DepartmentId | Na3DepartmentType>
+    ): Na3Department[] => {
+      const queryArr = isArray(idsOrTypes) ? idsOrTypes : [idsOrTypes];
+
+      return (departments.data || []).filter(
+        (dpt) => queryArr.includes(dpt.type) || queryArr.includes(dpt.id)
+      );
+    },
     [departments.data]
   );
 

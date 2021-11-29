@@ -1,9 +1,9 @@
+import { DataCard } from "@components";
+import { useNa3MaintProjects } from "@modules/na3-react";
+import type { Na3MaintenanceProject } from "@modules/na3-types";
 import { Typography } from "antd";
 import React, { useMemo } from "react";
 
-import { useNa3MaintProjects } from "../../../../../modules/na3-react";
-import type { Na3MaintenanceProject } from "../../../../../modules/na3-types";
-import { DataCard } from "../../../../ui/DataCard/DataCard";
 import { MaintProjectCardHeader } from "./MaintProjectCardHeader";
 
 type MaintProjectCardProps = {

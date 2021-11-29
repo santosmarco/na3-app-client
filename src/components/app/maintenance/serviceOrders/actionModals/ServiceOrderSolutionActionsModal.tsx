@@ -1,12 +1,10 @@
+import { Form, FormField, SubmitButton } from "@components";
+import { useForm } from "@hooks";
+import { useNa3Users } from "@modules/na3-react";
+import type { Na3ServiceOrder } from "@modules/na3-types";
+import { getMaintEmployeeSelectOptions } from "@utils";
 import { Modal } from "antd";
-import React, { useCallback } from "react";
-
-import { useForm } from "../../../../../hooks/useForm";
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
-import { maintEmployeeSelectOptions } from "../../../../../utils";
-import { Form } from "../../../../forms/Form";
-import { FormField } from "../../../../forms/FormField/FormField";
-import { SubmitButton } from "../../../../forms/SubmitButton";
+import React, { useCallback, useMemo } from "react";
 
 type ActionFormType = "deliver" | "status";
 
@@ -33,6 +31,10 @@ export function ServiceOrderSolutionActionsModal({
   onClose,
   type,
 }: ServiceOrderSolutionActionsModalProps): JSX.Element {
+  const {
+    helpers: { getAllInDepartments: getAllUsersInDepartments },
+  } = useNa3Users();
+
   const form = useForm<FormValues>({
     defaultValues: {
       assignee: serviceOrder.assignedMaintainer || "",
@@ -45,6 +47,11 @@ export function ServiceOrderSolutionActionsModal({
       return onSubmit(serviceOrder, values);
     },
     [onSubmit, serviceOrder]
+  );
+
+  const maintEmployeeSelectOptions = useMemo(
+    () => getMaintEmployeeSelectOptions(getAllUsersInDepartments("manutencao")),
+    [getAllUsersInDepartments]
   );
 
   return (

@@ -2,6 +2,7 @@ import { IdcardOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
 import {
   Form,
   FormField,
+  PageAlert,
   PageDescription,
   PageTitle,
   SubmitButton,
@@ -26,6 +27,7 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
 
   const {
     helpers: { signIn },
+    currentUser,
   } = useNa3Auth();
 
   const form = useForm<AuthFormValues>({
@@ -65,8 +67,16 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
   return (
     <>
       <PageTitle>Entrar</PageTitle>
+
+      {currentUser && (
+        <PageAlert type="warning">
+          Você não possui acesso a esta área.
+        </PageAlert>
+      )}
+
       <PageDescription>
-        Por favor, autentique-se para continuar.
+        Por favor, {currentUser ? "troque de conta" : "autentique-se"} para
+        continuar.
       </PageDescription>
 
       <Form form={form} onSubmit={handleSubmit}>

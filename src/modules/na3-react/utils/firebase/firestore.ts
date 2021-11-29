@@ -6,9 +6,9 @@ export function resolveCollectionId(
     | "API-PRODUCTS"
     | "departments"
     | "manut-projects"
-    | "NA3-USERS"
     | "tickets"
-    | "transf-label-templates",
+    | "transf-label-templates"
+    | "users",
   environment: ConfigState["environment"],
   options?: { forceProduction?: boolean }
 ): string {

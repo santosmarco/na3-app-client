@@ -51,8 +51,13 @@ export type AppRoute = {
   siderConfig?: SiderConfig;
   title: string | null;
 } & (
+  | {
+      isPublic?: undefined;
+      requiredPrivileges:
+        | Na3UserPrivilegeId[]
+        | ((userPrivileges: Na3UserPrivilegeId[]) => boolean);
+    }
   | { isPublic: boolean; requiredPrivileges: null }
-  | { isPublic?: undefined; requiredPrivileges: Na3UserPrivilegeId[] }
 );
 
 type AppRouteMap<Path extends string> = Readonly<
@@ -242,7 +247,12 @@ export const ROUTES: AppRouteMap<
   },
   "/manutencao/os": {
     component: <MaintServiceOrdersHomePage />,
-    requiredPrivileges: ["service_orders_read"],
+    requiredPrivileges: (userPrivileges) =>
+      userPrivileges.some((privilege) =>
+        ["service_orders_read_own", "service_orders_read_all"].includes(
+          privilege
+        )
+      ),
     title: "Ordens de Serviço",
   },
   "/manutencao/os/abrir-os": {

@@ -1,3 +1,5 @@
+import { DataCard } from "@components";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import { Row } from "antd";
 import React from "react";
 import {
@@ -7,8 +9,6 @@ import {
   IoThumbsUpOutline,
 } from "react-icons/io5";
 
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
-import { DataCard } from "../../../../ui/DataCard/DataCard";
 import { ServiceOrderCardHeader } from "./ServiceOrderCardHeader";
 import { ServiceOrderStep } from "./ServiceOrderStep";
 

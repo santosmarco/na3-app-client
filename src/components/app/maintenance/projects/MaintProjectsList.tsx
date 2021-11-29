@@ -1,8 +1,8 @@
+import { List } from "@components";
+import { useNa3MaintProjects } from "@modules/na3-react/hooks";
+import type { Na3MaintenanceProject } from "@modules/na3-types";
 import React, { useCallback } from "react";
 
-import { useNa3MaintProjects } from "../../../../modules/na3-react/hooks";
-import type { Na3MaintenanceProject } from "../../../../modules/na3-types";
-import { List } from "../../../lists/List";
 import { MaintProjectCard } from "./card/MaintProjectCard";
 
 type MaintProjectsListProps = {

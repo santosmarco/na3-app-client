@@ -1,11 +1,8 @@
+import { Form, FormField, SubmitButton } from "@components";
+import { useForm } from "@hooks";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import { Modal } from "antd";
 import React, { useCallback } from "react";
-
-import { useForm } from "../../../../../hooks/useForm";
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
-import { Form } from "../../../../forms/Form";
-import { FormField } from "../../../../forms/FormField/FormField";
-import { SubmitButton } from "../../../../forms/SubmitButton";
 
 type RejectSolutionModalProps = {
   isVisible: boolean;

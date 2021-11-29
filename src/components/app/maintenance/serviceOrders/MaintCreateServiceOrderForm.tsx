@@ -1,22 +1,16 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Col, Divider, Grid, Modal, notification, Row } from "antd";
-import React, { useCallback, useMemo, useState } from "react";
-
-import { useForm } from "../../../../hooks";
+import { Form, FormField, Result, SubmitButton } from "@components";
+import { useForm } from "@hooks";
 import {
   useCurrentUser,
   useNa3Departments,
   useNa3ServiceOrders,
-} from "../../../../modules/na3-react";
-import type {
-  Na3Department,
-  Na3DepartmentId,
-} from "../../../../modules/na3-types";
-import { createErrorNotifier } from "../../../../utils";
-import { Form } from "../../../forms/Form";
-import { FormField } from "../../../forms/FormField/FormField";
-import { SubmitButton } from "../../../forms/SubmitButton";
-import { Result } from "../../../ui/Result/Result";
+} from "@modules/na3-react";
+import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
+import { createErrorNotifier } from "@utils";
+import { Col, Divider, Grid, Modal, notification, Row } from "antd";
+import React, { useCallback, useMemo, useState } from "react";
+
 import classes from "./MaintCreateServiceOrderForm.module.css";
 
 type MaintCreateServiceOrderFormProps = {

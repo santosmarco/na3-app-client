@@ -1,12 +1,12 @@
 import { AdminUserCard, List } from "@components";
-import type { Na3User } from "@modules/na3-types";
+import type { AppUser } from "@modules/na3-react";
 import React, { useCallback } from "react";
 
 type AdminUsersListProps = {
-  data: Na3User[] | null;
+  data: AppUser[] | null;
   error: string | null | undefined;
   loading: boolean;
-  onSelectUser: (user: Na3User) => void;
+  onSelectUser: (user: AppUser) => void;
 };
 
 export function AdminUsersList({
@@ -16,12 +16,12 @@ export function AdminUsersList({
   onSelectUser,
 }: AdminUsersListProps): JSX.Element {
   const handleRenderItem = useCallback(
-    (user: Na3User) => <AdminUserCard data={user} onSelect={onSelectUser} />,
+    (user: AppUser) => <AdminUserCard data={user} onSelect={onSelectUser} />,
     [onSelectUser]
   );
 
   const handleFilterItemOnSearch = useCallback(
-    (query: string): Na3User[] =>
+    (query: string): AppUser[] =>
       data?.filter((user) => {
         const formattedQuery = query.trim().toLowerCase();
         return (

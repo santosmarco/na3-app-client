@@ -1,23 +1,33 @@
+import { useNa3Users } from "@modules/na3-react";
+import type { Na3MaintenancePerson } from "@modules/na3-types";
 import React, { useMemo } from "react";
 
-import { EMPLOYEES } from "../../../constants";
 import { Tag } from "./Tag";
 
 type MaintEmployeeTagProps = {
-  maintainer: string;
+  isLeader?: boolean;
+  maintainer: Na3MaintenancePerson | string;
 };
 
 export function MaintEmployeeTag({
   maintainer,
+  isLeader,
 }: MaintEmployeeTagProps): JSX.Element {
-  const employeeColor = useMemo(
-    () =>
-      EMPLOYEES.MAINTENANCE.find(
-        (employee) =>
-          employee.name.toLowerCase().trim() === maintainer.toLowerCase().trim()
-      )?.color || "blue",
-    [maintainer]
-  );
+  const {
+    helpers: { getByUid: getUserByUid },
+  } = useNa3Users();
 
-  return <Tag color={employeeColor}>{maintainer}</Tag>;
+  const tagColor = useMemo(() => {
+    if (typeof maintainer === "string") return;
+    return getUserByUid(maintainer.uid)?.style.webColor;
+  }, [maintainer, getUserByUid]);
+
+  return (
+    <Tag color={tagColor || (isLeader && "blue") || undefined}>
+      {(typeof maintainer === "string"
+        ? maintainer
+        : maintainer.displayName
+      ).trim()}
+    </Tag>
+  );
 }

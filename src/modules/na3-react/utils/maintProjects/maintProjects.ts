@@ -1,21 +1,29 @@
-import type { Dayjs } from "dayjs";
-import firebase from "firebase";
-
 import type {
+  Na3MaintenancePerson,
   Na3MaintenanceProject,
   Na3MaintenanceProjectEvent,
-} from "../../../na3-types";
+} from "@modules/na3-types";
+import type { Dayjs } from "dayjs";
+import firebase from "firebase";
 
 export type MaintProjectBuilderData = Required<
   Omit<
     Na3MaintenanceProject,
     "eta" | "events" | "id" | "internalId" | "ref" | "team"
-  > &
-    Pick<Na3MaintenanceProjectEvent, "author"> & {
-      eta: Dayjs;
-      team: { manager: string; members: string[] };
-    }
+  > & {
+    author: Na3MaintenancePerson;
+    eta: Dayjs;
+    team: {
+      manager: Na3MaintenancePerson;
+      members: (Na3MaintenancePerson | string)[];
+    };
+  }
 >;
+
+export type MaintProjectEventBuilderData = Omit<
+  Na3MaintenanceProjectEvent,
+  "author" | "timestamp"
+> & { author: Na3MaintenancePerson };
 
 export function buildMaintProject(
   internalId: number,
@@ -39,6 +47,22 @@ export function buildMaintProject(
     type: "create",
   });
 
+  const teamMembersSanitized = data.team.members.map((member) =>
+    typeof member === "string"
+      ? member
+      : { displayName: member.displayName, uid: member.uid }
+  );
+  const teamMembersSorted = [
+    ...teamMembersSanitized
+      .filter(
+        (member): member is Na3MaintenancePerson => typeof member !== "string"
+      )
+      .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    ...teamMembersSanitized
+      .filter((member): member is string => typeof member === "string")
+      .sort((a, b) => a.localeCompare(b)),
+  ];
+
   const project: Omit<Na3MaintenanceProject, "events" | "id" | "ref"> = {
     description: data.description.trim(),
     eta: firebase.firestore.Timestamp.fromDate(
@@ -48,10 +72,11 @@ export function buildMaintProject(
     isPredPrev: data.isPredPrev,
     priority: data.priority,
     team: {
-      manager: data.team.manager.trim(),
-      others: data.team.members
-        .map((memberName) => memberName.trim())
-        .join(", "),
+      manager: {
+        displayName: data.team.manager.displayName,
+        uid: data.team.manager.uid,
+      },
+      others: teamMembersSorted,
     },
     title: data.title.trim(),
   };
@@ -63,15 +88,13 @@ export function buildMaintProject(
   return { ...project, events: [creationEvent] };
 }
 
-export function buildMaintProjectEvents<
-  T extends Omit<Na3MaintenanceProjectEvent, "timestamp">
->(events: T): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T;
-export function buildMaintProjectEvents<
-  T extends Omit<Na3MaintenanceProjectEvent, "timestamp">
->(events: T[]): (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T)[];
-export function buildMaintProjectEvents<
-  T extends Omit<Na3MaintenanceProjectEvent, "timestamp">
->(
+export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
+  events: T
+): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T;
+export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
+  events: T[]
+): (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T)[];
+export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
   events: T | T[]
 ):
   | (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T)[]
@@ -79,7 +102,14 @@ export function buildMaintProjectEvents<
   function buildOneEvent(
     config: T
   ): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T {
-    return { ...config, timestamp: firebase.firestore.Timestamp.now() };
+    return {
+      ...config,
+      author: {
+        uid: config.author.uid,
+        displayName: config.author.displayName,
+      },
+      timestamp: firebase.firestore.Timestamp.now(),
+    };
   }
 
   if (!("length" in events)) {

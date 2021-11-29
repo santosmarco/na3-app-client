@@ -1,8 +1,7 @@
+import type { Na3MaintenanceProjectStatus } from "@modules/na3-types";
 import type { BadgeProps } from "antd";
 import { Badge } from "antd";
 import React, { useMemo } from "react";
-
-import type { Na3MaintenanceProjectStatus } from "../../../../../modules/na3-types";
 
 type MaintProjectStatusBadgeProps = {
   isPredPrev: boolean;

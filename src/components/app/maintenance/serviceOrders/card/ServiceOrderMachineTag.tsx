@@ -1,7 +1,6 @@
+import type { Na3Machine } from "@modules/na3-types";
 import { Tag } from "antd";
 import React from "react";
-
-import type { Na3Machine } from "../../../../../modules/na3-types";
 
 type ServiceOrderMachineTagProps = {
   fallback: string;

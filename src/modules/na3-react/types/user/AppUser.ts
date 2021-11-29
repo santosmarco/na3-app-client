@@ -11,28 +11,23 @@ import type { Dayjs } from "dayjs";
 import type { LiteralUnion } from "type-fest";
 import type { Falsy } from "utility-types";
 
-export interface AppUser
-  extends Omit<
-    Na3User,
-    "createdAt" | "lastSeenAt" | "positionIds" | "style" | "updatedAt"
-  > {
+type AppUserRaw = Omit<
+  Na3User,
+  "createdAt" | "lastSeenAt" | "positionIds" | "updatedAt"
+> & {
   readonly createdAt: Dayjs;
   readonly lastSeenAt: Dayjs;
-  readonly style: {
-    readonly backgroundColor: string;
-    readonly color: string;
-  };
   readonly updatedAt: Dayjs;
-}
+};
 
-export interface AppUser {
+export type AppUserAttributes = AppUserRaw & {
+  readonly compactDisplayName: string;
   readonly departments: Na3Department[];
-  readonly isLoading: boolean;
   readonly positions: Na3Position[];
   readonly privileges: Na3UserPrivilegeId[];
-}
+};
 
-export interface AppUser {
+export type AppUserMethods = {
   readonly getDepartmentsByType: <T extends Na3DepartmentType>(
     departmentType: T
   ) => Na3Department<T>[];
@@ -46,6 +41,11 @@ export interface AppUser {
       | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
       | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>[]
   ) => boolean;
+};
+
+export type AppUser = AppUserAttributes & AppUserMethods;
+
+export type AppUserAuthOnlyMethods = {
   readonly updatePassword: (
     newPassword: string
   ) => Promise<
@@ -53,4 +53,6 @@ export interface AppUser {
     | { error: null; warning: { message: string; title: string } }
     | { error: null; warning: null }
   >;
-}
+};
+
+export type AppUserAuthenticated = AppUser & AppUserAuthOnlyMethods;

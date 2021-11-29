@@ -1,17 +1,33 @@
 {
   "name": "@na3-app/client",
   "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
   "author": "santosmarco <eu@marco.rio.br>",
   "scripts": {
-    "start": "craco start",
-    "test": "craco test",
+    "build": "yarn lint:fix && yarn prettier:write && craco build",
+    "build:assets": "pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
+    "deploy:prod": "yarn build && firebase deploy --only hosting",
+    "deploy:test": "yarn build && firebase hosting:channel:deploy test",
+    "eject": "react-scripts eject",
     "lint": "yarn eslint src/ --ext .ts,.tsx",
     "lint:fix": "yarn lint --fix",
     "prettier:check": "yarn prettier --check src/",
     "prettier:write": "yarn prettier --write src/",
-    "build": "yarn lint:fix && yarn prettier:write && craco build",
-    "build:assets": "pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "test": "craco test"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "dependencies": {
     "@craco/craco": "^6.4.1",
@@ -21,7 +37,6 @@
     "@sentry/react": "^6.15.0",
     "@sentry/rrweb": "^0.3.1",
     "@sentry/tracing": "^6.15.0",
-    "@types/lodash": "^4.14.177",
     "animate.css": "^4.1.1",
     "antd": "^4.16.13",
     "axios": "^0.24.0",
@@ -51,6 +66,7 @@
     "react-use-localstorage": "^3.5.3",
     "redux": "^4.1.2",
     "rrweb": "^1.0.7",
+    "tslib": "^2.3.1",
     "validator": "^13.7.0",
     "web-vitals": "^1.0.1"
   },
@@ -61,6 +77,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@types/detect-browser": "^4.0.0",
     "@types/jest": "^26.0.15",
+    "@types/lodash": "^4.14.177",
     "@types/node": "^12.0.0",
     "@types/qrcode": "^1.4.1",
     "@types/react": "^17.0.0",
@@ -83,25 +100,13 @@
     "gulp-postcss": "^8.0.0",
     "less-plugin-npm-import": "^2.1.0",
     "prettier": "^2.4.1",
+    "pwa-asset-generator": "^6.0.2",
     "react-app-rewire-alias": "^1.1.5",
     "react-app-rewired": "^2.0.0",
     "redux-devtools-extension": "^2.13.9",
     "type-fest": "^2.5.2",
     "typescript": "^4.1.2",
-    "utility-types": "^3.10.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "license": "MIT",
-  "private": true
+    "utility-types": "^3.10.0",
+    "yarn": "^1.22.17"
+  }
 }

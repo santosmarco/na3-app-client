@@ -1,9 +1,8 @@
+import { Timeline } from "@components";
+import type { Na3MaintenanceProjectEvent } from "@modules/na3-types";
+import { parseStringId } from "@utils";
 import dayjs from "dayjs";
 import React from "react";
-
-import type { Na3MaintenanceProjectEvent } from "../../../../../modules/na3-types";
-import { parseStringId } from "../../../../../utils";
-import { Timeline } from "../../../../ui/Timeline/Timeline";
 
 type MaintProjectTimelineProps = {
   events: Na3MaintenanceProjectEvent[];

@@ -1,10 +1,10 @@
 import { DataCard } from "@components";
-import type { Na3User } from "@modules/na3-types";
+import type { AppUser } from "@modules/na3-react";
 import React from "react";
 
 type AdminUserCardProps = {
-  data: Na3User;
-  onSelect: (user: Na3User) => void;
+  data: AppUser;
+  onSelect: (user: AppUser) => void;
 };
 
 export function AdminUserCard({

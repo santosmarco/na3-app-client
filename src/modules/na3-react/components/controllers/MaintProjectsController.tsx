@@ -4,7 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3MaintenanceProject } from "../../../na3-types";
-import { useCurrentUser, useStateSlice } from "../../hooks";
+import { useStateSlice } from "../../hooks";
 import {
   setMaintProjectsData,
   setMaintProjectsError,
@@ -14,8 +14,7 @@ import { resolveCollectionId } from "../../utils";
 
 export function Na3MaintenanceProjectsController(): null {
   const { environment } = useStateSlice("config");
-
-  const user = useCurrentUser();
+  const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
 
@@ -53,7 +52,7 @@ export function Na3MaintenanceProjectsController(): null {
     dispatch(setMaintProjectsError(null));
     dispatch(setMaintProjectsData(null));
 
-    if (user) {
+    if (_firebaseUser) {
       const maintProjectsSnapshot = await fbCollectionRef.get();
 
       dispatch(
@@ -67,7 +66,7 @@ export function Na3MaintenanceProjectsController(): null {
     }
 
     dispatch(setMaintProjectsLoading(false));
-  }, [dispatch, user, fbCollectionRef]);
+  }, [dispatch, _firebaseUser, fbCollectionRef]);
 
   useEffect(() => {
     void forceRefreshMaintProjects();

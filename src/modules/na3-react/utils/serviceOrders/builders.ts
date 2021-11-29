@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
 import type {
@@ -6,6 +5,7 @@ import type {
   Na3ServiceOrder,
   Na3ServiceOrderEvent,
 } from "../../../na3-types";
+import { timestamp } from "../../utils";
 
 export type ServiceOrderBuilderData = Required<
   Pick<
@@ -74,7 +74,7 @@ export function buildServiceOrderEvents(
       device: originDevice,
       id: nanoid(),
       payload: config.payload || null,
-      timestamp: dayjs().format(),
+      timestamp: timestamp(),
       type: config.type,
     };
   }

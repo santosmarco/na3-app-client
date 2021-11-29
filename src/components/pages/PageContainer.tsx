@@ -1,6 +1,7 @@
 import type { AppRoute } from "@constants";
 import { useAppReady, useCurrentUser } from "@modules/na3-react";
 import { AuthPage } from "@pages";
+import { isArray } from "lodash";
 import React, { useMemo } from "react";
 import { Redirect } from "react-router-dom";
 
@@ -24,14 +25,20 @@ export function PageContainer({
     () =>
       !requiredPrivileges ||
       isPublic ||
-      user?.hasPrivileges(requiredPrivileges, { every: true }),
+      (isArray(requiredPrivileges)
+        ? user?.hasPrivileges(requiredPrivileges, { every: true })
+        : requiredPrivileges(user?.privileges || [])),
     [requiredPrivileges, isPublic, user]
   );
 
   if (!appIsReady) {
     return null;
   }
-  if (!hasAccess && requiredPrivileges?.includes("_super")) {
+  if (
+    !hasAccess &&
+    isArray(requiredPrivileges) &&
+    requiredPrivileges?.includes("_super")
+  ) {
     return <Redirect to="/" />;
   }
   return (

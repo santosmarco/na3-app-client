@@ -11,7 +11,7 @@ import {
   Progress,
   Typography,
 } from "antd";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import validator from "validator";
 
 import classes from "./ChangePwdModal.module.css";
@@ -33,6 +33,8 @@ type ResetPwdFormValues = {
 
 export function ChangePwdModal(): JSX.Element {
   const user = useCurrentUser();
+
+  const [isVisible, setIsVisible] = useState(user?.isPasswordDefault);
 
   const form = useForm<ResetPwdFormValues>({
     defaultValues: { pwd: "", pwdConfirm: "" },
@@ -160,26 +162,32 @@ export function ChangePwdModal(): JSX.Element {
           description: error.message,
         });
         return;
-      }
-      if (warning) {
+      } else if (warning) {
         notification.warn({
           message: warning.title,
           description: warning.message,
         });
-        return;
+      } else {
+        void message.success("Senha atualizada");
       }
 
-      void message.success("Senha atualizada");
+      setIsVisible(false);
     },
     [user]
   );
+
+  useEffect(() => {
+    if (user?.isPasswordDefault) {
+      setIsVisible(true);
+    }
+  }, [user?.isPasswordDefault]);
 
   return (
     <Modal
       closable={false}
       footer={null}
       title="Redefinir senha"
-      visible={user?.isPasswordDefault}
+      visible={isVisible}
     >
       <Alert
         className={classes.Alert}

@@ -10,20 +10,22 @@ const initialState: DepartmentsState = {
   loading: true,
 };
 
-export const departmentsReducer: Reducer<DepartmentsState, DepartmentsAction> =
-  (state = initialState, action) => {
-    switch (action.type) {
-      case "DEPARTMENTS_SET_DATA":
-        return { ...state, data: sortStateData(action.data, "displayName") };
-      case "DEPARTMENTS_SET_LOADING":
-        return { ...state, loading: action.loading };
-      case "DEPARTMENTS_SET_ERROR":
-        return {
-          ...state,
-          error: action.error ? translateFirebaseError(action.error) : null,
-        };
+export const departmentsReducer: Reducer<
+  DepartmentsState,
+  DepartmentsAction
+> = (state = initialState, action) => {
+  switch (action.type) {
+    case "DEPARTMENTS_SET_DATA":
+      return { ...state, data: sortStateData(action.data, "displayName") };
+    case "DEPARTMENTS_SET_LOADING":
+      return { ...state, loading: action.loading };
+    case "DEPARTMENTS_SET_ERROR":
+      return {
+        ...state,
+        error: action.error ? translateFirebaseError(action.error) : null,
+      };
 
-      default:
-        return state;
-    }
-  };
+    default:
+      return state;
+  }
+};

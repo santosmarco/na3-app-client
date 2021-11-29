@@ -1,17 +1,13 @@
+import { Form, FormCollapse, FormField, SubmitButton } from "@components";
+import { useForm } from "@hooks";
+import { na3 } from "@modules/na3";
+import { useNa3Departments } from "@modules/na3-react";
+import type { Na3TransfLabelTemplate } from "@modules/na3-types";
+import type { LabelsTransfPrintFormOnSubmitValues } from "@types";
+import { formatProductUnit, timestamp } from "@utils";
 import { Col, Divider, Row } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useMemo, useState } from "react";
-
-import { useForm } from "../../../hooks";
-import { na3 } from "../../../modules/na3";
-import { useNa3Departments } from "../../../modules/na3-react";
-import type { Na3TransfLabelTemplate } from "../../../modules/na3-types";
-import type { LabelsTransfPrintFormOnSubmitValues } from "../../../types";
-import { formatProductUnit } from "../../../utils";
-import { FormCollapse } from "../../forms/components/FormCollapse/FormCollapse";
-import { Form } from "../../forms/Form";
-import { FormField } from "../../forms/FormField/FormField";
-import { SubmitButton } from "../../forms/SubmitButton";
 
 type LabelsTransfPrintFormProps = {
   onSubmit: (labelConfig: LabelsTransfPrintFormOnSubmitValues) => void;
@@ -43,7 +39,7 @@ export function LabelsTransfPrintForm({
       batchId: "",
       copies: "",
       customerName: template.customerName.trim().toUpperCase(),
-      date: dayjs().format(),
+      date: timestamp(),
       invoiceNumber: "",
       productCode: template.productCode.trim().toUpperCase(),
       productName: template.productName.trim().toUpperCase(),

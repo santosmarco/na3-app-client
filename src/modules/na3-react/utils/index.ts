@@ -1,4 +1,5 @@
 export * from "./arrays";
+export * from "./datetime";
 export * from "./device";
 export * from "./errors/na3Errors";
 export * from "./firebase/firestore";

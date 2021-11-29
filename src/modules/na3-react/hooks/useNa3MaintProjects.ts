@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 
 import type { FirebaseError } from "../../firebase-errors-pt-br";
 import type {
+  Na3MaintenancePerson,
   Na3MaintenanceProject,
   Na3MaintenanceProjectStatus,
 } from "../../na3-types";
@@ -23,7 +24,7 @@ export type UseNa3MaintProjectsResult = {
     ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
     deliverProject: (
       projectId: string,
-      eventData: { author: string; message?: string | null }
+      eventData: { author: Na3MaintenancePerson; message?: string | null }
     ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
     formatInternalId: (internalId: number) => string;
     getById: (id: string) => Na3MaintenanceProject | undefined;
@@ -40,7 +41,7 @@ export type UseNa3MaintProjectsResult = {
     ) => Record<Na3MaintenanceProjectStatus, Na3MaintenanceProject[]>;
     shareProjectStatus: (
       projectId: string,
-      eventData: { author: string; message: string }
+      eventData: { author: Na3MaintenancePerson; message: string }
     ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
     sortByPriority: (data?: Na3MaintenanceProject[]) => Na3MaintenanceProject[];
     sortByStatus: (
@@ -171,7 +172,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
   const shareProjectStatus = useCallback(
     async (
       projectId: string,
-      eventData: { author: string; message: string }
+      eventData: { author: Na3MaintenancePerson; message: string }
     ) => {
       const ev = buildMaintProjectEvents({
         author: eventData.author,
@@ -199,7 +200,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
   const deliverProject = useCallback(
     async (
       projectId: string,
-      eventData: { author: string; message?: string | null }
+      eventData: { author: Na3MaintenancePerson; message?: string | null }
     ) => {
       const ev = buildMaintProjectEvents({
         author: eventData.author,

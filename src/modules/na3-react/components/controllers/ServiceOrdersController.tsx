@@ -4,7 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3ServiceOrder } from "../../../na3-types";
-import { useCurrentUser, useStateSlice } from "../../hooks";
+import { useStateSlice } from "../../hooks";
 import {
   setServiceOrdersData,
   setServiceOrdersError,
@@ -14,8 +14,7 @@ import { resolveCollectionId } from "../../utils";
 
 export function Na3ServiceOrdersController(): null {
   const { environment } = useStateSlice("config");
-
-  const user = useCurrentUser();
+  const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
 
@@ -53,7 +52,7 @@ export function Na3ServiceOrdersController(): null {
     dispatch(setServiceOrdersError(null));
     dispatch(setServiceOrdersData(null));
 
-    if (user) {
+    if (_firebaseUser) {
       const serviceOrdersSnapshot = await fbCollectionRef.get();
 
       dispatch(
@@ -67,7 +66,7 @@ export function Na3ServiceOrdersController(): null {
     }
 
     dispatch(setServiceOrdersLoading(false));
-  }, [dispatch, user, fbCollectionRef]);
+  }, [dispatch, _firebaseUser, fbCollectionRef]);
 
   useEffect(() => {
     void forceRefreshServiceOrders();

@@ -1,7 +1,7 @@
-import { UserOutlined } from "@ant-design/icons";
+import { UserAvatar, UserDisplayName } from "@components";
 import type { AppUser } from "@modules/na3-react";
 import { useNa3ServiceOrders } from "@modules/na3-react";
-import { Avatar, Badge, Grid, Popover, Tooltip, Typography } from "antd";
+import { Badge, Grid, Popover, Tooltip } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import classes from "./UserInfo.module.css";
@@ -86,14 +86,15 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
           className={`${classes.UserInfo} animate__animated animate__fadeIn`}
         >
           <Badge count={messageCount} size="small">
-            <Avatar icon={<UserOutlined />} size="small" style={user.style} />
+            <UserAvatar size="small" type="icon" user={user} />
           </Badge>
 
-          <small>
-            <Typography.Title className={classes.Username} level={5}>
-              {user.displayName.toUpperCase()}
-            </Typography.Title>
-          </small>
+          <UserDisplayName
+            className={classes.UserDisplayName}
+            level={5}
+            type="compact"
+            user={user}
+          />
         </div>
       </Popover>
     </Tooltip>

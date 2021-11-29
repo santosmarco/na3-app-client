@@ -1,11 +1,11 @@
 import { PageDescription, PageTitle, Result404 } from "@components";
+import type { AppUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
-import type { Na3User } from "@modules/na3-types";
 import React from "react";
 
 type PageProps = {
   backUrl?: `/${string}`;
-  user: Na3User | undefined;
+  user: AppUser | undefined;
 };
 
 export function AdminUserDetailsPage({

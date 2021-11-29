@@ -1,26 +1,24 @@
+import { Form, FormField, SubmitButton } from "@components";
+import { useForm } from "@hooks";
+import { useNa3Users } from "@modules/na3-react";
+import type {
+  Na3MaintenancePerson,
+  Na3MaintenanceProject,
+} from "@modules/na3-types";
+import { getMaintEmployeeSelectOptions } from "@utils";
 import { Modal } from "antd";
-import React, { useCallback } from "react";
-
-import { useForm } from "../../../../../hooks";
-import type { Na3MaintenanceProject } from "../../../../../modules/na3-types";
-import { maintEmployeeSelectOptions } from "../../../../../utils";
-import { Form } from "../../../../forms/Form";
-import { FormField } from "../../../../forms/FormField/FormField";
-import { SubmitButton } from "../../../../forms/SubmitButton";
+import React, { useCallback, useMemo } from "react";
 
 type ActionFormType = "deliver" | "status";
 
-type FormValues<T extends ActionFormType> = {
-  author: string;
-  message: T extends "status" ? string : string | null;
-};
+type FormValues = { authorUid: string; message: string };
 
 type MaintProjectActionModalProps<T extends ActionFormType> = {
   isVisible: boolean;
   onClose: () => void;
   onSubmit: (
     data: Na3MaintenanceProject,
-    payload: FormValues<T>
+    payload: { author: Na3MaintenancePerson; message: string }
   ) => Promise<void> | void;
   project: Na3MaintenanceProject;
   type: T;
@@ -33,15 +31,51 @@ export function MaintProjectActionModal<T extends ActionFormType>({
   onSubmit,
   onClose,
 }: MaintProjectActionModalProps<T>): JSX.Element {
-  const form = useForm({
-    defaultValues: { author: project.events[0]?.author || "", message: "" },
+  const {
+    helpers: {
+      getAllInDepartments: getAllUsersInDepartments,
+      getByUid: getUserByUid,
+    },
+  } = useNa3Users();
+
+  const authorUidDefaultValue = useMemo((): string => {
+    if (typeof project.events[0].author === "string") {
+      return project.events[0].author;
+    }
+    return project.events[0].author.uid;
+  }, [project.events]);
+
+  const form = useForm<FormValues>({
+    defaultValues: { authorUid: authorUidDefaultValue, message: "" },
   });
 
-  const handleSubmit = useCallback(
-    (values: FormValues<T>) => {
-      return onSubmit(project, values);
+  const handleAuthorValidate = useCallback(
+    (authorUid: string) => {
+      if (!getUserByUid(authorUid))
+        return "Não foi possível vincular um usuário ao autor atribuído.";
     },
-    [onSubmit, project]
+    [getUserByUid]
+  );
+
+  const handleSubmit = useCallback(
+    (values: FormValues) => {
+      const author = getUserByUid(values.authorUid);
+
+      if (!author) {
+        form.setError("authorUid", {
+          message: "Não foi possível vincular um usuário ao autor atribuído.",
+        });
+        return;
+      }
+
+      return onSubmit(project, { author, message: values.message });
+    },
+    [form, project, getUserByUid, onSubmit]
+  );
+
+  const maintEmployeeSelectOptions = useMemo(
+    () => getMaintEmployeeSelectOptions(getAllUsersInDepartments("manutencao")),
+    [getAllUsersInDepartments]
   );
 
   return (
@@ -59,9 +93,12 @@ export function MaintProjectActionModal<T extends ActionFormType>({
       <Form form={form} onSubmit={handleSubmit}>
         <FormField
           label="Autor"
-          name="author"
+          name={form.fieldNames.authorUid}
           options={maintEmployeeSelectOptions}
-          rules={{ required: "Atribua um autor" }}
+          rules={{
+            required: "Atribua um autor",
+            validate: handleAuthorValidate,
+          }}
           type="select"
         />
 
@@ -71,7 +108,7 @@ export function MaintProjectActionModal<T extends ActionFormType>({
               ? `Status ${project.isPredPrev ? "da Pred/Prev" : "do projeto"}`
               : "Comentários"
           }
-          name="message"
+          name={form.fieldNames.message}
           required={type === "status"}
           rules={
             type === "status"

@@ -7,7 +7,7 @@ import React, { useCallback } from "react";
 
 import classes from "./Select.module.css";
 
-type SelectValue = string[] | string;
+export type SelectValue = string[] | string;
 
 export type SelectOptionBase<OptionValue extends string = string> = {
   label: React.ReactNode;
@@ -44,11 +44,7 @@ export type SelectAsFieldProps<Value extends SelectValue> = Partial<
   >
 > & {
   multiple?: boolean;
-  onTagProps?:
-    | ((
-        value: Parameters<RenderTagHandler<Value>>[0]["value"]
-      ) => SelectTagProps)
-    | null;
+  onTagProps?: ((value: string) => SelectTagProps) | null;
   options: SelectOption<Value extends Array<string> ? Value[number] : Value>[];
 };
 
@@ -81,22 +77,24 @@ export function Select<Value extends SelectValue = SelectValue>({
 }: SelectProps<Value>): JSX.Element {
   const handleRenderTag: RenderTagHandler<Value> = useCallback(
     ({ value: optionValue, label, closable, onClose }) => {
+      const optionValueStr = optionValue.toString();
+
       return (
         <div
           className={`${classes.LabelWhenSelected} ${classes.CustomTagContainer}`}
-          style={onTagProps?.(optionValue).containerStyle}
+          style={onTagProps?.(optionValueStr).containerStyle}
         >
           <Tag
             closable={closable}
-            color={onTagProps?.(optionValue).color}
+            color={onTagProps?.(optionValueStr).color}
             onClose={onClose}
             style={{
               marginLeft:
-                isArray(valueOrValues) && optionValue === valueOrValues[0]
+                isArray(valueOrValues) && optionValueStr === valueOrValues[0]
                   ? 7
                   : undefined,
               marginRight: 3,
-              ...onTagProps?.(optionValue).style,
+              ...onTagProps?.(optionValueStr).style,
             }}
           >
             {label}

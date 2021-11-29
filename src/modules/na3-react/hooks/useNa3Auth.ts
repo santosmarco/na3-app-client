@@ -1,21 +1,21 @@
-import dayjs from "dayjs";
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
+import type { Na3User } from "@modules/na3-types";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
-import type { FirebaseError } from "../../firebase-errors-pt-br";
-import { translateFirebaseError } from "../../firebase-errors-pt-br";
-import type { Na3User } from "../../na3-types";
-import { formatRegistrationId, getAuthEmail } from "../helpers";
-import type { AppUser, AuthState } from "../types";
+import type { AppUserAuthenticated, AuthState } from "../types";
 import {
   buildNa3Error,
-  pickRandomColorCombination,
+  createRandomUserStyle,
   resolveCollectionId,
+  timestamp,
 } from "../utils";
-import { useCurrentUser } from "./useCurrentUser";
+import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3AuthResult = {
+  currentUser: AppUserAuthenticated | undefined;
   error: AuthState["error"];
   helpers: {
     signIn: (
@@ -37,21 +37,19 @@ export type UseNa3AuthResult = {
     >;
   };
   loading: boolean;
-  user: AppUser | undefined;
 };
 
 export function useNa3Auth(): UseNa3AuthResult {
   const { environment } = useStateSlice("config");
   const { error, loading } = useStateSlice("auth");
 
-  const user = useCurrentUser();
+  const {
+    helpers: { formatRegistrationId, getAuthEmail },
+    currentUser,
+  } = useNa3Users();
 
   const usersCollectionRef = useRef(
-    firebase.firestore().collection(
-      resolveCollectionId("NA3-USERS", environment, {
-        forceProduction: true,
-      })
-    )
+    firebase.firestore().collection(resolveCollectionId("users", environment))
   );
 
   const signIn = useCallback(
@@ -74,7 +72,7 @@ export function useNa3Auth(): UseNa3AuthResult {
         };
       }
     },
-    []
+    [getAuthEmail]
   );
 
   const signOut = useCallback(async (): Promise<
@@ -114,11 +112,10 @@ export function useNa3Auth(): UseNa3AuthResult {
           };
         }
 
-        const timestamp = dayjs().format();
-        const colors = pickRandomColorCombination();
-        const user: Omit<Na3User, "id"> = {
+        const now = timestamp();
+        const user: Omit<Na3User, "uid"> = {
           activityHistory: [],
-          createdAt: timestamp,
+          createdAt: now,
           displayName: `${userConfig.firstName} ${userConfig.lastName}`,
           email: userConfig.email || null,
           firstName: userConfig.firstName,
@@ -131,10 +128,10 @@ export function useNa3Auth(): UseNa3AuthResult {
           photoUrl: null,
           positionIds: userConfig.positionIds,
           registrationId: formattedRegId,
-          style: { backgroundColor: colors[0], color: colors[1] },
-          updatedAt: timestamp,
+          style: createRandomUserStyle(),
+          updatedAt: now,
           isPasswordDefault: true,
-          lastSeenAt: timestamp,
+          lastSeenAt: now,
           bio: null,
         };
 
@@ -154,9 +151,9 @@ export function useNa3Auth(): UseNa3AuthResult {
 
         await usersCollectionRef.current.doc(credentials.user.uid).set(user);
 
-        await signOut();
+        void signOut();
 
-        return { error: null, user: { ...user, id: credentials.user.uid } };
+        return { error: null, user: { ...user, uid: credentials.user.uid } };
       } catch (err) {
         return {
           error: translateFirebaseError(err as FirebaseError),
@@ -164,13 +161,13 @@ export function useNa3Auth(): UseNa3AuthResult {
         };
       }
     },
-    [signOut]
+    [formatRegistrationId, getAuthEmail, signOut]
   );
 
   return {
     error: error,
     helpers: { signIn, signOut, signUp },
     loading: loading,
-    user: user,
+    currentUser,
   };
 }

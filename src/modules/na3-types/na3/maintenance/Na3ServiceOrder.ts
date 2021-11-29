@@ -1,8 +1,5 @@
-import type firebase from "firebase";
-
 export type Na3ServiceOrder = LegacyTicket & {
   id: string;
-  ref?: firebase.firestore.DocumentReference<Na3ServiceOrder>;
 };
 
 export type Na3ServiceOrderEvent = Na3ServiceOrder["events"][number];

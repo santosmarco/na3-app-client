@@ -8,6 +8,7 @@ export { DocsHomePage } from "./docs/DocsHome";
 export { DocTransfHomePage } from "./docs/transf/DocTransfHome";
 export { NoMatchPage } from "./error/NoMatch";
 export { NotImplementedPage } from "./error/NotImplemented";
+export { HomePage } from "./home/Home";
 export { LabelsHomePage } from "./labels/LabelsHome";
 export { LabelsManagePage } from "./labels/LabelsManage";
 export { LabelsPrintPage } from "./labels/LabelsPrint";
@@ -20,4 +21,3 @@ export { MaintProjectsCreatePage } from "./maintenance/projects/MaintProjectsCre
 export { MaintProjectsHomePage } from "./maintenance/projects/MaintProjectsHome";
 export { MaintServiceOrdersCreatePage } from "./maintenance/serviceOrders/MaintServiceOrdersCreate";
 export { MaintServiceOrdersHomePage } from "./maintenance/serviceOrders/MaintServiceOrdersHome";
-export { HomePage } from "./root/Home";

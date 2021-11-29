@@ -1,9 +1,9 @@
+import { List } from "@components";
+import { useNa3ServiceOrders } from "@modules/na3-react";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import { Badge } from "antd";
 import React, { useCallback } from "react";
 
-import { useNa3ServiceOrders } from "../../../../modules/na3-react";
-import type { Na3ServiceOrder } from "../../../../modules/na3-types";
-import { List } from "../../../lists/List";
 import { MaintServiceOrderCard } from "./card/MaintServiceOrderCard";
 
 type MaintServiceOrdersListProps = {

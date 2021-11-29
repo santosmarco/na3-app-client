@@ -1,7 +1,7 @@
 import { AdminCreateUserForm, AdminUsersList, ListFormPage } from "@components";
 import { useQuery } from "@hooks";
+import type { AppUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
-import type { Na3User } from "@modules/na3-types";
 import { AdminUserDetailsPage } from "@pages";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
@@ -17,11 +17,15 @@ export function AdminUsersHomePage(): JSX.Element {
   }, [history]);
 
   const handleUserSelect = useCallback(
-    ({ registrationId }: Na3User) => {
+    ({ registrationId }: AppUser) => {
       history.push(`/admin/usuarios?matricula=${registrationId}`);
     },
     [history]
   );
+
+  const handleUserCreateSuccess = useCallback(() => {
+    history.replace("/admin/usuarios");
+  }, [history]);
 
   return query.matricula ? (
     <AdminUserDetailsPage
@@ -30,7 +34,7 @@ export function AdminUsersHomePage(): JSX.Element {
   ) : (
     <ListFormPage
       actions={[{ label: "Novo usuário", onClick: handleUserCreateClick }]}
-      form={<AdminCreateUserForm />}
+      form={<AdminCreateUserForm onSubmit={handleUserCreateSuccess} />}
       formTitle="Novo usuário"
       list={
         <AdminUsersList

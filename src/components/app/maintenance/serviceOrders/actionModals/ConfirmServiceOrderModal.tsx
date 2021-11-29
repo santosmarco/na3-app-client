@@ -1,15 +1,13 @@
-import { Grid, Modal } from "antd";
-import React, { useCallback } from "react";
-
-import { useForm } from "../../../../../hooks";
-import type { Na3ServiceOrder } from "../../../../../modules/na3-types";
+import { Form, FormField, SubmitButton } from "@components";
+import { useForm } from "@hooks";
+import { useNa3Users } from "@modules/na3-react";
+import type { Na3ServiceOrder } from "@modules/na3-types";
 import {
-  maintEmployeeSelectOptions,
-  serviceOrderPrioritySelectOptions,
-} from "../../../../../utils";
-import { Form } from "../../../../forms/Form";
-import { FormField } from "../../../../forms/FormField/FormField";
-import { SubmitButton } from "../../../../forms/SubmitButton";
+  getMaintEmployeeSelectOptions,
+  getPrioritySelectOptions,
+} from "@utils";
+import { Grid, Modal } from "antd";
+import React, { useCallback, useMemo } from "react";
 
 type FormValues = {
   assignee: string;
@@ -34,6 +32,10 @@ export function ConfirmServiceOrderModal({
 }: ConfirmServiceOrderModalProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
+  const {
+    helpers: { getAllInDepartments: getAllUsersInDepartments },
+  } = useNa3Users();
+
   const form = useForm<FormValues>({
     defaultValues: { assignee: "", priority: "" },
   });
@@ -43,6 +45,11 @@ export function ConfirmServiceOrderModal({
       return onSubmit(serviceOrder, values);
     },
     [onSubmit, serviceOrder]
+  );
+
+  const maintEmployeeSelectOptions = useMemo(
+    () => getMaintEmployeeSelectOptions(getAllUsersInDepartments("manutencao")),
+    [getAllUsersInDepartments]
   );
 
   return (
@@ -65,7 +72,7 @@ export function ConfirmServiceOrderModal({
         <FormField
           label="Prioridade"
           name="priority"
-          options={serviceOrderPrioritySelectOptions}
+          options={getPrioritySelectOptions()}
           rules={{ required: "Defina a prioridade" }}
           type={breakpoint.md ? "radio" : "select"}
         />

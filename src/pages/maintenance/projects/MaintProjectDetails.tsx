@@ -20,9 +20,22 @@ import {
 } from "@components";
 import { useBreadcrumb } from "@hooks";
 import { useNa3MaintProjects } from "@modules/na3-react";
-import type { Na3MaintenanceProject } from "@modules/na3-types";
+import type {
+  Na3MaintenancePerson,
+  Na3MaintenanceProject,
+} from "@modules/na3-types";
 import { createErrorNotifier, getMaintProjectsRootUrl } from "@utils";
-import { Button, Col, Divider, Grid, Modal, notification, Row } from "antd";
+import {
+  Button,
+  Col,
+  Divider,
+  Grid,
+  Modal,
+  notification,
+  Row,
+  Space,
+} from "antd";
+import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -91,7 +104,7 @@ export function MaintProjectDetails({
   const handleProjectDeliver = useCallback(
     (
       project: Na3MaintenanceProject,
-      actionPayload: { author: string; message: string | null }
+      actionPayload: { author: Na3MaintenancePerson; message: string | null }
     ) => {
       const confirmModal = Modal.confirm({
         content: (
@@ -137,7 +150,7 @@ export function MaintProjectDetails({
   const handleProjectShareStatus = useCallback(
     (
       project: Na3MaintenanceProject,
-      actionPayload: { author: string; message: string | null }
+      actionPayload: { author: Na3MaintenancePerson; message: string }
     ) => {
       const confirmModal = Modal.confirm({
         content: (
@@ -249,13 +262,22 @@ export function MaintProjectDetails({
 
         <Col lg={6} xs={12}>
           <DataItem icon={<UserOutlined />} label="Responsável">
-            <MaintEmployeeTag maintainer={project.team.manager.trim()} />
+            <MaintEmployeeTag maintainer={project.team.manager} />
           </DataItem>
         </Col>
 
         <Col lg={6} xs={12}>
           <DataItem icon={<TeamOutlined />} label="Equipe">
-            {project.team.others.trim()}
+            <Space size={4} wrap={true}>
+              {typeof project.team.others === "string"
+                ? project.team.others.trim()
+                : project.team.others.map((other) => (
+                    <MaintEmployeeTag
+                      key={typeof other === "string" ? nanoid() : other.uid}
+                      maintainer={other}
+                    />
+                  ))}
+            </Space>
           </DataItem>
         </Col>
       </Row>

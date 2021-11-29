@@ -1,10 +1,10 @@
-.AvatarContent {
+.AvatarInitialsContainer {
   display: flex;
   align-items: center;
   height: 40px;
 }
 
 .AvatarInitials {
-  font-weight: 400 !important;
+  font-weight: 600 !important;
   margin-bottom: 0 !important;
 }
