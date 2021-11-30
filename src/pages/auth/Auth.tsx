@@ -2,6 +2,7 @@ import { IdcardOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
 import {
   Form,
   FormField,
+  Page,
   PageAlert,
   PageDescription,
   PageTitle,
@@ -65,7 +66,7 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
   );
 
   return (
-    <>
+    <Page>
       <PageTitle>Entrar</PageTitle>
 
       <PageAlert title="Atenção!" type="info">
@@ -142,6 +143,6 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
           wrapperCol={{ sm: { offset: 6, span: 18 }, xs: { span: 24 } }}
         />
       </Form>
-    </>
+    </Page>
   );
 }
