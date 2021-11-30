@@ -1,3 +1,4 @@
+import type { AppRoutePath } from "@config";
 import { Button } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
@@ -8,7 +9,7 @@ import classes from "./Result404.module.css";
 
 type Result404Props = {
   backBtnLabel?: string;
-  backUrl: `/${string}`;
+  backUrl: AppRoutePath;
   children: React.ReactNode;
   isLoading: boolean;
 };
@@ -26,7 +27,7 @@ export function Result404({
   const history = useHistory();
 
   const handleNavigateBack = useCallback(() => {
-    history.replace(backUrl);
+    history.replace(backUrl as string);
   }, [history, backUrl]);
 
   return isLoading ? (

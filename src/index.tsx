@@ -17,7 +17,7 @@ import ReactDOM from "react-dom";
 import { Router } from "react-router-dom";
 
 import { App } from "./App";
-import { APP_VERSION } from "./constants";
+import { APP_VERSION } from "./config";
 import { BreadcrumbProvider } from "./contexts";
 import { Na3Provider } from "./modules/na3-react";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
@@ -67,7 +67,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Root />
   </React.StrictMode>,
-  document.querySelector("#root")
+  document.getElementById("root")
 );
 
 // https://cra.link/PWA

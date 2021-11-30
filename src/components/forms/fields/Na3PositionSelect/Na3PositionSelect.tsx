@@ -1,7 +1,11 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { FormField } from "@components";
 import { useNa3Departments, useNa3Users } from "@modules/na3-react";
-import type { Na3DepartmentId, Na3PositionId } from "@modules/na3-types";
+import type {
+  Na3Department,
+  Na3DepartmentId,
+  Na3PositionId,
+} from "@modules/na3-types";
 import { getDepartmentSelectOptions } from "@utils";
 import { Button, Col, Row } from "antd";
 import { nanoid } from "nanoid";
@@ -19,11 +23,13 @@ type PositionField = {
 type Na3PositionSelectProps = {
   errorMessage?: string;
   onValueChange?: (positionIds: Na3PositionId[]) => void;
+  selectableDepartments?: Na3Department[];
 };
 
 export function Na3PositionSelect({
   onValueChange,
   errorMessage,
+  selectableDepartments,
 }: Na3PositionSelectProps): JSX.Element {
   const departments = useNa3Departments();
   const users = useNa3Users();
@@ -35,18 +41,20 @@ export function Na3PositionSelect({
   const selectableDepartmentOptions = useMemo(
     () =>
       getDepartmentSelectOptions(
-        departments.data?.filter(
-          (dpt) =>
-            !dpt.positions
-              .map((pos) => pos.id)
-              .every((posId) =>
-                positionFields
-                  .map((posField) => posField.positionId)
-                  .includes(posId)
-              )
-        ) || []
+        selectableDepartments ||
+          departments.data?.filter(
+            (dpt) =>
+              !dpt.positions
+                .map((pos) => pos.id)
+                .every((posId) =>
+                  positionFields
+                    .map((posField) => posField.positionId)
+                    .includes(posId)
+                )
+          ) ||
+          []
       ),
-    [departments.data, positionFields]
+    [departments.data, positionFields, selectableDepartments]
   );
 
   const getSelectablePositionOptions = useCallback(

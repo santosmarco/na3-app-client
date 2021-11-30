@@ -1,10 +1,11 @@
 import { PageDescription, PageTitle, Result404 } from "@components";
+import type { AppRoutePath } from "@config";
 import type { AppUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
 import React from "react";
 
 type PageProps = {
-  backUrl?: `/${string}`;
+  backUrl?: AppRoutePath;
   user: AppUser | undefined;
 };
 
@@ -17,7 +18,7 @@ export function AdminUserDetailsPage({
   return user ? (
     <>
       <PageTitle>{user.displayName}</PageTitle>
-      <PageDescription></PageDescription>
+      <PageDescription>Em construção</PageDescription>
     </>
   ) : (
     <Result404 backUrl={backUrl || "/"} isLoading={loading}>

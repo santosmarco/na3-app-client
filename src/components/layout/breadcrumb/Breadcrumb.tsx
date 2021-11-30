@@ -1,5 +1,5 @@
-import type { AppRoute } from "@constants";
-import { ROUTES } from "@constants";
+import type { AppRoute } from "@config";
+import { isAppRoutePath, ROUTES } from "@config";
 import { useBreadcrumb } from "@hooks";
 import { Breadcrumb as AntdBreadcrumb, Row } from "antd";
 import { nanoid } from "nanoid";
@@ -28,16 +28,14 @@ export function Breadcrumb(): JSX.Element {
       ...pathChunks
         .map((_, index): BreadcrumbItem | undefined => {
           const chunkPath = `/${pathChunks.slice(1, index + 1).join("/")}`;
-          if (!(chunkPath in ROUTES)) {
-            return undefined;
-          } else {
-            const chunkRoute: AppRoute | undefined = ROUTES[chunkPath];
-            return {
-              content: chunkRoute.title,
-              icon: chunkRoute.icon,
-              path: chunkPath,
-            };
-          }
+
+          if (!isAppRoutePath(chunkPath)) return;
+          const chunkRoute: AppRoute | undefined = ROUTES[chunkPath];
+          return {
+            content: chunkRoute.title,
+            icon: chunkRoute.icon,
+            path: chunkPath,
+          };
         })
         .filter((item): item is BreadcrumbItem => !!item),
       ...breadcrumb.extra.map((extra) => ({ content: extra })),

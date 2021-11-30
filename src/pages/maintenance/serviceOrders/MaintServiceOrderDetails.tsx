@@ -20,6 +20,7 @@ import {
   ServiceOrderSolutionActionsModal,
   ServiceOrderStatusBadge,
 } from "@components";
+import type { AppRoutePath } from "@config";
 import { useBreadcrumb } from "@hooks";
 import { useCurrentUser, useNa3ServiceOrders } from "@modules/na3-react";
 import type { Na3MaintenancePerson, Na3ServiceOrder } from "@modules/na3-types";
@@ -83,7 +84,7 @@ export function MaintServiceOrderDetailsPage({
   } = useNa3ServiceOrders();
 
   const backUrl = useMemo(
-    (): `/${string}` =>
+    (): AppRoutePath =>
       `/manutencao/${hasCameFromDashboard ? "dashboard" : "os"}`,
     [hasCameFromDashboard]
   );

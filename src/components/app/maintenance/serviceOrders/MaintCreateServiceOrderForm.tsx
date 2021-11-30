@@ -54,7 +54,9 @@ export function MaintCreateServiceOrderForm({
     }
   }, [user, departments.helpers]);
 
-  const [selectedDpt, setSelectedDpt] = useState<Na3Department<"shop-floor">>();
+  const [selectedDpt, setSelectedDpt] = useState<
+    Na3Department<"shop-floor"> | undefined
+  >(userShopFloorDpts?.length === 1 ? userShopFloorDpts[0] : undefined);
   const [didStopMachineDisabled, setDidStopMachineDisabled] = useState(false);
 
   const form = useForm<FormValues>({

@@ -7,7 +7,9 @@ import {
   SubmitButton,
 } from "@components";
 import { useForm } from "@hooks";
+import { useNa3Departments } from "@modules/na3-react";
 import type {
+  Na3PositionId,
   Na3StdDocumentType,
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
@@ -31,7 +33,16 @@ type FormValues = {
 };
 
 export function DocsCreateStdForm(): JSX.Element {
-  const [uploadHint, setUploadHint] = useState("");
+  const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>([]);
+  const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>([]);
+  const [approverPosIds, setApproverPosIds] = useState<Na3PositionId[]>([]);
+
+  const [uploadHintTitle, setUploadHintTitle] = useState("");
+  const [uploadHintVersion, setUploadHintVersion] = useState("");
+
+  const {
+    helpers: { getByPositionIds: getDepartmentsByPositionIds },
+  } = useNa3Departments();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -60,15 +71,6 @@ export function DocsCreateStdForm(): JSX.Element {
     },
     [form]
   );
-
-  const handleUploadHintUpdate = useCallback((docTitle: string) => {
-    const titleTrimmed = docTitle.trim();
-    setUploadHint(
-      `Anexe a última versão vigente do documento${
-        titleTrimmed ? ` "${titleTrimmed}"` : ""
-      }`
-    );
-  }, []);
 
   const handleSubmit = useCallback(() => {
     return;
@@ -106,7 +108,7 @@ export function DocsCreateStdForm(): JSX.Element {
           <FormField
             label="Título"
             name={form.fieldNames.title}
-            onValueChange={handleUploadHintUpdate}
+            onValueChange={setUploadHintTitle}
             rules={{ required: "Atribua um título ao documento" }}
             type="input"
           />
@@ -117,6 +119,7 @@ export function DocsCreateStdForm(): JSX.Element {
             label="Versão vigente"
             name={form.fieldNames.versionNumber}
             noDecimal={true}
+            onValueChange={setUploadHintVersion}
             prefix="v."
             rules={{ required: "Defina a última versão vigente do documento" }}
             type="number"
@@ -168,7 +171,10 @@ export function DocsCreateStdForm(): JSX.Element {
         </Col>
 
         <Col md={16} xs={24}>
-          <Na3PositionSelect errorMessage="Defina as posições com permissão de visualização" />
+          <Na3PositionSelect
+            errorMessage="Defina as posições com permissão de visualização"
+            onValueChange={setViewerPosIds}
+          />
         </Col>
       </Row>
 
@@ -178,7 +184,11 @@ export function DocsCreateStdForm(): JSX.Element {
         </Col>
 
         <Col md={16} xs={24}>
-          <Na3PositionSelect errorMessage="Defina as posições com permissão de download" />
+          <Na3PositionSelect
+            errorMessage="Defina as posições com permissão de download"
+            onValueChange={setDownloaderPosIds}
+            selectableDepartments={getDepartmentsByPositionIds(viewerPosIds)}
+          />
         </Col>
       </Row>
 
@@ -188,14 +198,21 @@ export function DocsCreateStdForm(): JSX.Element {
         </Col>
 
         <Col md={16} xs={24}>
-          <Na3PositionSelect errorMessage="Defina as posições com permissão de aprovação" />
+          <Na3PositionSelect
+            errorMessage="Defina as posições com permissão de aprovação"
+            onValueChange={setApproverPosIds}
+          />
         </Col>
       </Row>
 
       <Divider />
 
       <FormItem label="Arquivo">
-        <FileUpload hint={uploadHint} />
+        <FileUpload
+          hint={`Anexe a última versão vigente${
+            uploadHintVersion ? ` (v. ${uploadHintVersion})` : ""
+          } do documento${uploadHintTitle ? ` "${uploadHintVersion}"` : ""}`}
+        />
       </FormItem>
 
       <SubmitButton label="Criar documento" labelWhenLoading="Enviando..." />

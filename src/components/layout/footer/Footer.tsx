@@ -1,4 +1,4 @@
-import { APP_VERSION, APP_VERSION_TIMESTAMP } from "@constants";
+import { APP_VERSION, APP_VERSION_TIMESTAMP } from "@config";
 import { Col, Layout, Row, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import React from "react";

@@ -1,5 +1,5 @@
-import type { AppRoute } from "@constants";
-import { ROUTES } from "@constants";
+import type { AppRoute, AppRoutePath } from "@config";
+import { ROUTES } from "@config";
 import { useTheme } from "@hooks";
 import React, { useMemo } from "react";
 import { Helmet as ReactHelmet } from "react-helmet";
@@ -16,8 +16,8 @@ export function Helmet(): JSX.Element {
       .filter((pathChunk, index) => !!pathChunk || index === 0);
 
     const routes: [AppRoute | undefined, AppRoute | undefined] = [
-      ROUTES[`/${pathChunks[1]}`],
-      ROUTES[`/${pathChunks[1]}/${pathChunks[2]}`],
+      ROUTES[`/${pathChunks[1]}` as AppRoutePath],
+      ROUTES[`/${pathChunks[1]}/${pathChunks[2]}` as AppRoutePath],
     ];
 
     const titleParts = [

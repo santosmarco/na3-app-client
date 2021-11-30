@@ -1,5 +1,5 @@
 import { MenuOutlined } from "@ant-design/icons";
-import { ROUTES } from "@constants";
+import { ROUTES } from "@config";
 import { useTheme } from "@hooks";
 import { Grid, Layout } from "antd";
 import { isArray } from "lodash";

@@ -3,7 +3,7 @@ import { Tag } from "antd";
 import { Select as AntdSelect } from "antd";
 import { isArray } from "lodash";
 import { nanoid } from "nanoid";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import classes from "./Select.module.css";
 
@@ -75,14 +75,21 @@ export function Select<Value extends SelectValue = SelectValue>({
   showSearch,
   value: valueOrValues,
 }: SelectProps<Value>): JSX.Element {
+  const isMultiple = useMemo((): boolean => {
+    return !!(multiple || onTagProps);
+  }, [multiple, onTagProps]);
+
   const handleRenderTag: RenderTagHandler<Value> = useCallback(
     ({ value: optionValue, label, closable, onClose }) => {
       const optionValueStr = optionValue.toString();
 
       return (
         <div
-          className={`${classes.LabelWhenSelected} ${classes.CustomTagContainer}`}
-          style={onTagProps?.(optionValueStr).containerStyle}
+          className={`${classes.LabelWhenSelected}`}
+          style={{
+            height: isMultiple ? 28 : undefined,
+            ...onTagProps?.(optionValueStr).containerStyle,
+          }}
         >
           <Tag
             closable={closable}
@@ -102,7 +109,7 @@ export function Select<Value extends SelectValue = SelectValue>({
         </div>
       );
     },
-    [onTagProps, valueOrValues]
+    [onTagProps, valueOrValues, isMultiple]
   );
 
   return (
@@ -118,12 +125,10 @@ export function Select<Value extends SelectValue = SelectValue>({
       onChange={onChange}
       optionLabelProp="labelWhenSelected"
       options={options.map((opt) =>
-        generateOption(opt, {
-          preventLabelWhenSelected: !!(multiple || onTagProps),
-        })
+        generateOption(opt, { preventLabelWhenSelected: isMultiple })
       )}
       placeholder={placeholder}
-      showSearch={showSearch || multiple || !!onTagProps}
+      showSearch={showSearch || isMultiple}
       tagRender={handleRenderTag}
       tokenSeparators={[",", ";", "  "]}
       value={valueOrValues}

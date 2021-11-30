@@ -1,4 +1,4 @@
-import type { AppRoute } from "@constants";
+import type { AppRoute } from "@config";
 import { useAppReady, useCurrentUser } from "@modules/na3-react";
 import { AuthPage } from "@pages";
 import { isArray } from "lodash";

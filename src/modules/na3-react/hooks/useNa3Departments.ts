@@ -3,12 +3,14 @@ import type {
   Na3Department,
   Na3DepartmentId,
   Na3DepartmentType,
+  Na3PositionId,
 } from "@modules/na3-types";
 import { isArray } from "lodash";
 import { useCallback } from "react";
 import type { LiteralUnion } from "type-fest";
 
 import type { MaybeArray } from "../types";
+import { removeNullables } from "../utils";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3DepartmentsResult = {
@@ -22,12 +24,12 @@ export type UseNa3DepartmentsResult = {
     getByIdsOrTypes: (
       idsOrTypes: MaybeArray<Na3DepartmentId | Na3DepartmentType>
     ) => Na3Department[];
+    getByPositionIds: (
+      positionIds: MaybeArray<Na3PositionId>
+    ) => Na3Department[];
     getByType: <T extends Na3DepartmentType>(
       type: T
     ) => Na3Department<T>[] | undefined;
-    getDptTypeName: (
-      type: Na3DepartmentType
-    ) => "Fábrica" | "Filial" | "Setores";
     isDptType: (type: unknown) => type is Na3DepartmentType;
   };
   loading: boolean;
@@ -85,18 +87,18 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     [departments.data]
   );
 
-  const getDptTypeName = useCallback(
-    (type: Na3DepartmentType): "Fábrica" | "Filial" | "Setores" => {
-      switch (type) {
-        case "shop-floor":
-          return "Setores";
-        case "factory-adm":
-          return "Fábrica";
-        case "office":
-          return "Filial";
-      }
+  const getByPositionIds = useCallback(
+    (positionIds: MaybeArray<Na3PositionId>): Na3Department[] => {
+      const positionIdsArr = isArray(positionIds) ? positionIds : [positionIds];
+
+      return removeNullables(
+        positionIdsArr.map((posId) => {
+          const [dptId] = posId.split(".");
+          return getById(dptId);
+        })
+      );
     },
-    []
+    [getById]
   );
 
   const isDptType = useCallback((type: unknown): type is Na3DepartmentType => {
@@ -113,7 +115,7 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
       getById,
       getByIdsOrTypes,
       getByType,
-      getDptTypeName,
+      getByPositionIds,
       isDptType,
     },
   };

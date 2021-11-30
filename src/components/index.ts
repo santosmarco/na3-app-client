@@ -59,6 +59,7 @@ export { PageDescription } from "./pages/components/PageDescription";
 export { PageTitle } from "./pages/components/PageTitle";
 export { Page } from "./pages/Page";
 export { RouteHandler } from "./pages/RouteHandler";
+export { CreateFormPage } from "./pages/templates/CreateFormPage";
 export { ListFormPage } from "./pages/templates/ListFormPage";
 export { MenuPage } from "./pages/templates/MenuPage";
 export { DataCard } from "./ui/DataCard/DataCard";

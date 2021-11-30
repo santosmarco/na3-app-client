@@ -31,7 +31,6 @@ import {
 } from "@pages";
 import React from "react";
 import type { SiderItem } from "src/components/layout/sider/Sider";
-import type { LiteralUnion } from "type-fest";
 
 type SiderChildConfig = {
   path: string;
@@ -44,30 +43,10 @@ export type SiderConfig = {
   title?: string;
 };
 
-export type AppRoute = {
-  component: React.ReactNode | null;
-  headTitle?: string;
-  icon?: React.ReactNode;
-  notExact?: boolean;
-  siderConfig?: SiderConfig;
-  title: string | null;
-} & (
-  | {
-      isPublic?: undefined;
-      requiredPrivileges:
-        | Na3UserPrivilegeId[]
-        | ((userPrivileges: Na3UserPrivilegeId[]) => boolean)
-        | { every?: boolean; privileges: Na3UserPrivilegeId[] };
-    }
-  | { isPublic: boolean; requiredPrivileges: null }
-);
-
-type AppRouteMap<Path extends string> = Readonly<
-  Record<LiteralUnion<Path, string>, AppRoute>
->;
-
-export const ROUTES: AppRouteMap<
+export type AppRoutePath =
   | "/"
+  | "/admin"
+  | "/admin/setores"
   | "/admin/usuarios"
   | "/admin/usuarios/criar"
   | "/conta"
@@ -91,8 +70,27 @@ export const ROUTES: AppRouteMap<
   | "/manutencao/predprev"
   | "/manutencao/predprev/nova-predprev"
   | "/manutencao/projetos"
-  | "/manutencao/projetos/novo-projeto"
-> = {
+  | "/manutencao/projetos/novo-projeto";
+
+export type AppRoute = {
+  component: React.ReactNode | null;
+  headTitle?: string;
+  icon?: React.ReactNode;
+  notExact?: boolean;
+  siderConfig?: SiderConfig;
+  title: string | null;
+} & (
+  | {
+      isPublic?: undefined;
+      requiredPrivileges:
+        | Na3UserPrivilegeId[]
+        | ((userPrivileges: Na3UserPrivilegeId[]) => boolean)
+        | { every?: boolean; privileges: Na3UserPrivilegeId[] };
+    }
+  | { isPublic: boolean; requiredPrivileges: null }
+);
+
+export const ROUTES: Record<AppRoutePath, AppRoute> = {
   "/": {
     component: <HomePage />,
     icon: <HomeOutlined />,
@@ -291,3 +289,7 @@ export const ROUTES: AppRouteMap<
     title: "Novo Projeto",
   },
 };
+
+export function isAppRoutePath(test: unknown): test is AppRoutePath {
+  return typeof test === "string" && test in ROUTES;
+}
