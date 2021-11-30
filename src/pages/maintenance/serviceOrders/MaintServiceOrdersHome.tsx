@@ -86,9 +86,11 @@ export function MaintServiceOrdersHomePage(): JSX.Element {
         />
       }
       listTitle={
-        user?.hasPrivileges("service_orders_write_shop_floor")
+        user?.hasPrivileges("service_orders_read_all")
+          ? "Todas as OS"
+          : user?.hasPrivileges("service_orders_read_own")
           ? "Suas OS"
-          : "Todas as OS"
+          : "Ordens de Serviço"
       }
       title="Manutenção • Ordens de Serviço"
     />

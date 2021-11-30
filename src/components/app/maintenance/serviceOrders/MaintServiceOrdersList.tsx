@@ -65,6 +65,7 @@ export function MaintServiceOrdersList({
         const formattedQuery = query.trim().toLowerCase();
         return (
           order.description.toLowerCase().includes(formattedQuery) ||
+          order.dpt.toLowerCase().includes(formattedQuery) ||
           parseInt(order.id) === parseInt(query)
         );
       }) || [],

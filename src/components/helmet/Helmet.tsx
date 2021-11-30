@@ -20,10 +20,15 @@ export function Helmet(): JSX.Element {
       ROUTES[`/${pathChunks[1]}/${pathChunks[2]}`],
     ];
 
-    if (routes[0]?.title && routes[1]?.title) {
-      return `${routes[0].title} • ${routes[1].title}`;
-    } else if (routes[0]?.title) {
-      return `Nova A3 • ${routes[0].title}`;
+    const titleParts = [
+      routes[0]?.headTitle || routes[0]?.title,
+      routes[1]?.headTitle || routes[1]?.title,
+    ];
+
+    if (titleParts[0] && titleParts[1]) {
+      return `${titleParts[0]} • ${titleParts[1]}`;
+    } else if (titleParts[0]) {
+      return `Nova A3 • ${titleParts[0]}`;
     } else {
       return "Nova A3";
     }

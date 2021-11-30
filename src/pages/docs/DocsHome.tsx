@@ -36,9 +36,9 @@ const docsPageActions: MenuPageAction[] = [
   },
   {
     colors: { background: blue[2], foreground: blue[8] },
-    description: "Baixar modelos de documentos para preencher",
-    href: "/docs/modelos",
+    description: "Visualizar modelos de normas, padrões e procedimentos",
+    href: "/docs/normas",
     icon: <IoDocumentsOutline />,
-    title: "Modelos",
+    title: "Normas & Procedimentos",
   },
 ];

@@ -8,7 +8,7 @@ import classes from "./Footer.module.css";
 export function Footer(): JSX.Element {
   return (
     <Row>
-      <Col md={24} xs={0}>
+      <Col lg={24} xs={0}>
         <div className={classes.Container}>
           <Layout.Footer className={classes.Footer}>
             Nova A3 ©{dayjs().format("YYYY")} Todos os direitos reservados

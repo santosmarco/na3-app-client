@@ -21,15 +21,20 @@ export function PageContainer({
   const appIsReady = useAppReady();
   const user = useCurrentUser();
 
-  const hasAccess = useMemo(
-    () =>
-      !requiredPrivileges ||
-      isPublic ||
-      (isArray(requiredPrivileges)
-        ? user?.hasPrivileges(requiredPrivileges, { every: true })
-        : requiredPrivileges(user?.privileges || [])),
-    [requiredPrivileges, isPublic, user]
-  );
+  const hasAccess = useMemo(() => {
+    if (!requiredPrivileges || isPublic || user?.isSuper) return true;
+
+    if (isArray(requiredPrivileges)) {
+      return user?.hasPrivileges(requiredPrivileges, { every: true });
+    } else if ("privileges" in requiredPrivileges) {
+      return user?.hasPrivileges(
+        requiredPrivileges.privileges,
+        requiredPrivileges
+      );
+    } else {
+      return requiredPrivileges(user?.privileges || []);
+    }
+  }, [requiredPrivileges, isPublic, user]);
 
   if (!appIsReady) {
     return null;

@@ -1,13 +1,13 @@
-import { isArray } from "lodash";
-import { useCallback } from "react";
-import type { LiteralUnion } from "type-fest";
-
-import type { FirebaseError } from "../../firebase-errors-pt-br";
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3Department,
   Na3DepartmentId,
   Na3DepartmentType,
-} from "../../na3-types";
+} from "@modules/na3-types";
+import { isArray } from "lodash";
+import { useCallback } from "react";
+import type { LiteralUnion } from "type-fest";
+
 import type { MaybeArray } from "../types";
 import { useStateSlice } from "./useStateSlice";
 

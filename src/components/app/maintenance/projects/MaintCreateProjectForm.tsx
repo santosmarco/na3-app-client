@@ -49,7 +49,12 @@ export function MaintCreateProjectForm({
   } = useNa3Users();
 
   const authorUidDefaultValue = useMemo((): string => {
-    if (!editingProject) return currentUser?.uid || "";
+    if (!editingProject) {
+      if (currentUser?.includesDepartments("manutencao")) {
+        return currentUser.uid;
+      }
+      return "";
+    }
 
     if (typeof editingProject.events[0].author === "string") {
       return editingProject.events[0].author;
@@ -256,7 +261,11 @@ export function MaintCreateProjectForm({
   );
 
   return (
-    <Form form={form} onSubmit={handleSubmit}>
+    <Form
+      form={form}
+      onSubmit={handleSubmit}
+      requiredPrivileges={["maint_projects_write_all"]}
+    >
       <FormField
         disabled={!!(editingProject && getUserByUid(authorUidDefaultValue))}
         label="Autor"

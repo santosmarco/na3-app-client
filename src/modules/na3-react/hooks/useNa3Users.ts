@@ -2,9 +2,12 @@ import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3DepartmentId,
   Na3DepartmentType,
+  Na3Position,
+  Na3PositionId,
   Na3UserRegistrationId,
 } from "@modules/na3-types";
 import firebase from "firebase";
+import { isArray } from "lodash";
 import { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -29,6 +32,9 @@ export type UseNa3UsersResult = {
     formatRegistrationId: (unformatted: string) => Na3UserRegistrationId;
     getAllInDepartments: (
       dptIdsOrTypes: MaybeArray<Na3DepartmentId | Na3DepartmentType>
+    ) => AppUser[];
+    getAllInPositions: (
+      positions: MaybeArray<Na3Position | Na3PositionId>
     ) => AppUser[];
     getAuthEmail: (registrationId: string) => string;
     getByRegistrationId: (registrationId: string) => AppUser | undefined;
@@ -140,6 +146,19 @@ export function useNa3Users(): UseNa3UsersResult {
     [data, departments.helpers]
   );
 
+  const getAllInPositions = useCallback(
+    (positions: MaybeArray<Na3Position | Na3PositionId>) => {
+      const positionIds = (isArray(positions) ? positions : [positions]).map(
+        (pos) => (typeof pos === "string" ? pos : pos.id)
+      );
+
+      return data.filter((user) =>
+        user.positions.some((position) => positionIds.includes(position.id))
+      );
+    },
+    [data]
+  );
+
   return {
     data,
     error,
@@ -152,6 +171,7 @@ export function useNa3Users(): UseNa3UsersResult {
       getByUid,
       getByRegistrationId,
       getAllInDepartments,
+      getAllInPositions,
     },
   };
 }

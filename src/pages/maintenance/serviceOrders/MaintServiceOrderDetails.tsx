@@ -21,7 +21,7 @@ import {
   ServiceOrderStatusBadge,
 } from "@components";
 import { useBreadcrumb } from "@hooks";
-import { useNa3ServiceOrders } from "@modules/na3-react";
+import { useCurrentUser, useNa3ServiceOrders } from "@modules/na3-react";
 import type { Na3MaintenancePerson, Na3ServiceOrder } from "@modules/na3-types";
 import {
   createErrorNotifier,
@@ -67,6 +67,7 @@ export function MaintServiceOrderDetailsPage({
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
 
+  const user = useCurrentUser();
   const {
     loading,
     helpers: {
@@ -378,50 +379,54 @@ export function MaintServiceOrderDetailsPage({
       <PageTitle>OS #{serviceOrder.id}</PageTitle>
       <PageDescription>{serviceOrder.description}</PageDescription>
 
-      {orderRequiresAction(serviceOrder) && (
-        <PageActionButtons>
-          {serviceOrder.status === "solved" ? (
-            <>
+      {user?.hasPrivileges([
+        "service_orders_write_shop_floor",
+        "service_orders_write_maintenance",
+      ]) &&
+        orderRequiresAction(serviceOrder) && (
+          <PageActionButtons>
+            {serviceOrder.status === "solved" ? (
+              <>
+                <Button
+                  icon={<CheckOutlined />}
+                  onClick={handleOrderSolutionAccept}
+                  type="primary"
+                >
+                  Aceitar solução
+                </Button>
+                <Button
+                  danger={true}
+                  icon={<CloseOutlined />}
+                  onClick={handleOpenRejectSolutionModal}
+                  type="text"
+                >
+                  Rejeitar{breakpoint.lg && " solução"}
+                </Button>
+              </>
+            ) : serviceOrder.status === "pending" ? (
               <Button
                 icon={<CheckOutlined />}
-                onClick={handleOrderSolutionAccept}
+                onClick={handleOpenAcceptOrderModal}
                 type="primary"
               >
-                Aceitar solução
+                Aceitar OS
               </Button>
-              <Button
-                danger={true}
-                icon={<CloseOutlined />}
-                onClick={handleOpenRejectSolutionModal}
-                type="text"
-              >
-                Rejeitar{breakpoint.lg && " solução"}
-              </Button>
-            </>
-          ) : serviceOrder.status === "pending" ? (
-            <Button
-              icon={<CheckOutlined />}
-              onClick={handleOpenAcceptOrderModal}
-              type="primary"
-            >
-              Aceitar OS
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleSolutionActionModalStatusOpen}>
-                Informar status
-              </Button>
-              <Button
-                icon={<CheckOutlined />}
-                onClick={handleSolutionActionModalDeliverOpen}
-                type="primary"
-              >
-                Transmitir solução
-              </Button>
-            </>
-          )}
-        </PageActionButtons>
-      )}
+            ) : (
+              <>
+                <Button onClick={handleSolutionActionModalStatusOpen}>
+                  Informar status
+                </Button>
+                <Button
+                  icon={<CheckOutlined />}
+                  onClick={handleSolutionActionModalDeliverOpen}
+                  type="primary"
+                >
+                  Transmitir solução
+                </Button>
+              </>
+            )}
+          </PageActionButtons>
+        )}
 
       <Divider />
 

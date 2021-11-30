@@ -3,7 +3,7 @@ import { useQuery } from "@hooks";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 
-export function DocTransfHomePage(): JSX.Element {
+export function DocsTransfHomePage(): JSX.Element {
   const history = useHistory();
   const query = useQuery("id");
 
@@ -31,7 +31,7 @@ export function DocTransfHomePage(): JSX.Element {
       formTitle="Nova Transferência"
       list={<>LIST</>}
       listTitle="Suas Transferências"
-      title="Documentos • Transferência"
+      title="Docs • Transferência"
     />
   );
 }

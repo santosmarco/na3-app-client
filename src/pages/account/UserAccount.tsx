@@ -6,13 +6,13 @@ import {
 } from "@ant-design/icons";
 import {
   AccountAchievements,
-  AccountPositionTag,
   AccountRegistrationId,
   DataItem,
   Divider,
   Result404,
   UserAvatar,
   UserDisplayName,
+  UserPositionTag,
 } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
 import { Button, Grid, Typography } from "antd";
@@ -43,10 +43,7 @@ export function UserAccountPage(): JSX.Element {
               user={user}
             />
 
-            {breakpoint.lg &&
-              user.positions.map((pos) => (
-                <AccountPositionTag key={pos.id} position={pos} />
-              ))}
+            {breakpoint.lg && <UserPositionTag position={user.positions} />}
 
             <div className={classes.HeaderRight}>
               <Button
@@ -80,9 +77,7 @@ export function UserAccountPage(): JSX.Element {
             iconMarginRight={4}
             label="Suas posições"
           >
-            {user.positions.map((pos) => (
-              <AccountPositionTag key={pos.id} position={pos} />
-            ))}
+            <UserPositionTag position={user.positions} />
           </DataItem>
 
           <Divider marginBottom={16} />

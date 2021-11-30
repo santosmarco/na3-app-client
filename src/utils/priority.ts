@@ -1,4 +1,4 @@
-type PriorityValue = "high" | "low" | "medium";
+export type PriorityValue = "high" | "low" | "medium";
 
 type PriorityValueConfig = {
   color: "error" | "success" | "warning";

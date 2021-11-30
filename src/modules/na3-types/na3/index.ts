@@ -25,6 +25,13 @@ export type {
   Na3PositionId,
   Na3PositionIdBase,
 } from "./Na3Position";
+export type {
+  Na3StdDocument,
+  Na3StdDocumentPrivileges,
+  Na3StdDocumentType,
+  Na3StdDocumentTypeId,
+  Na3StdDocumentVersion,
+} from "./Na3StdDocument";
 export type { Na3TransfLabelTemplate } from "./Na3TransfLabelTemplate";
 export type {
   Na3User,

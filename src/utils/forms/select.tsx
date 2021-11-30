@@ -3,14 +3,21 @@ import type {
   SelectOptionBase,
   SelectOptionGroup,
 } from "@components";
+import { DocStdTypeTag } from "@components";
 import { PriorityTag } from "@components";
 import { Tag } from "@components";
+import { NA3_STD_DOCUMENT_TYPES } from "@constants";
 import type { AppUser } from "@modules/na3-react";
-import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
+import type {
+  Na3Department,
+  Na3DepartmentId,
+  Na3StdDocumentTypeId,
+} from "@modules/na3-types";
 import React from "react";
 import type { ConditionalPick } from "type-fest";
 import type { Falsy } from "utility-types";
 
+import type { PriorityValue } from "../priority";
 import { getPriorityValuesConfig } from "../priority";
 
 type OptionsGeneratorExtractor<Data, FnReturn> =
@@ -47,30 +54,6 @@ export function generateSelectOptions<T extends Record<string, unknown>>(
   });
 }
 
-export function getMaintEmployeeSelectOptions(
-  maintenanceUsers: AppUser[]
-): SelectOptionBase[] {
-  return [...maintenanceUsers]
-    .sort((a, b) => a.compactDisplayName.localeCompare(b.compactDisplayName))
-    .map((maintainer) => ({
-      label: maintainer.compactDisplayName,
-      labelWhenSelected: (
-        <Tag color={maintainer.style.webColor}>
-          {maintainer.compactDisplayName}
-        </Tag>
-      ),
-      value: maintainer.uid,
-    }));
-}
-
-export function getPrioritySelectOptions(): SelectOptionBase[] {
-  return getPriorityValuesConfig({ sorted: true }).map((config) => ({
-    label: <PriorityTag priority={config.value} type="dot" />,
-    labelWhenSelected: <PriorityTag priority={config.value} />,
-    value: config.value,
-  }));
-}
-
 export function getDepartmentSelectOptions(
   departments: Na3Department[]
 ): SelectOptionGroup<Na3DepartmentId>[] {
@@ -100,4 +83,38 @@ export function getDepartmentSelectOptions(
   return [...optionGroups].sort(
     (a, b) => groupLabelMap[a.label] - groupLabelMap[b.label]
   );
+}
+
+export function getPrioritySelectOptions(): SelectOptionBase<PriorityValue>[] {
+  return getPriorityValuesConfig({ sorted: true }).map((config) => ({
+    label: <PriorityTag priority={config.value} type="dot" />,
+    labelWhenSelected: <PriorityTag priority={config.value} />,
+    value: config.value,
+  }));
+}
+
+export function getMaintEmployeeSelectOptions(
+  maintenanceUsers: AppUser[]
+): SelectOptionBase[] {
+  return [...maintenanceUsers]
+    .sort((a, b) => a.compactDisplayName.localeCompare(b.compactDisplayName))
+    .map((maintainer) => ({
+      label: maintainer.compactDisplayName,
+      labelWhenSelected: (
+        <Tag color={maintainer.style.webColor}>
+          {maintainer.compactDisplayName}
+        </Tag>
+      ),
+      value: maintainer.uid,
+    }));
+}
+
+export function getStdDocTypeSelectOptions(): SelectOptionBase<Na3StdDocumentTypeId>[] {
+  return Object.values(NA3_STD_DOCUMENT_TYPES)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((docType) => ({
+      label: <DocStdTypeTag type={docType} variant="dot" />,
+      labelWhenSelected: <DocStdTypeTag type={docType} />,
+      value: docType.id,
+    }));
 }

@@ -4,7 +4,7 @@ import {
   MaintProjectsList,
 } from "@components";
 import { useQuery } from "@hooks";
-import { useNa3MaintProjects } from "@modules/na3-react/hooks";
+import { useCurrentUser, useNa3MaintProjects } from "@modules/na3-react/hooks";
 import type { Na3MaintenanceProject } from "@modules/na3-types";
 import { getMaintProjectsRootUrl } from "@utils";
 import React, { useCallback, useMemo } from "react";
@@ -20,6 +20,7 @@ export function MaintProjectsHomePage({ isPredPrev }: PageProps): JSX.Element {
   const history = useHistory();
   const query = useQuery("id");
 
+  const user = useCurrentUser();
   const maintProjects = useNa3MaintProjects();
 
   const rootUrl = useMemo(
@@ -58,12 +59,14 @@ export function MaintProjectsHomePage({ isPredPrev }: PageProps): JSX.Element {
     <MaintProjectDetails isPredPrev={isPredPrev} projectId={query.id} />
   ) : (
     <ListFormPage
-      actions={[
-        {
-          label: `${isPredPrev ? "Nova Pred/Prev" : "Novo projeto"}`,
-          onClick: handleCreateProjectClick,
-        },
-      ]}
+      actions={
+        user?.hasPrivileges("service_orders_write_maintenance") && [
+          {
+            label: `${isPredPrev ? "Nova Pred/Prev" : "Novo projeto"}`,
+            onClick: handleCreateProjectClick,
+          },
+        ]
+      }
       description={
         isPredPrev
           ? "Projetos de preditiva/preventiva e lubrificação da Manutenção."

@@ -21,7 +21,7 @@ import {
   Result404,
 } from "@components";
 import { useBreadcrumb } from "@hooks";
-import { useNa3MaintProjects } from "@modules/na3-react";
+import { useCurrentUser, useNa3MaintProjects } from "@modules/na3-react";
 import type {
   Na3MaintenancePerson,
   Na3MaintenanceProject,
@@ -62,6 +62,7 @@ export function MaintProjectDetails({
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
 
+  const user = useCurrentUser();
   const {
     loading,
     helpers: {
@@ -224,36 +225,37 @@ export function MaintProjectDetails({
 
       <PageDescription>{project.description}</PageDescription>
 
-      {projectStatus !== "finished" && (
-        <PageActionButtons
-          left={
-            <>
-              <Button onClick={handleActionModalStatusOpen}>
-                Informar status
-              </Button>
+      {user?.hasPrivileges("maint_projects_write_all") &&
+        projectStatus !== "finished" && (
+          <PageActionButtons
+            left={
+              <>
+                <Button onClick={handleActionModalStatusOpen}>
+                  Informar status
+                </Button>
+                <Button
+                  icon={<CheckOutlined />}
+                  onClick={handleActionModalDeliverOpen}
+                  type="primary"
+                >
+                  Entregar
+                  {breakpoint.md && ` ${isPredPrev ? "Pred/Prev" : "projeto"}`}
+                </Button>
+              </>
+            }
+            right={
               <Button
-                icon={<CheckOutlined />}
-                onClick={handleActionModalDeliverOpen}
-                type="primary"
+                className={classes.EditButton}
+                icon={<EditOutlined />}
+                onClick={handleEditModalOpen}
+                type="link"
               >
-                Entregar
+                Editar
                 {breakpoint.md && ` ${isPredPrev ? "Pred/Prev" : "projeto"}`}
               </Button>
-            </>
-          }
-          right={
-            <Button
-              className={classes.EditButton}
-              icon={<EditOutlined />}
-              onClick={handleEditModalOpen}
-              type="link"
-            >
-              Editar
-              {breakpoint.md && ` ${isPredPrev ? "Pred/Prev" : "projeto"}`}
-            </Button>
-          }
-        />
-      )}
+            }
+          />
+        )}
 
       <Divider />
 

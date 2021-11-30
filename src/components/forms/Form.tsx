@@ -1,3 +1,6 @@
+import { Result, Spinner } from "@components";
+import { useCurrentUser } from "@modules/na3-react";
+import type { Na3UserPrivilegeId } from "@modules/na3-types";
 import { Form as AntdForm, message } from "antd";
 import React, { useCallback } from "react";
 import type {
@@ -7,8 +10,6 @@ import type {
   UseFormReturn,
 } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
-
-import { Spinner } from "../ui/Spinner/Spinner";
 
 export type HandleSubmit<Fields extends FieldValues = FieldValues> =
   SubmitHandler<Fields>;
@@ -25,6 +26,7 @@ type FormProps<
   form: UseFormReturn<Fields, Context>;
   onSubmit: HandleSubmit<Fields>;
   onSubmitFailed?: HandleSubmitFailed<Fields>;
+  requiredPrivileges?: Na3UserPrivilegeId[];
 };
 
 const defaultProps = {
@@ -55,8 +57,11 @@ export function Form<
   children,
   onSubmit,
   onSubmitFailed,
+  requiredPrivileges,
   className,
 }: FormProps<Fields, Context>): JSX.Element {
+  const user = useCurrentUser();
+
   const handleSubmitFailed: SubmitErrorHandler<Fields> = useCallback(
     (errors, event) => {
       void message.error("Corrija os erros");
@@ -65,6 +70,15 @@ export function Form<
     [onSubmitFailed]
   );
 
+  if (requiredPrivileges && !user?.hasPrivileges(requiredPrivileges)) {
+    return (
+      <Result
+        description="Sua conta não possui as permissões necessárias."
+        status="error"
+        title="Formulário desabilitado"
+      />
+    );
+  }
   return (
     <FormProvider
       clearErrors={clearErrors}

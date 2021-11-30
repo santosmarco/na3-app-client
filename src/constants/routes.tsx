@@ -13,6 +13,7 @@ import {
   AdminUsersHomePage,
   AuthPage,
   DocsHomePage,
+  DocsStdHomePage,
   HomePage,
   LabelsHomePage,
   LabelsManagePage,
@@ -45,6 +46,7 @@ export type SiderConfig = {
 
 export type AppRoute = {
   component: React.ReactNode | null;
+  headTitle?: string;
   icon?: React.ReactNode;
   notExact?: boolean;
   siderConfig?: SiderConfig;
@@ -54,7 +56,8 @@ export type AppRoute = {
       isPublic?: undefined;
       requiredPrivileges:
         | Na3UserPrivilegeId[]
-        | ((userPrivileges: Na3UserPrivilegeId[]) => boolean);
+        | ((userPrivileges: Na3UserPrivilegeId[]) => boolean)
+        | { every?: boolean; privileges: Na3UserPrivilegeId[] };
     }
   | { isPublic: boolean; requiredPrivileges: null }
 );
@@ -70,7 +73,8 @@ export const ROUTES: AppRouteMap<
   | "/conta"
   | "/docs"
   | "/docs/comex"
-  | "/docs/modelos"
+  | "/docs/normas"
+  | "/docs/normas/novo"
   | "/docs/transferencia"
   | "/docs/transferencia/nova"
   | "/entrar"
@@ -144,10 +148,11 @@ export const ROUTES: AppRouteMap<
       children: [
         { path: "/docs/transferencia", title: "Transferência" },
         { path: "/docs/comex", title: "Comércio Exterior" },
-        { path: "/docs/modelos", title: "Modelos" },
+        { path: "/docs/normas", title: "Normas/Procedimentos" },
       ],
     },
     title: "Documentos",
+    headTitle: "Docs",
   },
   "/docs/comex": {
     component: null,
@@ -155,11 +160,22 @@ export const ROUTES: AppRouteMap<
     isPublic: true,
     title: "Comércio Exterior",
   },
-  "/docs/modelos": {
+  "/docs/normas": {
+    component: <DocsStdHomePage />,
+    requiredPrivileges: {
+      privileges: [
+        "docs_std_read_own",
+        "docs_std_read_all",
+        "docs_std_write_new",
+      ],
+      every: false,
+    },
+    title: "Normas/Procedimentos",
+  },
+  "/docs/normas/novo": {
     component: null,
-    requiredPrivileges: null,
-    isPublic: true,
-    title: "Modelos",
+    requiredPrivileges: ["docs_std_write_new"],
+    title: "Novo Documento",
   },
   "/docs/transferencia": {
     component: null,
@@ -238,20 +254,15 @@ export const ROUTES: AppRouteMap<
   },
   "/manutencao/dashboard": {
     component: <MaintDashboardHomePage />,
-    requiredPrivileges: [
-      "service_orders_read_all",
-      "service_orders_write_maintenance",
-    ],
+    requiredPrivileges: ["service_orders_read_all"],
     title: "Dashboard",
   },
   "/manutencao/os": {
     component: <MaintServiceOrdersHomePage />,
-    requiredPrivileges: (userPrivileges) =>
-      userPrivileges.some((privilege) =>
-        ["service_orders_read_own", "service_orders_read_all"].includes(
-          privilege
-        )
-      ),
+    requiredPrivileges: {
+      privileges: ["service_orders_read_own", "service_orders_read_all"],
+      every: false,
+    },
     title: "Ordens de Serviço",
   },
   "/manutencao/os/abrir-os": {
@@ -261,7 +272,7 @@ export const ROUTES: AppRouteMap<
   },
   "/manutencao/predprev": {
     component: <MaintProjectsHomePage isPredPrev={true} />,
-    requiredPrivileges: ["maint_projects_read_all", "maint_projects_write_all"],
+    requiredPrivileges: ["maint_projects_read_all"],
     title: "Pred/Prev",
   },
   "/manutencao/predprev/nova-predprev": {
@@ -271,7 +282,7 @@ export const ROUTES: AppRouteMap<
   },
   "/manutencao/projetos": {
     component: <MaintProjectsHomePage isPredPrev={false} />,
-    requiredPrivileges: ["maint_projects_read_all", "maint_projects_write_all"],
+    requiredPrivileges: ["maint_projects_read_all"],
     title: "Projetos",
   },
   "/manutencao/projetos/novo-projeto": {

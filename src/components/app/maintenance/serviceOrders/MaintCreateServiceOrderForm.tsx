@@ -1,5 +1,5 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Form, FormField, Result, SubmitButton } from "@components";
+import { Form, FormField, SubmitButton } from "@components";
 import { useForm } from "@hooks";
 import {
   useCurrentUser,
@@ -168,17 +168,12 @@ export function MaintCreateServiceOrderForm({
     [form]
   );
 
-  if (!user || !user.hasPrivileges("service_orders_write_shop_floor")) {
-    return (
-      <Result
-        description="Sua conta não possui as permissões necessárias."
-        status="error"
-        title="Formulário desabilitado"
-      />
-    );
-  }
   return (
-    <Form form={form} onSubmit={handleSubmit}>
+    <Form
+      form={form}
+      onSubmit={handleSubmit}
+      requiredPrivileges={["service_orders_write_shop_floor"]}
+    >
       <FormField
         disabled={true}
         hidden={true}

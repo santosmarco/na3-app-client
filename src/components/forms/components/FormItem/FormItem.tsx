@@ -3,7 +3,7 @@ import { Form } from "antd";
 import React from "react";
 
 type FormItemProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   help?: React.ReactNode;
   hidden?: boolean;
   label?: string;
@@ -33,7 +33,7 @@ export function FormItem({
       label={label}
       labelAlign="left"
       labelCol={labelCol || (labelSpan && { span: labelSpan }) || { span: 24 }}
-      required={required}
+      required={required ?? true}
       tooltip={tooltip}
       wrapperCol={
         wrapperCol || (labelSpan && { span: 24 - labelSpan }) || { span: 24 }
