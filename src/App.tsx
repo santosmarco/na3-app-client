@@ -31,6 +31,7 @@ function Main(): JSX.Element {
 
   const connectionStatus = useRef<"offline" | "online">("online");
 
+  /* Notify when user's connectivity changes */
   useEffect(() => {
     function handleIsOnline(): void {
       if (connectionStatus.current === "offline") {

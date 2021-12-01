@@ -1,7 +1,9 @@
 {
+  "lang": "pt",
   "name": "Nova A3",
   "short_name": "Nova A3",
   "description": "Nova A3 • App — Abra ordens de serviço, imprima etiquetas, gere documentos, online.",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
       "src": "assets/manifest-icon-192.maskable.png",
@@ -48,10 +50,36 @@
       "url": "/manutencao"
     }
   ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screenshot-1.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/screenshot-2.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/screenshot-3.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/screenshot-4.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/screenshot-5.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "lang": "pt-br"
+  "background_color": "#ffffff"
 }

@@ -1,7 +1,8 @@
+import type { MaybeArray } from "@types";
 import { useLocation } from "react-router-dom";
 
 export const useQuery = <Param extends string>(
-  params: Param | Param[]
+  params: MaybeArray<Param>
 ): Record<Param, string | null> => {
   params = typeof params === "string" ? [params] : params;
 

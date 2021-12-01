@@ -1,18 +1,47 @@
 /// <reference lib="webworker" />
 
 // https://developers.google.com/web/tools/workbox/modules
-
-/*
- * === DEFAULT INITIALIZATION ===
- */
-
 import { clientsClaim } from "workbox-core";
 import { ExpirationPlugin } from "workbox-expiration";
-import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
+import * as navigationPreload from "workbox-navigation-preload";
+import {
+  /* createHandlerBoundToURL, */ precacheAndRoute,
+} from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { StaleWhileRevalidate } from "workbox-strategies";
 
+// Give the service worker access to Firebase Messaging.
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.2.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.2.0/firebase-messaging-compat.js"
+);
+
 declare const self: ServiceWorkerGlobalScope;
+
+declare const firebase: {
+  initializeApp: (config: {
+    apiKey: string;
+    appId: string;
+    authDomain: string;
+    measurementId: string;
+    messagingSenderId: string;
+    projectId: string;
+    storageBucket: string;
+  }) => void;
+  messaging: () => {
+    onBackgroundMessage: (
+      handler: (payload: {
+        collapseKey: string;
+        data?: Record<string, string>;
+        fcmOptions?: { analyticsLabel?: string; link?: string };
+        from: string;
+        notification?: { body?: string; image?: string; title?: string };
+      }) => void
+    ) => () => void;
+  };
+};
 
 clientsClaim();
 
@@ -22,6 +51,8 @@ clientsClaim();
 // even if you decide not to use precaching.
 // https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
+
+/* REPLACED FOR A BETTER VERSION BELOW
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell.
@@ -51,6 +82,7 @@ registerRoute(
   },
   createHandlerBoundToURL(process.env.PUBLIC_URL + "/index.html")
 );
+*/
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
@@ -71,8 +103,8 @@ registerRoute(
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
-self.addEventListener("message", (event) => {
-  if (event.data && (event.data as { type: string }).type === "SKIP_WAITING") {
+self.addEventListener("message", (event: { data?: { type?: string } }) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     void self.skipWaiting();
   }
 });
@@ -80,39 +112,6 @@ self.addEventListener("message", (event) => {
 /*
  * === FIREBASE CLOUD MESSAGING ===
  */
-
-// Give the service worker access to Firebase Messaging.
-// Note that you can only use Firebase Messaging here. Other Firebase libraries
-// are not available in the service worker.
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.2.0/firebase-app-compat.js"
-);
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.2.0/firebase-messaging-compat.js"
-);
-
-declare const firebase: {
-  initializeApp: (config: {
-    apiKey: string;
-    appId: string;
-    authDomain: string;
-    measurementId: string;
-    messagingSenderId: string;
-    projectId: string;
-    storageBucket: string;
-  }) => void;
-  messaging: () => {
-    onBackgroundMessage: (
-      handler: (payload: {
-        collapseKey: string;
-        data?: Record<string, string>;
-        fcmOptions?: { analyticsLabel?: string; link?: string };
-        from: string;
-        notification?: { body?: string; image?: string; title?: string };
-      }) => void
-    ) => () => void;
-  };
-};
 
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
@@ -145,3 +144,50 @@ messaging.onBackgroundMessage(function (payload) {
 
   void self.registration.showNotification(title, options);
 });
+
+/*
+ * === PWA BUILDER'S OFFLINE PAGE + OFFLINE COPY OF PAGES ===
+ */
+
+const CACHE = "pwabuilder-offline-page";
+
+// TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
+const offlineFallbackPage = "ToDo-replace-this-name.html";
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.add(offlineFallbackPage))
+  );
+});
+
+if (navigationPreload.isSupported()) {
+  navigationPreload.enable();
+}
+
+registerRoute(new RegExp("/*"), new StaleWhileRevalidate({ cacheName: CACHE }));
+
+self.addEventListener(
+  "fetch",
+  (event: FetchEvent & { preloadResponse?: Promise<Response> }) => {
+    if (event.request.mode === "navigate") {
+      event.respondWith(
+        (async (): Promise<Response> => {
+          try {
+            const preloadResp = await event.preloadResponse;
+
+            if (preloadResp) {
+              return preloadResp;
+            }
+
+            const networkResp = await fetch(event.request);
+            return networkResp;
+          } catch (error) {
+            const cache = await caches.open(CACHE);
+            const cachedResp = await cache.match(offlineFallbackPage);
+            return cachedResp as Response;
+          }
+        })()
+      );
+    }
+  }
+);

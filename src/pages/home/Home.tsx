@@ -25,7 +25,12 @@ export function HomePage(): JSX.Element {
         <Divider orientation="left">Acesso rápido</Divider>
       </div>
 
-      <Row gutter={[{ lg: user ? 12 : 8 }, { lg: 16, xs: 8 }]}>
+      <Row
+        gutter={[
+          { xs: 8, sm: 8, md: 10, lg: 12 },
+          { xs: 8, sm: 8, md: 16 },
+        ]}
+      >
         {getQuickLinks(!!user).map(
           ({ title, icon, colors, description, href }) => (
             <Col key={nanoid()} md={href === "/entrar" ? 24 : 8} xs={24}>
