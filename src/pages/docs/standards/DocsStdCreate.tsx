@@ -3,7 +3,11 @@ import React from "react";
 
 export function DocsStdCreatePage(): JSX.Element {
   return (
-    <CreateFormPage backUrl="/docs/normas" title="Nova Norma/Procedimento">
+    <CreateFormPage
+      backUrl="/docs/normas"
+      description="Defina o documento."
+      title="Nova Norma/Procedimento"
+    >
       <DocsCreateStdForm />
     </CreateFormPage>
   );

@@ -8,7 +8,7 @@ import type {
   Na3MaintenanceProject,
   Na3MaintenanceProjectStatus,
 } from "../../na3-types";
-import type { FirebaseOperationResult } from "../types";
+import type { FirebaseDocOperationResult } from "../types";
 import type { MaintProjectBuilderData } from "../utils";
 import { buildMaintProjectEvents } from "../utils";
 import { buildMaintProject, resolveCollectionId } from "../utils";
@@ -21,11 +21,11 @@ export type UseNa3MaintProjectsResult = {
     add: (
       internalId: number,
       projectData: MaintProjectBuilderData
-    ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
+    ) => Promise<FirebaseDocOperationResult<Na3MaintenanceProject>>;
     deliverProject: (
       projectId: string,
       eventData: { author: Na3MaintenancePerson; message?: string | null }
-    ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
+    ) => Promise<FirebaseDocOperationResult<Na3MaintenanceProject>>;
     formatInternalId: (internalId: number) => string;
     getById: (id: string) => Na3MaintenanceProject | undefined;
     getByStatus: (
@@ -42,7 +42,7 @@ export type UseNa3MaintProjectsResult = {
     shareProjectStatus: (
       projectId: string,
       eventData: { author: Na3MaintenancePerson; message: string }
-    ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
+    ) => Promise<FirebaseDocOperationResult<Na3MaintenanceProject>>;
     sortByPriority: (data?: Na3MaintenanceProject[]) => Na3MaintenanceProject[];
     sortByStatus: (
       sortingOrder: Na3MaintenanceProjectStatus[],
@@ -52,7 +52,7 @@ export type UseNa3MaintProjectsResult = {
       projectId: string,
       updateData: MaintProjectBuilderData &
         Pick<Na3MaintenanceProject, "internalId">
-    ) => Promise<FirebaseOperationResult<Na3MaintenanceProject>>;
+    ) => Promise<FirebaseDocOperationResult<Na3MaintenanceProject>>;
   };
   loading: boolean;
 };

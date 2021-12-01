@@ -13,6 +13,7 @@ import {
   AdminUsersHomePage,
   AuthPage,
   DocsHomePage,
+  DocsStdCreatePage,
   DocsStdHomePage,
   HomePage,
   LabelsHomePage,
@@ -171,7 +172,7 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     title: "Normas/Procedimentos",
   },
   "/docs/normas/novo": {
-    component: null,
+    component: <DocsStdCreatePage />,
     requiredPrivileges: ["docs_std_write_new"],
     title: "Novo Documento",
   },

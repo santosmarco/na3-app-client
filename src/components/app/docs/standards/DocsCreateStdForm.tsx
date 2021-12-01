@@ -37,8 +37,8 @@ export function DocsCreateStdForm(): JSX.Element {
   const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>([]);
   const [approverPosIds, setApproverPosIds] = useState<Na3PositionId[]>([]);
 
-  const [uploadHintTitle, setUploadHintTitle] = useState("");
-  const [uploadHintVersion, setUploadHintVersion] = useState("");
+  const [docTitle, setDocTitle] = useState("");
+  const [docVersion, setDocVersion] = useState("");
 
   const {
     helpers: { getByPositionIds: getDepartmentsByPositionIds },
@@ -108,7 +108,7 @@ export function DocsCreateStdForm(): JSX.Element {
           <FormField
             label="Título"
             name={form.fieldNames.title}
-            onValueChange={setUploadHintTitle}
+            onValueChange={setDocTitle}
             rules={{ required: "Atribua um título ao documento" }}
             type="input"
           />
@@ -119,7 +119,7 @@ export function DocsCreateStdForm(): JSX.Element {
             label="Versão vigente"
             name={form.fieldNames.versionNumber}
             noDecimal={true}
-            onValueChange={setUploadHintVersion}
+            onValueChange={setDocVersion}
             prefix="v."
             rules={{ required: "Defina a última versão vigente do documento" }}
             type="number"
@@ -209,9 +209,24 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <FormItem label="Arquivo">
         <FileUpload
-          hint={`Anexe a última versão vigente${
-            uploadHintVersion ? ` (v. ${uploadHintVersion})` : ""
-          } do documento${uploadHintTitle ? ` "${uploadHintVersion}"` : ""}`}
+          disabled={!docTitle || !docVersion}
+          fileNameTransform={(): string => `${docTitle}_v${docVersion}`}
+          folderPath="docs/standards"
+          hint={
+            <>
+              Anexe a última versão vigente
+              {docVersion ? (
+                <>
+                  {" "}
+                  <em>({docVersion})</em>
+                </>
+              ) : (
+                ""
+              )}{" "}
+              do documento{docTitle ? ` "${docTitle}"` : ""}
+            </>
+          }
+          maxCount={1}
         />
       </FormItem>
 

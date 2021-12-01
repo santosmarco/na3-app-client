@@ -89,7 +89,7 @@ export function useNa3Users(): UseNa3UsersResult {
 
     return {
       ...basicUser,
-      ...buildAppUserAuthOnlyMethods({
+      ...buildAppUserAuthOnlyMethods(basicUser, {
         fbCollectionRef: usersCollectionRef,
         onRedirect: () => history.replace("/entrar"),
       }),

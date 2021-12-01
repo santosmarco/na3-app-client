@@ -6,6 +6,10 @@ export type FirebaseNullOperationResult =
   | { error: FirebaseError }
   | { error: null };
 
-export type FirebaseOperationResult<T> =
+export type FirebaseDocOperationResult<T> =
   | { data: firebase.firestore.DocumentReference<T>; error: null }
   | { data: null; error: FirebaseError };
+
+export type FirebaseOperationResult<T> =
+  | { data: null; error: FirebaseError }
+  | { data: T; error: null };

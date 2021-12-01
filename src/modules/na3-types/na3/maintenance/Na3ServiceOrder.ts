@@ -7,6 +7,8 @@ export type Na3ServiceOrderStatus =
   | "solved"
   | "solving";
 
+export type Na3ServiceOrderPriority = "high" | "low" | "medium";
+
 export type Na3ServiceOrderEvent = {
   device: {
     model: string | null;

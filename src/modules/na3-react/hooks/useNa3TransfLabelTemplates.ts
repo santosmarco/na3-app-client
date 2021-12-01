@@ -4,8 +4,8 @@ import { useCallback, useRef } from "react";
 import type { FirebaseError } from "../../firebase-errors-pt-br";
 import type { Na3TransfLabelTemplate } from "../../na3-types";
 import type {
+  FirebaseDocOperationResult,
   FirebaseNullOperationResult,
-  FirebaseOperationResult,
 } from "../types";
 import { resolveCollectionId } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
@@ -17,7 +17,7 @@ export type UseNa3TransfLabelTemplatesResult = {
   helpers: {
     add: (
       templateData: Omit<Na3TransfLabelTemplate, "id">
-    ) => Promise<FirebaseOperationResult<Na3TransfLabelTemplate>>;
+    ) => Promise<FirebaseDocOperationResult<Na3TransfLabelTemplate>>;
     delete: (templateId: string) => Promise<FirebaseNullOperationResult>;
     getById: (id: string) => Na3TransfLabelTemplate | undefined;
     getUserTemplates: (
@@ -26,7 +26,7 @@ export type UseNa3TransfLabelTemplatesResult = {
     update: (
       templateId: string,
       templateData: Omit<Na3TransfLabelTemplate, "id">
-    ) => Promise<FirebaseOperationResult<Na3TransfLabelTemplate>>;
+    ) => Promise<FirebaseDocOperationResult<Na3TransfLabelTemplate>>;
   };
   loading: boolean;
 };

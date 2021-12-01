@@ -142,7 +142,11 @@ export function Na3PositionSelect({
   return (
     <>
       {positionFields.map((field, idx) => (
-        <Row align="bottom" gutter={{ xs: 6, lg: 16 }} key={field.id}>
+        <Row
+          align="bottom"
+          gutter={{ xs: 6, sm: 6, md: 6, lg: 16 }}
+          key={field.id}
+        >
           <Col lg={12} xs={11}>
             <FormField
               label="Setor"

@@ -1,27 +1,13 @@
-import type { FirebaseError } from "@modules/firebase-errors-pt-br";
-import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3Department,
   Na3DepartmentId,
   Na3DepartmentType,
-  Na3User,
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
-import firebase from "firebase";
 import type { LiteralUnion } from "type-fest";
 import type { Falsy } from "utility-types";
 
-import type {
-  AppUserAttributes,
-  AppUserAuthOnlyMethods,
-  AppUserMethods,
-} from "../../types";
-import { buildNa3Error } from "../../utils";
-
-type UserAuthOnlyMethodDeps = {
-  fbCollectionRef: firebase.firestore.CollectionReference;
-  onRedirect: () => void;
-};
+import type { AppUserAttributes, AppUserMethods } from "../../types";
 
 function createGetDepartmentsByTypeMethod(
   baseAppUser: AppUserAttributes
@@ -73,60 +59,6 @@ function createIncludesDepartmentsMethod(
   };
 }
 
-function createUpdatePasswordMethod({
-  fbCollectionRef,
-  onRedirect,
-}: UserAuthOnlyMethodDeps): AppUserAuthOnlyMethods["updatePassword"] {
-  return async (
-    newPassword: string
-  ): Promise<
-    | { error: FirebaseError; warning: null }
-    | { error: null; warning: { message: string; title: string } }
-    | { error: null; warning: null }
-  > => {
-    try {
-      const firebaseAppUser = firebase.auth().currentUser;
-
-      if (!firebaseAppUser) {
-        return {
-          error: buildNa3Error("na3/user/update-password/not-signed-in"),
-          warning: null,
-        };
-      }
-
-      await firebaseAppUser.updatePassword(newPassword);
-
-      const updatedUser: Pick<Na3User, "isPasswordDefault"> = {
-        isPasswordDefault: false,
-      };
-
-      await fbCollectionRef.doc(firebaseAppUser.uid).update(updatedUser);
-
-      return { error: null, warning: null };
-    } catch (err) {
-      const firebaseError = err as FirebaseError;
-
-      if (firebaseError.code === "auth/requires-recent-login") {
-        await firebase.auth().signOut();
-        onRedirect();
-
-        return {
-          error: null,
-          warning: {
-            title: "Reautenticação requerida",
-            message: "Por favor, entre novamente para continuar.",
-          },
-        };
-      }
-
-      return {
-        error: translateFirebaseError(err as FirebaseError),
-        warning: null,
-      };
-    }
-  };
-}
-
 export function buildAppUserMethods(
   baseAppUser: AppUserAttributes
 ): AppUserMethods {
@@ -134,13 +66,5 @@ export function buildAppUserMethods(
     getDepartmentsByType: createGetDepartmentsByTypeMethod(baseAppUser),
     hasPrivileges: createHasPrivilegesMethod(baseAppUser),
     includesDepartments: createIncludesDepartmentsMethod(baseAppUser),
-  };
-}
-
-export function buildAppUserAuthOnlyMethods(
-  dependencies: UserAuthOnlyMethodDeps
-): AppUserAuthOnlyMethods {
-  return {
-    updatePassword: createUpdatePasswordMethod(dependencies),
   };
 }

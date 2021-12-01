@@ -1,21 +1,46 @@
-import type { ReadonlyDeep } from "type-fest";
+import type { Na3ServiceOrderPriority } from "../maintenance/Na3ServiceOrder";
 
-type Na3UserEventType = "SERVICE_ORDER_CREATE";
+/* Map event types to their data and category */
+type Na3UserEventMap = {
+  SERVICE_ORDER_ACCEPT_SOLUTION: {
+    category: "service_order_operator";
+    data: { id: string };
+  };
+  SERVICE_ORDER_CONFIRM: {
+    category: "service_order_maintenance";
+    data: {
+      assigneeUid: string;
+      id: string;
+      priority: Na3ServiceOrderPriority;
+    };
+  };
+  SERVICE_ORDER_CREATE: {
+    category: "service_order_operator";
+    data: { id: string };
+  };
+  SERVICE_ORDER_REJECT_SOLUTION: {
+    category: "service_order_operator";
+    data: { id: string; refusalReason: string };
+  };
+};
 
-type Na3UserEventBase<
-  Type extends Na3UserEventType,
-  Data extends Record<string, unknown>
+export type Na3UserEventType = keyof Na3UserEventMap;
+
+export type Na3UserEventCategory<
+  Type extends Na3UserEventType = Na3UserEventType
+> = Na3UserEventMap[Type]["category"] | "uncategorized";
+
+export type Na3UserEventData<Type extends Na3UserEventType = Na3UserEventType> =
+  Na3UserEventMap[Type]["data"];
+
+export type Na3UserEvent<
+  Type extends Na3UserEventType = Na3UserEventType,
+  Data extends Na3UserEventData<Type> = Na3UserEventData
 > = {
-  readonly data: ReadonlyDeep<Data>;
-  readonly fromId: string;
-  readonly id: string;
+  readonly category: Na3UserEventCategory<Type>;
+  readonly data: Data;
+  readonly eventId: string;
+  readonly fromUid: string;
   readonly timestamp: string;
   readonly type: Type;
 };
-
-type ServiceOrderCreate = Na3UserEventBase<
-  "SERVICE_ORDER_CREATE",
-  { id: string }
->;
-
-export type Na3UserEvent = ServiceOrderCreate;

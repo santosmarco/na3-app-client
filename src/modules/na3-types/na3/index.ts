@@ -7,6 +7,7 @@ export type {
 export type {
   Na3ServiceOrder,
   Na3ServiceOrderEvent,
+  Na3ServiceOrderPriority,
   Na3ServiceOrderStatus,
 } from "./maintenance/Na3ServiceOrder";
 export type { Na3App, Na3AppDevice, Na3AppId } from "./Na3App";
@@ -38,5 +39,10 @@ export type {
   Na3UserRegistrationId,
   Na3UserStyle,
 } from "./user/Na3User";
-export type { Na3UserEvent } from "./user/Na3UserEvent";
+export type {
+  Na3UserEvent,
+  Na3UserEventCategory,
+  Na3UserEventData,
+  Na3UserEventType,
+} from "./user/Na3UserEvent";
 export type { Na3UserPrivilegeId } from "./user/Na3UserPrivilege";

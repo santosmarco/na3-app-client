@@ -9,13 +9,13 @@ export const NA3_STD_DOCUMENT_TYPES: Record<
 > = {
   form: {
     id: "form",
-    color: "blue",
+    color: "cyan",
     name: "Formulário",
     shortName: "Formulário",
   },
   instructions: {
     id: "instructions",
-    color: "cyan",
+    color: "blue",
     name: "Instrução de trabalho",
     shortName: "Instrução",
   },

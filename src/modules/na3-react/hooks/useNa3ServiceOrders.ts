@@ -1,17 +1,18 @@
-import firebase from "firebase";
-import { useCallback, useRef } from "react";
-
-import type { FirebaseError } from "../../firebase-errors-pt-br";
-import { translateFirebaseError } from "../../firebase-errors-pt-br";
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3Machine,
   Na3MaintenancePerson,
   Na3ServiceOrder,
-} from "../../na3-types";
-import type { FirebaseOperationResult } from "../types";
+  Na3ServiceOrderPriority,
+} from "@modules/na3-types";
+import firebase from "firebase";
+import { useCallback, useRef } from "react";
+
+import type { FirebaseDocOperationResult } from "../types";
 import type { ServiceOrderBuilderData } from "../utils";
-import { buildNa3Error } from "../utils";
 import {
+  buildNa3Error,
   buildServiceOrder,
   buildServiceOrderEvents,
   formatServiceOrderId,
@@ -28,22 +29,22 @@ export type UseNa3ServiceOrdersResult = {
   helpers: {
     acceptSolution: (
       id: string
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     add: (
       id: string,
       data: ServiceOrderBuilderData
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     confirm: (
       id: string,
       payload: {
         assignee: Na3MaintenancePerson;
-        priority: NonNullable<Na3ServiceOrder["priority"]>;
+        priority: NonNullable<Na3ServiceOrderPriority>;
       }
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     deliver: (
       id: string,
       payload: { assignee: Na3MaintenancePerson; solution: string }
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     getById: (id: string) => Na3ServiceOrder | undefined;
     getByStatus: (
       status: Na3ServiceOrder["status"] | Na3ServiceOrder["status"][],
@@ -60,11 +61,11 @@ export type UseNa3ServiceOrdersResult = {
     rejectSolution: (
       id: string,
       payload: { reason: string }
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     shareStatus: (
       id: string,
       payload: { assignee: Na3MaintenancePerson; status: string }
-    ) => Promise<FirebaseOperationResult<Na3ServiceOrder>>;
+    ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     sortById: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
     sortByPriority: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
     sortByStatus: (
@@ -180,7 +181,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
   const sortByPriority = useCallback(
     (data?: Na3ServiceOrder[]) => {
       const priorityMap: Record<
-        NonNullable<Na3ServiceOrder["priority"]>,
+        NonNullable<Na3ServiceOrderPriority>,
         number
       > = {
         high: 3,
@@ -224,7 +225,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
     async (
       id: string,
       data: ServiceOrderBuilderData
-    ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
@@ -247,13 +248,17 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
+      } finally {
+        void user.registerEvents({ SERVICE_ORDER_CREATE: { id } });
       }
     },
     [device, user]
   );
 
   const acceptSolution = useCallback(
-    async (id: string): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    async (
+      id: string
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
@@ -294,6 +299,8 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
+      } finally {
+        void user.registerEvents({ SERVICE_ORDER_ACCEPT_SOLUTION: { id } });
       }
     },
     [device, user]
@@ -303,7 +310,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
     async (
       id: string,
       payload: { reason: string }
-    ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
@@ -363,6 +370,13 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
+      } finally {
+        void user.registerEvents({
+          SERVICE_ORDER_REJECT_SOLUTION: {
+            id,
+            refusalReason: payload.reason.trim(),
+          },
+        });
       }
     },
     [device, user]
@@ -373,9 +387,9 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       id: string,
       payload: {
         assignee: Na3MaintenancePerson;
-        priority: NonNullable<Na3ServiceOrder["priority"]>;
+        priority: NonNullable<Na3ServiceOrderPriority>;
       }
-    ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
@@ -427,6 +441,14 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
+      } finally {
+        void user.registerEvents({
+          SERVICE_ORDER_CONFIRM: {
+            id,
+            assigneeUid: payload.assignee.uid,
+            priority: payload.priority,
+          },
+        });
       }
     },
     [device, user]
@@ -436,7 +458,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
     async (
       id: string,
       payload: { assignee: Na3MaintenancePerson; status: string }
-    ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
@@ -499,7 +521,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
     async (
       id: string,
       payload: { assignee: Na3MaintenancePerson; solution: string }
-    ): Promise<FirebaseOperationResult<Na3ServiceOrder>> => {
+    ): Promise<FirebaseDocOperationResult<Na3ServiceOrder>> => {
       if (!user) {
         return {
           data: null,
