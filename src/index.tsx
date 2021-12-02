@@ -3,6 +3,7 @@ import "./index.css";
 import "dayjs/locale/pt-br";
 import "web-vitals";
 
+import { Na3Provider } from "@modules/na3-react";
 import { ConfigProvider as AntdConfigProvider } from "antd";
 import ptBR from "antd/lib/locale/pt_BR";
 import dayjs from "dayjs";
@@ -19,7 +20,6 @@ import { Router } from "react-router-dom";
 import { App } from "./App";
 import { APP_VERSION } from "./config";
 import { BreadcrumbProvider } from "./contexts";
-import { Na3Provider } from "./modules/na3-react";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { initFirebaseCore, initFirebaseMessaging, initSentry } from "./utils";
 
@@ -72,9 +72,9 @@ ReactDOM.render(
 
 // https://cra.link/PWA
 serviceWorkerRegistration.register({
-  onSuccess: (registration) =>
+  onSuccess: (swRegistration) =>
     initFirebaseMessaging({
-      registration,
+      swRegistration,
       vapidKey:
         "BHAAggUsRBF-E-GWYHh8vY3A4r6kZMgHwrQ7qs1a6jXtU6tHxLq9WObBW-HalHDzA9YQ74U7mjiu-9nsKb0vabU",
     }),

@@ -126,11 +126,11 @@ export function FileUpload({
     [getFbStorageRef, updateFile]
   );
 
-  console.log(files);
-
   useEffect(() => {
     onChange?.(files);
   }, [onChange, files]);
+
+  console.log(files);
 
   return (
     <Upload.Dragger

@@ -7,6 +7,7 @@ export * from "./useNa3/useNa3ProductCustomers";
 export * from "./useNa3Auth";
 export * from "./useNa3Departments";
 export * from "./useNa3MaintProjects";
+export * from "./useNa3Positions";
 export * from "./useNa3ServiceOrders";
 export * from "./useNa3TransfLabelTemplates";
 export * from "./useNa3Users";

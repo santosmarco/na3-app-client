@@ -11,31 +11,39 @@ type InitFirebaseCoreConfig = {
 };
 
 type InitFirebaseMessagingConfig = {
-  registration: ServiceWorkerRegistration;
+  swRegistration: ServiceWorkerRegistration;
   vapidKey: string;
 };
+
+function setupFirestore(): void {
+  void firebase.firestore().enablePersistence({ synchronizeTabs: true });
+  void firebase.firestore().enableNetwork();
+}
 
 export function initFirebaseCore(config: InitFirebaseCoreConfig): void {
   // Initialize default app
   firebase.initializeApp(config);
 
-  // Get the Performance service for the default app
+  // Configure Firestore
+  setupFirestore();
+
+  // Init Firebase's Performance service
   firebase.performance();
 
-  // Get the Analytics service for the default app
+  // Init Firebase's Analytics service
   firebase.analytics();
 }
 
 export async function initFirebaseMessaging({
-  registration,
+  swRegistration,
   vapidKey,
 }: InitFirebaseMessagingConfig): Promise<void> {
-  // Get the Messaging service for the default app
+  // Init and retrieve Firebase's Messaging service
   const messaging = firebase.messaging();
 
   try {
     const messagingToken = await messaging.getToken({
-      serviceWorkerRegistration: registration,
+      serviceWorkerRegistration: swRegistration,
       vapidKey,
     });
 

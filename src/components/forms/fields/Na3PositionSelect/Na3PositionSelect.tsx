@@ -1,6 +1,10 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { FormField } from "@components";
-import { useNa3Departments, useNa3Users } from "@modules/na3-react";
+import {
+  useNa3Departments,
+  useNa3Positions,
+  useNa3Users,
+} from "@modules/na3-react";
 import type {
   Na3Department,
   Na3DepartmentId,
@@ -21,7 +25,10 @@ type PositionField = {
 };
 
 type Na3PositionSelectProps = {
+  defaultPositions?: Na3PositionId[];
+  disabled?: boolean;
   errorMessage?: string;
+  helpWhenEmpty?: React.ReactNode;
   onValueChange?: (positionIds: Na3PositionId[]) => void;
   selectableDepartments?: Na3Department[];
 };
@@ -30,9 +37,14 @@ export function Na3PositionSelect({
   onValueChange,
   errorMessage,
   selectableDepartments,
+  defaultPositions,
+  helpWhenEmpty,
+  disabled,
 }: Na3PositionSelectProps): JSX.Element {
   const departments = useNa3Departments();
   const users = useNa3Users();
+
+  const { parsePositionId } = useNa3Positions();
 
   const [positionFields, setPositionFields] = useState<PositionField[]>([
     createBlankPositionField(),
@@ -132,6 +144,19 @@ export function Na3PositionSelect({
   );
 
   useEffect(() => {
+    if (defaultPositions) {
+      setPositionFields(
+        defaultPositions.map((posId) => {
+          const blankField = createBlankPositionField();
+          const [dptId] = parsePositionId(posId);
+
+          return { ...blankField, departmentId: dptId, positionId: posId };
+        })
+      );
+    }
+  }, [defaultPositions, parsePositionId]);
+
+  useEffect(() => {
     onValueChange?.(
       positionFields
         .map((posField) => posField.positionId)
@@ -149,6 +174,12 @@ export function Na3PositionSelect({
         >
           <Col lg={12} xs={11}>
             <FormField
+              defaultHelp={
+                idx === 0 &&
+                selectableDepartmentOptions.length === 0 &&
+                helpWhenEmpty
+              }
+              disabled={disabled}
               label="Setor"
               name={`${field.name}-departmentId`}
               onValueChange={(value): void =>
@@ -167,7 +198,7 @@ export function Na3PositionSelect({
 
           <Col lg={idx === 0 ? 12 : 10} xs={idx === 0 ? 13 : 10}>
             <FormField
-              disabled={!field.departmentId}
+              disabled={disabled || !field.departmentId}
               label="Função"
               name={`${field.name}-positionId`}
               onValueChange={(value): void =>

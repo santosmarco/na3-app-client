@@ -1,8 +1,8 @@
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import type { Na3TransfLabelTemplate } from "@modules/na3-types";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
-import type { FirebaseError } from "../../firebase-errors-pt-br";
-import type { Na3TransfLabelTemplate } from "../../na3-types";
 import type {
   FirebaseDocOperationResult,
   FirebaseNullOperationResult,

@@ -31,38 +31,54 @@ function Main(): JSX.Element {
 
   const connectionStatus = useRef<"offline" | "online">("online");
 
-  /* Notify when user's connectivity changes */
+  // Handle internet connectivity changes
   useEffect(() => {
-    function handleIsOnline(): void {
-      if (connectionStatus.current === "offline") {
-        void (async (): Promise<void> => {
-          await firebase.firestore().enableNetwork();
-          void message.success("Você está online");
-          message.destroy("offlineMsg");
-          connectionStatus.current = "online";
-        })();
-      }
-    }
     function handleIsOffline(): void {
       if (connectionStatus.current === "online") {
+        // Start onOffline routine
         void (async (): Promise<void> => {
+          // Queue all Firestore's write operations and make all snapshot
+          // listeners and document requests retrieve results from the cache
+          // until user is back online.
           await firebase.firestore().disableNetwork();
+          // Display a persistent "You are offline" message.
           void message.warn({
             content: "Você está offline",
+            // Persist the message until user is back online.
             duration: 0,
+            // Give the message a unique key so that it can be destroyed when
+            // user is back online.
             key: "offlineMsg",
           });
+
           connectionStatus.current = "offline";
         })();
       }
     }
+    function handleIsOnline(): void {
+      if (connectionStatus.current === "offline") {
+        // Start onOnline routine
+        void (async (): Promise<void> => {
+          // Re-enable Firestore's network access.
+          await firebase.firestore().enableNetwork();
+          // Wait for pending Firestore's writes.
+          await firebase.firestore().waitForPendingWrites();
+          // Display a "You are online" message.
+          void message.success("Você está online");
+          // Destroy the "You are offline" message.
+          message.destroy("offlineMsg");
 
-    window.addEventListener("online", handleIsOnline);
+          connectionStatus.current = "online";
+        })();
+      }
+    }
+
     window.addEventListener("offline", handleIsOffline);
+    window.addEventListener("online", handleIsOnline);
 
     return (): void => {
-      window.removeEventListener("online", handleIsOnline);
       window.removeEventListener("offline", handleIsOffline);
+      window.removeEventListener("online", handleIsOnline);
     };
   }, []);
 

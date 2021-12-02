@@ -14,7 +14,7 @@ import type {
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
 import { getStdDocTypeSelectOptions } from "@utils";
-import { Col, Divider, Row } from "antd";
+import { Col, Divider, Row, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useState } from "react";
 
@@ -75,6 +75,8 @@ export function DocsCreateStdForm(): JSX.Element {
   const handleSubmit = useCallback(() => {
     return;
   }, []);
+
+  console.log(viewerPosIds, downloaderPosIds, approverPosIds);
 
   return (
     <Form
@@ -167,7 +169,12 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de visualização" />
+          <FormItem label="Permissões de visualização">
+            <Typography.Text type="secondary">
+              Selecione as funções que poderão <strong>visualizar</strong> o
+              documento.
+            </Typography.Text>
+          </FormItem>
         </Col>
 
         <Col md={16} xs={24}>
@@ -180,7 +187,12 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de download" />
+          <FormItem label="Permissões de download">
+            <Typography.Text type="secondary">
+              Selecione as funções que poderão <strong>baixar</strong> o
+              documento.
+            </Typography.Text>
+          </FormItem>
         </Col>
 
         <Col md={16} xs={24}>
@@ -194,7 +206,12 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de aprovação" />
+          <FormItem label="Permissões de aprovação">
+            <Typography.Text type="secondary">
+              Selecione as funções que poderão <strong>aprovar</strong> o
+              documento.
+            </Typography.Text>
+          </FormItem>
         </Col>
 
         <Col md={16} xs={24}>

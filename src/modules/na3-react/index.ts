@@ -7,6 +7,7 @@ export {
   useNa3Departments,
   useNa3MaintProjects,
   useNa3People,
+  useNa3Positions,
   useNa3Product,
   useNa3ProductCustomers,
   useNa3ServiceOrders,
