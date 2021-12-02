@@ -5,8 +5,8 @@
   "license": "MIT",
   "author": "santosmarco <eu@marco.rio.br>",
   "scripts": {
-    "build": "yarn lint:fix && yarn prettier:write && craco build",
-    "build:assets": "pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
+    "build": "yarn lint:fix && yarn prettier:write && yarn craco build",
+    "build:assets": "yarn pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
     "deploy:prod": "yarn build && firebase deploy --only hosting",
     "deploy:test": "yarn build && firebase hosting:channel:deploy test",
     "eject": "react-scripts eject",
@@ -14,8 +14,8 @@
     "lint:fix": "yarn lint --fix",
     "prettier:check": "yarn prettier --check src/",
     "prettier:write": "yarn prettier --write src/",
-    "start": "craco start",
-    "test": "craco test"
+    "start": "yarn craco start",
+    "test": "yarn craco test"
   },
   "browserslist": {
     "production": [
