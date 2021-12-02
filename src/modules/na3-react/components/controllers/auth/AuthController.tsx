@@ -1,3 +1,4 @@
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import type { Na3User } from "@modules/na3-types";
 import firebase from "firebase";
 import { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import { resolveCollectionId, timestamp } from "../../../utils";
 
 export function Na3AuthController(): null {
   const { environment, messagingTokensStorageKey } = useStateSlice("config");
+  const { _firebaseUser, user, loading: authLoading } = useStateSlice("auth");
 
   const dispatch = useDispatch();
   const [storedMessagingTokens, setStoredMessagingTokens] = useLocalStorage(
@@ -61,6 +63,33 @@ export function Na3AuthController(): null {
   useEffect(() => {
     dispatch(setAuthUser(na3UserCandidates?.[0] || null));
   }, [dispatch, na3UserCandidates]);
+
+  useEffect(() => {
+    void (async (): Promise<void> => {
+      if (_firebaseUser && !user && !authLoading) {
+        dispatch(setAuthLoading(true));
+        dispatch(setAuthError(null));
+
+        try {
+          const userSnapshot = await firebase
+            .firestore()
+            .collection(resolveCollectionId("users", environment))
+            .doc(_firebaseUser.uid)
+            .get();
+          const user = {
+            ...(userSnapshot.data() as Omit<Na3User, "uid">),
+            uid: userSnapshot.id,
+          };
+
+          dispatch(setAuthUser(user));
+        } catch (err) {
+          dispatch(setAuthError(err as FirebaseError));
+        } finally {
+          dispatch(setAuthLoading(false));
+        }
+      }
+    })();
+  }, [dispatch, _firebaseUser, user, authLoading, environment]);
 
   /* Update user's push notification tokens */
 

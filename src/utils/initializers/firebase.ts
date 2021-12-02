@@ -18,9 +18,7 @@ type InitFirebaseMessagingConfig = {
 };
 
 function setupFirestore(): void {
-  if (process.env.NODE_ENV === "production") {
-    void firebase.firestore().enablePersistence({ synchronizeTabs: true });
-  }
+  void firebase.firestore().enablePersistence({ synchronizeTabs: true });
   void firebase.firestore().enableNetwork();
 }
 
