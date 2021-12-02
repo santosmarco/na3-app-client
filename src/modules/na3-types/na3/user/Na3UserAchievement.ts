@@ -1,6 +1,6 @@
 import type { WebColor } from "../../utils";
-import type { Na3DepartmentType } from "..";
-import type { Na3DepartmentId } from "../Na3Department";
+import type { Na3DepartmentId, Na3DepartmentType } from "../Na3Department";
+import type { Na3UserEvent } from "./Na3UserEvent";
 
 export type Na3UserAchievementId =
   | "service_orders_closed"
@@ -10,8 +10,10 @@ export type Na3UserAchievementIconId = "gi-auto-repair" | "gi-check-mark";
 
 export type Na3UserAchievementLevel = {
   goal: number;
-  points: number;
+  score: number;
 };
+
+export type Na3UserAchievementValidator = (ev: Na3UserEvent) => boolean;
 
 export type Na3UserAchievement<
   Id extends Na3UserAchievementId = Na3UserAchievementId
@@ -24,4 +26,5 @@ export type Na3UserAchievement<
   levels: Na3UserAchievementLevel[];
   targetDepartments: (Na3DepartmentId | Na3DepartmentType)[];
   title: string;
+  validate: Na3UserAchievementValidator;
 };

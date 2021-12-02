@@ -6,6 +6,7 @@ import type {
   Na3ServiceOrder,
   Na3ServiceOrderPriority,
 } from "@modules/na3-types";
+import dayjs from "dayjs";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
 
@@ -266,11 +267,11 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         };
       }
 
-      try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+      const docRef = fbCollectionRef.current.doc(
+        id
+      ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
 
+      try {
         const update: Required<Pick<Na3ServiceOrder, "closedAt" | "status">> = {
           closedAt: timestamp(),
           status: "closed",
@@ -300,7 +301,24 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           error: translateFirebaseError(error as FirebaseError),
         };
       } finally {
-        void user.registerEvents({ SERVICE_ORDER_ACCEPT_SOLUTION: { id } });
+        const serviceOrderSnapshot = await docRef.get();
+        const serviceOrder = serviceOrderSnapshot.data() as Omit<
+          Na3ServiceOrder,
+          "id"
+        >;
+
+        const lastDeliverEvent = [...serviceOrder.events]
+          .reverse()
+          .find((ev) => ev.type === "solutionTransmitted");
+
+        void user.registerEvents({
+          SERVICE_ORDER_ACCEPT_SOLUTION: {
+            id,
+            msFromDeliver: lastDeliverEvent
+              ? dayjs(lastDeliverEvent.timestamp).diff(dayjs())
+              : null,
+          },
+        });
       }
     },
     [device, user]
@@ -529,11 +547,11 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         };
       }
 
-      try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+      const docRef = fbCollectionRef.current.doc(
+        id
+      ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
 
+      try {
         const sanitizedAssignee = {
           uid: payload.assignee.uid,
           displayName: payload.assignee.displayName,
@@ -583,6 +601,23 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
+      } finally {
+        const serviceOrderSnapshot = await docRef.get();
+        const serviceOrder = serviceOrderSnapshot.data() as Omit<
+          Na3ServiceOrder,
+          "id"
+        >;
+
+        const createEvent = serviceOrder.events[0];
+
+        void user.registerEvents({
+          SERVICE_ORDER_DELIVER: {
+            id,
+            msFromCreation: createEvent
+              ? dayjs().diff(dayjs(createEvent.timestamp))
+              : null,
+          },
+        });
       }
     },
     [device, user]

@@ -5,7 +5,6 @@ import type {
   Na3DepartmentType,
   Na3Position,
   Na3User,
-  Na3UserEvent,
   Na3UserEventData,
   Na3UserEventType,
   Na3UserPrivilegeId,
@@ -14,7 +13,7 @@ import type { Dayjs } from "dayjs";
 import type { LiteralUnion } from "type-fest";
 import type { Falsy } from "utility-types";
 
-import type { FirebaseOperationResult } from "../firebase/FirebaseOperation";
+import type { FirebaseNullOperationResult } from "../firebase/FirebaseOperation";
 import type { AppUserAchievement } from "./AppUserAchievement";
 
 type AppUserRaw = Omit<
@@ -56,9 +55,7 @@ export type AppUser = AppUserAttributes & AppUserMethods;
 export type AppUserAuthOnlyMethods = {
   readonly registerEvents: <T extends Na3UserEventType>(events: {
     [Type in T]: Na3UserEventData<Type>;
-  }) => Promise<
-    FirebaseOperationResult<Na3UserEvent<T, Na3UserEventData<T>>[]>
-  >;
+  }) => Promise<FirebaseNullOperationResult>;
   readonly updatePassword: (
     newPassword: string
   ) => Promise<

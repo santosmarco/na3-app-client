@@ -1,5 +1,6 @@
 export * from "./datetime";
 export * from "./device";
+export * from "./formatters";
 export * from "./forms/select";
 export * from "./initializers/firebase";
 export * from "./initializers/sentry";

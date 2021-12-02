@@ -8,25 +8,23 @@ import classes from "./AchievementContent.module.css";
 type AchievementContentProps = {
   children: React.ReactNode;
   color: WebColor;
-  currentLevel: number;
   progressStrokeWidth: number;
   size: number;
 };
 
 export function AchievementContent({
   color,
-  currentLevel,
   size,
   progressStrokeWidth,
   children,
 }: AchievementContentProps): JSX.Element {
   const style = useMemo(
     () => ({
-      backgroundColor: colors[color][currentLevel + 2],
+      backgroundColor: colors[color][2],
       color: colors[color][8],
       marginLeft: progressStrokeWidth / 2,
     }),
-    [color, currentLevel, progressStrokeWidth]
+    [color, progressStrokeWidth]
   );
 
   return (

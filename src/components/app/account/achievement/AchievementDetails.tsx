@@ -1,5 +1,6 @@
 import { PopoverSectionDivider } from "@components";
 import type { Na3UserAchievementLevel } from "@modules/na3-types";
+import { formatNumber } from "@utils";
 import { Steps, Typography } from "antd";
 import { nanoid } from "nanoid";
 import React from "react";
@@ -37,19 +38,19 @@ export function AchievementDetails({
                 ? "Concluído!"
                 : levelDescriptor.replace(
                     "{{remaining}}",
-                    (level.goal - progress).toString()
+                    formatNumber(level.goal - progress)
                   )
             }
             key={nanoid()}
             title={
               <Typography.Title className={classes.LevelTitle} level={5}>
-                {level.goal}{" "}
+                {formatNumber(level.goal)}{" "}
                 <Typography.Text
                   className={classes.LevelPoints}
                   italic={true}
                   type="secondary"
                 >
-                  <small>{level.points} pontos</small>
+                  <small>{formatNumber(level.score)} pontos</small>
                 </Typography.Text>
               </Typography.Title>
             }

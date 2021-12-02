@@ -12,7 +12,7 @@ export function AccountAchievements({
   achievements,
 }: AccountAchievementsProps): JSX.Element {
   return (
-    <Space wrap={true}>
+    <Space size={3} wrap={true}>
       {achievements.map((achievement) => (
         <Achievement achievement={achievement} key={achievement.id} />
       ))}

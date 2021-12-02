@@ -2,7 +2,6 @@ import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3User,
-  Na3UserEvent,
   Na3UserEventData,
   Na3UserEventType,
 } from "@modules/na3-types";
@@ -13,7 +12,7 @@ import { nanoid } from "nanoid";
 import type {
   AppUserAttributes,
   AppUserAuthOnlyMethods,
-  FirebaseOperationResult,
+  FirebaseNullOperationResult,
 } from "../../types";
 import { buildNa3Error, timestamp } from "../../utils";
 
@@ -30,35 +29,32 @@ function createRegisterEventsMethod(
 
   return async <T extends Na3UserEventType>(events: {
     [Type in T]: Na3UserEventData<Type>;
-  }): Promise<
-    FirebaseOperationResult<Na3UserEvent<T, Na3UserEventData<T>>[]>
-  > => {
+  }): Promise<FirebaseNullOperationResult> => {
     try {
       const now = timestamp();
 
-      const eventsArr: Na3UserEvent<T, Na3UserEventData<T>>[] = Object.entries<
-        Na3UserEventData<T>
-      >(events).map(([t, data]) => {
-        const type = t as T;
-        return {
-          data,
-          eventId: nanoid(),
-          fromUid: uid,
-          timestamp: now,
-          type: type,
-          category: NA3_USER_EVENT_CATEGORY_MAP[type] || "uncategorized",
-        };
-      });
+      const eventsArr = Object.entries<Na3UserEventData<T>>(events).map(
+        ([t, data]) => {
+          const type = t as T;
+          return {
+            data: data,
+            eventId: nanoid(),
+            fromUid: uid,
+            timestamp: now,
+            type: type,
+            category: NA3_USER_EVENT_CATEGORY_MAP[type] || "uncategorized",
+          };
+        }
+      );
 
       await fbCollectionRef.doc(uid).update({
         activityHistory: firebase.firestore.FieldValue.arrayUnion(...eventsArr),
       });
 
-      return { error: null, data: eventsArr };
+      return { error: null };
     } catch (err) {
       return {
         error: translateFirebaseError(err as FirebaseError),
-        data: null,
       };
     }
   };

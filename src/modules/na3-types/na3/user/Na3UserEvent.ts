@@ -4,7 +4,7 @@ import type { Na3ServiceOrderPriority } from "../maintenance/Na3ServiceOrder";
 type Na3UserEventMap = {
   SERVICE_ORDER_ACCEPT_SOLUTION: {
     category: "service_order_operator";
-    data: { id: string };
+    data: { id: string; msFromDeliver: number | null };
   };
   SERVICE_ORDER_CONFIRM: {
     category: "service_order_maintenance";
@@ -18,13 +18,13 @@ type Na3UserEventMap = {
     category: "service_order_operator";
     data: { id: string };
   };
+  SERVICE_ORDER_DELIVER: {
+    category: "service_order_maintenance";
+    data: { id: string; msFromCreation: number | null };
+  };
   SERVICE_ORDER_REJECT_SOLUTION: {
     category: "service_order_operator";
     data: { id: string; refusalReason: string };
-  };
-  SERVICE_ORDER_SOLVE: {
-    category: "service_order_maintenance";
-    data: { id: string };
   };
 };
 
@@ -37,14 +37,30 @@ export type Na3UserEventCategory<
 export type Na3UserEventData<Type extends Na3UserEventType = Na3UserEventType> =
   Na3UserEventMap[Type]["data"];
 
-export type Na3UserEvent<
-  Type extends Na3UserEventType = Na3UserEventType,
-  Data extends Na3UserEventData<Type> = Na3UserEventData
-> = {
+export type Na3UserEvent<Type extends Na3UserEventType = Na3UserEventType> = {
   readonly category: Na3UserEventCategory<Type>;
-  readonly data: Data;
   readonly eventId: string;
   readonly fromUid: string;
   readonly timestamp: string;
-  readonly type: Type;
-};
+} & (
+  | {
+      data: Na3UserEventMap["SERVICE_ORDER_ACCEPT_SOLUTION"]["data"];
+      readonly type: "SERVICE_ORDER_ACCEPT_SOLUTION";
+    }
+  | {
+      data: Na3UserEventMap["SERVICE_ORDER_CONFIRM"]["data"];
+      readonly type: "SERVICE_ORDER_CONFIRM";
+    }
+  | {
+      data: Na3UserEventMap["SERVICE_ORDER_CREATE"]["data"];
+      readonly type: "SERVICE_ORDER_CREATE";
+    }
+  | {
+      data: Na3UserEventMap["SERVICE_ORDER_DELIVER"]["data"];
+      readonly type: "SERVICE_ORDER_DELIVER";
+    }
+  | {
+      data: Na3UserEventMap["SERVICE_ORDER_REJECT_SOLUTION"]["data"];
+      readonly type: "SERVICE_ORDER_REJECT_SOLUTION";
+    }
+);

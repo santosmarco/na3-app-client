@@ -119,33 +119,26 @@ function getUserAchievements(
   );
 
   return achievable.map((achievement): AppUserAchievement => {
-    let progress = 0;
-
-    switch (achievement.id) {
-      case "service_orders_closed":
-        progress = user.activityHistory.reduce(
-          (sum, ev) =>
-            ev.type === "SERVICE_ORDER_ACCEPT_SOLUTION" ? sum + 1 : sum,
-          0
-        );
-        break;
-      case "service_orders_solved":
-        progress = user.activityHistory.reduce(
-          (sum, ev) => (ev.type === "SERVICE_ORDER_SOLVE" ? sum + 1 : sum),
-          0
-        );
-    }
-
+    const progress = user.activityHistory.reduce(
+      (sum, ev) => (achievement.validate(ev) ? sum + 1 : sum),
+      0
+    );
     const currentLevel = achievement.levels.filter(
       (level) => level.goal < progress
     ).length;
     const progressPercent = progress / achievement.levels[currentLevel].goal;
+    const currentScore = achievement.levels
+      .slice(0, currentLevel)
+      .reduce((sum, level) => sum + level.score, 0);
+      const isDone = achievement.levels.reduce((sum, level) => sum + level.score, 0) <= currentScore
 
     return {
       ...achievement,
       progress,
       currentLevel,
       progressPercent,
+      currentScore,
+      isDone
     };
   });
 }
