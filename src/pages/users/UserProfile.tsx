@@ -161,7 +161,7 @@ export function UserProfilePage({
         iconMarginRight={4}
         label={asAccountPage ? "Suas conquistas" : "Conquistas"}
       >
-        <AccountAchievements />
+        <AccountAchievements achievements={user.achievements} />
       </DataItem>
     </>
   ) : (

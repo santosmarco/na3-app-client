@@ -2,15 +2,20 @@ import type {
   Na3Department,
   Na3Position,
   Na3User,
+  Na3UserAchievement,
+  Na3UserAchievementId,
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
 import type { Falsy } from "utility-types";
 
-import type { AppUserAttributes } from "../../types";
+import type { AppUserAchievement, AppUserAttributes } from "../../types";
 import { removeDuplicates, removeNullables } from "../../utils";
 
+type AchievementMap = { [Id in Na3UserAchievementId]: Na3UserAchievement<Id> };
+
 type UserAttributeHelpers = {
+  getUserAchievements: () => AppUserAchievement[];
   getUserCompactDisplayName: () => string;
   getUserDepartments: () => Na3Department[];
   getUserFormattedDisplayName: () => string;
@@ -20,10 +25,12 @@ type UserAttributeHelpers = {
 };
 
 type UserAttrHelperDeps = {
+  availableAchievements: AchievementMap;
   departments: Na3Department[];
 };
 
 type UserAttrBuilderDeps = {
+  availableAchievements: AchievementMap;
   departments: Falsy | Na3Department[];
 };
 
@@ -77,11 +84,13 @@ function getUserPositions(
 
 function getUserDepartments(
   user: Na3User,
-  { departments }: UserAttrHelperDeps
+  { departments, ...deps }: UserAttrHelperDeps
 ): Na3Department[] {
   return removeNullables(
     removeDuplicates(
-      getUserPositions(user, { departments }).map((pos) => pos.departmentId)
+      getUserPositions(user, { departments, ...deps }).map(
+        (pos) => pos.departmentId
+      )
     ).map((dptId) => departments.find((dpt) => dpt.id === dptId))
   );
 }
@@ -95,21 +104,67 @@ function getUserPrivileges(
   );
 }
 
+function getUserAchievements(
+  user: Na3User,
+  dependencies: UserAttrHelperDeps
+): AppUserAchievement[] {
+  const { availableAchievements } = dependencies;
+
+  const userDpts = getUserDepartments(user, dependencies);
+  const achievable = Object.values(availableAchievements).filter(
+    (achievement) =>
+      achievement.targetDepartments.some((targetDpt) =>
+        userDpts.flatMap((dpt) => [dpt.id, dpt.type]).includes(targetDpt)
+      )
+  );
+
+  return achievable.map((achievement): AppUserAchievement => {
+    let progress = 0;
+
+    switch (achievement.id) {
+      case "service_orders_closed":
+        progress = user.activityHistory.reduce(
+          (sum, ev) =>
+            ev.type === "SERVICE_ORDER_ACCEPT_SOLUTION" ? sum + 1 : sum,
+          0
+        );
+        break;
+      case "service_orders_solved":
+        progress = user.activityHistory.reduce(
+          (sum, ev) => (ev.type === "SERVICE_ORDER_SOLVE" ? sum + 1 : sum),
+          0
+        );
+    }
+
+    const currentLevel = achievement.levels.filter(
+      (level) => level.goal < progress
+    ).length;
+    const progressPercent = progress / achievement.levels[currentLevel].goal;
+
+    return {
+      ...achievement,
+      progress,
+      currentLevel,
+      progressPercent,
+    };
+  });
+}
+
 function getUserAttributeHelpers(
   user: Na3User,
-  { departments }: UserAttrHelperDeps
+  deps: UserAttrHelperDeps
 ): UserAttributeHelpers {
   return {
     getUserCompactDisplayName: (): string => getUserCompactDisplayName(user),
-    getUserDepartments: (): Na3Department[] =>
-      getUserDepartments(user, { departments }),
-    getUserPositions: (): Na3Position[] =>
-      getUserPositions(user, { departments }),
+    getUserDepartments: (): Na3Department[] => getUserDepartments(user, deps),
+    getUserPositions: (): Na3Position[] => getUserPositions(user, deps),
     getUserPrivileges: (): Na3UserPrivilegeId[] =>
-      getUserPrivileges(user, { departments }),
+      getUserPrivileges(user, deps),
     getUserFormattedDisplayName: (): string =>
       getUserFormattedDisplayName(user),
     getUserFullName: (): string => getUserFullName(user),
+    getUserAchievements: (): AppUserAchievement[] =>
+      getUserAchievements(user, deps),
   };
 }
 
@@ -125,7 +180,9 @@ export function buildAppUserAttributes(
     getUserPrivileges,
     getUserFormattedDisplayName,
     getUserCompactDisplayName,
-  } = getUserAttributeHelpers(na3User, { departments });
+    getUserAchievements,
+    getUserFullName,
+  } = getUserAttributeHelpers(na3User, { ...dependencies, departments });
 
   const userPositions = getUserPositions();
   const userDepartments = getUserDepartments();
@@ -153,7 +210,8 @@ export function buildAppUserAttributes(
     style: na3User.style,
     updatedAt: dayjs(na3User.updatedAt),
     bio: na3User.bio,
-    fullName: getUserFullName(na3User),
+    fullName: getUserFullName(),
     lastSeenAt: dayjs(na3User.lastSeenAt),
+    achievements: getUserAchievements(),
   };
 }

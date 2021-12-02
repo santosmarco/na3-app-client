@@ -6,6 +6,7 @@ import type {
   Na3PositionId,
   Na3UserRegistrationId,
 } from "@modules/na3-types";
+import { NA3_USER_ACHIEVEMENTS } from "@modules/na3-types";
 import firebase from "firebase";
 import { isArray } from "lodash";
 import { useCallback, useMemo } from "react";
@@ -76,6 +77,7 @@ export function useNa3Users(): UseNa3UsersResult {
     return na3Users.data.map((na3User) => {
       const baseUser = buildAppUserAttributes(na3User, {
         departments: departments.data,
+        availableAchievements: NA3_USER_ACHIEVEMENTS,
       });
 
       return { ...baseUser, ...buildAppUserMethods(baseUser) };

@@ -3,10 +3,18 @@ import React from "react";
 
 import classes from "./PopoverSectionDivider.module.css";
 
-export function PopoverSectionDivider(): JSX.Element {
+type PopoverSectionDividerProps = {
+  marginBottom?: number;
+  marginTop?: number;
+};
+
+export function PopoverSectionDivider({
+  marginBottom,
+  marginTop,
+}: PopoverSectionDividerProps): JSX.Element {
   return (
     <div className={classes.PopoverDivider}>
-      <Divider marginBottom={12} marginTop={12} />
+      <Divider marginBottom={marginBottom ?? 12} marginTop={marginTop ?? 12} />
     </div>
   );
 }

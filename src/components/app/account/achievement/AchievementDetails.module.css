@@ -1,0 +1,13 @@
+.AchievementDetails {
+  max-width: 320px;
+}
+
+.LevelTitle {
+  margin: 0;
+  font-weight: 800;
+}
+
+.LevelPoints {
+  margin-left: 12px;
+  font-weight: 500;
+}

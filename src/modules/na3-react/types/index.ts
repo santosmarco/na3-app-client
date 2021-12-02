@@ -11,4 +11,5 @@ export * from "./store/Na3Users";
 export * from "./store/Root";
 export * from "./store/ServiceOrders";
 export * from "./user/AppUser";
+export * from "./user/AppUserAchievement";
 export * from "./utils";

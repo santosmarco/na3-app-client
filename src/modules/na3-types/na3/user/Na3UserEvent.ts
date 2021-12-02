@@ -22,6 +22,10 @@ type Na3UserEventMap = {
     category: "service_order_operator";
     data: { id: string; refusalReason: string };
   };
+  SERVICE_ORDER_SOLVE: {
+    category: "service_order_maintenance";
+    data: { id: string };
+  };
 };
 
 export type Na3UserEventType = keyof Na3UserEventMap;

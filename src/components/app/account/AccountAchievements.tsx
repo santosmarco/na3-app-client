@@ -1,14 +1,21 @@
-import { Typography } from "antd";
+import type { AppUserAchievement } from "@modules/na3-react";
+import { Space } from "antd";
 import React from "react";
 
-import classes from "./AccountAchievements.module.css";
+import { Achievement } from "./achievement/Achievement";
 
-export function AccountAchievements(): JSX.Element {
+type AccountAchievementsProps = {
+  achievements: AppUserAchievement[];
+};
+
+export function AccountAchievements({
+  achievements,
+}: AccountAchievementsProps): JSX.Element {
   return (
-    <div className={classes.AccountAchievements}>
-      <Typography.Text italic={true} type="secondary">
-        Por enquanto não há conquistas.
-      </Typography.Text>
-    </div>
+    <Space wrap={true}>
+      {achievements.map((achievement) => (
+        <Achievement achievement={achievement} key={achievement.id} />
+      ))}
+    </Space>
   );
 }

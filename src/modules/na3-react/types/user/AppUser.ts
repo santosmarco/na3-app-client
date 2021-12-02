@@ -15,6 +15,7 @@ import type { LiteralUnion } from "type-fest";
 import type { Falsy } from "utility-types";
 
 import type { FirebaseOperationResult } from "../firebase/FirebaseOperation";
+import type { AppUserAchievement } from "./AppUserAchievement";
 
 type AppUserRaw = Omit<
   Na3User,
@@ -26,6 +27,7 @@ type AppUserRaw = Omit<
 };
 
 export type AppUserAttributes = AppUserRaw & {
+  readonly achievements: AppUserAchievement[];
   readonly compactDisplayName: string;
   readonly departments: Na3Department[];
   readonly fullName: string;

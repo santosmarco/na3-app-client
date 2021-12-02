@@ -40,6 +40,12 @@ export type {
   Na3UserStyle,
 } from "./user/Na3User";
 export type {
+  Na3UserAchievement,
+  Na3UserAchievementIconId,
+  Na3UserAchievementId,
+  Na3UserAchievementLevel,
+} from "./user/Na3UserAchievement";
+export type {
   Na3UserEvent,
   Na3UserEventCategory,
   Na3UserEventData,
