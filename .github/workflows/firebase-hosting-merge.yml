@@ -1,6 +1,6 @@
 # https://github.com/marketplace/actions/deploy-to-firebase-hosting
 
-name: Deploy to Firebase Hosting's Live Channel on push to main
+name: Deploy to Firebase Hosting's Live Channel on pushes to main
 
 on:
   push:
@@ -10,18 +10,25 @@ on:
 jobs:
   deploy_live_website:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
         with:
           node-version: 14
-      
+
       - name: Install dependencies
         run: yarn
+      - name: Run ESLint
+        run: yarn lint:fix
+      - name: Format code
+        run: yarn prettier:write
       - name: Build app
-        run: yarn build
+        run: craco build
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_NOVA_A3_IND }}"
