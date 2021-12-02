@@ -20,12 +20,18 @@ jobs:
 
       - name: Install dependencies
         run: yarn
+      - name: Install client scripts' dependencies
+        run: yarn scripts:install
       - name: Run ESLint
         run: yarn lint:fix
       - name: Format code
         run: yarn prettier:write
+      - name: Build client scripts
+        run: yarn scripts:build
+      - name: Update version's timestamp
+        run: yarn scripts:vtimestamp
       - name: Build app
-        run: yarn craco build
+        run: yarn build
 
       - name: Deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -34,3 +40,6 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_NOVA_A3_IND }}"
           channelId: live
           projectId: nova-a3-ind
+
+      - name: Update version
+        run: yarn scripts:vincrement

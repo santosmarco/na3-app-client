@@ -3,4 +3,4 @@
  */
 
 export const APP_VERSION = "2.0.0";
-export const APP_VERSION_TIMESTAMP = "2021-11-30T14:44:31-03:00";
+export const APP_VERSION_TIMESTAMP = "2021-12-02T04:45:31-03:00";
