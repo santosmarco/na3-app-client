@@ -1,9 +1,11 @@
 import type { FormItemProps as AntdFormItemProps } from "antd";
+import { Typography } from "antd";
 import { Form } from "antd";
 import React from "react";
 
 type FormItemProps = {
   children?: React.ReactNode;
+  description?: React.ReactNode;
   help?: React.ReactNode;
   hidden?: boolean;
   label?: string;
@@ -24,6 +26,7 @@ export function FormItem({
   hidden,
   labelSpan,
   help,
+  description,
 }: FormItemProps): JSX.Element {
   return (
     <Form.Item
@@ -39,7 +42,11 @@ export function FormItem({
         wrapperCol || (labelSpan && { span: 24 - labelSpan }) || { span: 24 }
       }
     >
-      {children}
+      {description ? (
+        <Typography.Text type="secondary">{description}</Typography.Text>
+      ) : (
+        children
+      )}
     </Form.Item>
   );
 }

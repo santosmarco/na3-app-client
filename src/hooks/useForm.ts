@@ -21,7 +21,7 @@ type FieldNames<Fields extends FieldValues> = {
   readonly [FieldName in keyof Fields]: FieldName;
 };
 
-type UseFormReturn<
+export type UseFormReturn<
   Fields extends FieldValues = FieldValues,
   Context extends Record<string, unknown> = Record<string, unknown>
 > = UseFormOriginalReturn<Fields, Context> & {

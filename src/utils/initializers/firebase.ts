@@ -16,13 +16,17 @@ type InitFirebaseMessagingConfig = {
 };
 
 function setupFirestore(): void {
-  void firebase.firestore().enablePersistence({ synchronizeTabs: true });
+  if (process.env.NODE_ENV === "production") {
+    void firebase.firestore().enablePersistence({ synchronizeTabs: true });
+  }
   void firebase.firestore().enableNetwork();
 }
 
 export function initFirebaseCore(config: InitFirebaseCoreConfig): void {
   // Initialize default app
-  firebase.initializeApp(config);
+  if (firebase.apps.length === 0) {
+    firebase.initializeApp(config);
+  }
 
   // Configure Firestore
   setupFirestore();

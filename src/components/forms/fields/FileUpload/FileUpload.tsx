@@ -1,17 +1,24 @@
 import { FileOutlined } from "@ant-design/icons";
-import { Upload } from "antd";
+import { FormItem } from "@components";
+import { Typography, Upload } from "antd";
 import type { UploadChangeParam, UploadFile } from "antd/lib/upload/interface";
 import firebase from "firebase";
 import React, { useCallback, useEffect, useState } from "react";
 
+import classes from "./FileUpload.module.css";
+
 type FileUploadProps = {
+  defaultHelp?: React.ReactNode;
   disabled?: boolean;
   fileNameTransform?: (fileName: string) => string;
   folderPath: string;
+  helpWhenDisabled?: React.ReactNode;
   hint?: React.ReactNode;
+  label: string;
   maxCount?: number;
   multiple?: boolean;
   onChange?: (files: UploadFile[]) => void;
+  required?: boolean;
 };
 
 export function FileUpload({
@@ -22,8 +29,14 @@ export function FileUpload({
   maxCount,
   disabled,
   onChange,
+  label,
+  helpWhenDisabled,
+  defaultHelp,
+  required,
 }: FileUploadProps): JSX.Element {
   const [files, setFiles] = useState<UploadFile[]>([]);
+  const [isTouched, setIsTouched] = useState(false);
+  const [error, setError] = useState<string>();
 
   const getUploadFileName = useCallback(
     (fileName: string) => {
@@ -79,6 +92,10 @@ export function FileUpload({
     [files]
   );
 
+  const handleTouch = useCallback(() => {
+    if (!isTouched && !disabled) setIsTouched(true);
+  }, [isTouched, disabled]);
+
   const handleChange = useCallback(
     ({ file, fileList }: UploadChangeParam) => {
       const fbStorageRef = getFbStorageRef(file.name);
@@ -127,27 +144,58 @@ export function FileUpload({
   );
 
   useEffect(() => {
+    if (required !== false && isTouched && files.length === 0) {
+      setError("Selecione pelo menos um arquivo");
+    }
+
     onChange?.(files);
-  }, [onChange, files]);
+  }, [onChange, files, required, isTouched]);
 
   console.log(files);
 
   return (
-    <Upload.Dragger
-      disabled={disabled}
-      fileList={files}
-      maxCount={maxCount}
-      multiple={multiple}
-      onChange={handleChange}
-      onRemove={handleRemove}
+    <FormItem
+      help={
+        <Typography.Text
+          type={error ? "danger" : isTouched ? "success" : "secondary"}
+        >
+          {disabled
+            ? helpWhenDisabled
+            : error
+            ? error
+            : isTouched
+            ? "Parece bom!"
+            : defaultHelp}
+        </Typography.Text>
+      }
+      label={label}
+      required={required}
     >
-      <p className="ant-upload-drag-icon">
-        <FileOutlined />
-      </p>
+      <div
+        className={`${classes.DraggerContainer} ${
+          disabled ? classes.DraggerContainerDisabled : ""
+        }`.trim()}
+        onClick={handleTouch}
+      >
+        <Upload.Dragger
+          disabled={disabled}
+          fileList={files}
+          maxCount={maxCount}
+          multiple={multiple}
+          onChange={handleChange}
+          onRemove={handleRemove}
+        >
+          <p className="ant-upload-drag-icon">
+            <FileOutlined />
+          </p>
 
-      <p className="ant-upload-text">Clique ou arraste um arquivo para cá</p>
+          <p className="ant-upload-text">
+            Clique ou arraste um arquivo para cá
+          </p>
 
-      {hint && <p className="ant-upload-hint">{hint}</p>}
-    </Upload.Dragger>
+          {hint && <p className="ant-upload-hint">{hint}</p>}
+        </Upload.Dragger>
+      </div>
+    </FormItem>
   );
 }

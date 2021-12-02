@@ -1,10 +1,6 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { FormField } from "@components";
-import {
-  useNa3Departments,
-  useNa3Positions,
-  useNa3Users,
-} from "@modules/na3-react";
+import { useNa3Departments, useNa3Users } from "@modules/na3-react";
 import type {
   Na3Department,
   Na3DepartmentId,
@@ -25,7 +21,6 @@ type PositionField = {
 };
 
 type Na3PositionSelectProps = {
-  defaultPositions?: Na3PositionId[];
   disabled?: boolean;
   errorMessage?: string;
   helpWhenEmpty?: React.ReactNode;
@@ -37,14 +32,11 @@ export function Na3PositionSelect({
   onValueChange,
   errorMessage,
   selectableDepartments,
-  defaultPositions,
   helpWhenEmpty,
   disabled,
 }: Na3PositionSelectProps): JSX.Element {
   const departments = useNa3Departments();
   const users = useNa3Users();
-
-  const { parsePositionId } = useNa3Positions();
 
   const [positionFields, setPositionFields] = useState<PositionField[]>([
     createBlankPositionField(),
@@ -53,8 +45,11 @@ export function Na3PositionSelect({
   const selectableDepartmentOptions = useMemo(
     () =>
       getDepartmentSelectOptions(
-        selectableDepartments ||
-          departments.data?.filter(
+        (selectableDepartments || departments.data || [])
+          .filter(
+            (dpt, idx, arr) => arr.map((dpt) => dpt.id).indexOf(dpt.id) === idx
+          )
+          .filter(
             (dpt) =>
               !dpt.positions
                 .map((pos) => pos.id)
@@ -63,8 +58,7 @@ export function Na3PositionSelect({
                     .map((posField) => posField.positionId)
                     .includes(posId)
                 )
-          ) ||
-          []
+          )
       ),
     [departments.data, positionFields, selectableDepartments]
   );
@@ -144,19 +138,6 @@ export function Na3PositionSelect({
   );
 
   useEffect(() => {
-    if (defaultPositions) {
-      setPositionFields(
-        defaultPositions.map((posId) => {
-          const blankField = createBlankPositionField();
-          const [dptId] = parsePositionId(posId);
-
-          return { ...blankField, departmentId: dptId, positionId: posId };
-        })
-      );
-    }
-  }, [defaultPositions, parsePositionId]);
-
-  useEffect(() => {
     onValueChange?.(
       positionFields
         .map((posField) => posField.positionId)
@@ -167,11 +148,7 @@ export function Na3PositionSelect({
   return (
     <>
       {positionFields.map((field, idx) => (
-        <Row
-          align="bottom"
-          gutter={{ xs: 6, sm: 6, md: 6, lg: 16 }}
-          key={field.id}
-        >
+        <Row gutter={{ xs: 6, sm: 6, md: 6, lg: 16 }} key={field.id}>
           <Col lg={12} xs={11}>
             <FormField
               defaultHelp={

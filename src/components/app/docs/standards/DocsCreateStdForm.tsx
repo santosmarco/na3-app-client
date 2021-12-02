@@ -14,7 +14,7 @@ import type {
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
 import { getStdDocTypeSelectOptions } from "@utils";
-import { Col, Divider, Row, Typography } from "antd";
+import { Col, Divider, Row } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useState } from "react";
 
@@ -169,12 +169,15 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de visualização">
-            <Typography.Text type="secondary">
-              Selecione as funções que poderão <strong>visualizar</strong> o
-              documento.
-            </Typography.Text>
-          </FormItem>
+          <FormItem
+            description={
+              <>
+                Selecione as funções que poderão <strong>visualizar</strong> o
+                documento.
+              </>
+            }
+            label="Permissões de visualização"
+          />
         </Col>
 
         <Col md={16} xs={24}>
@@ -187,12 +190,15 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de download">
-            <Typography.Text type="secondary">
-              Selecione as funções que poderão <strong>baixar</strong> o
-              documento.
-            </Typography.Text>
-          </FormItem>
+          <FormItem
+            description={
+              <>
+                Selecione as posições que poderão <strong>baixar</strong> o
+                documento.
+              </>
+            }
+            label="Permissões de download"
+          />
         </Col>
 
         <Col md={16} xs={24}>
@@ -206,46 +212,55 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Row gutter={16}>
         <Col md={8} xs={24}>
-          <FormItem label="Permissões de aprovação">
-            <Typography.Text type="secondary">
-              Selecione as funções que poderão <strong>aprovar</strong> o
-              documento.
-            </Typography.Text>
-          </FormItem>
+          <FormItem
+            description={
+              <>
+                Selecione as funções que poderão <strong>aprovar</strong> o
+                documento.
+              </>
+            }
+            label="Permissões de aprovação"
+          />
         </Col>
 
         <Col md={16} xs={24}>
           <Na3PositionSelect
             errorMessage="Defina as posições com permissão de aprovação"
             onValueChange={setApproverPosIds}
+            selectableDepartments={getDepartmentsByPositionIds([
+              "diretoria.diretor-operacoes",
+              "diretoria.diretor-financeiro",
+            ])}
           />
         </Col>
       </Row>
 
       <Divider />
 
-      <FormItem label="Arquivo">
-        <FileUpload
-          disabled={!docTitle || !docVersion}
-          fileNameTransform={(): string => `${docTitle}_v${docVersion}`}
-          folderPath="docs/standards"
-          hint={
-            <>
-              Anexe a última versão vigente
-              {docVersion ? (
-                <>
-                  {" "}
-                  <em>({docVersion})</em>
-                </>
-              ) : (
-                ""
-              )}{" "}
-              do documento{docTitle ? ` "${docTitle}"` : ""}
-            </>
-          }
-          maxCount={1}
-        />
-      </FormItem>
+      <FileUpload
+        disabled={!docTitle || !docVersion}
+        fileNameTransform={(): string => `${docTitle}_v${docVersion}`}
+        folderPath="docs/standards"
+        helpWhenDisabled="Defina o título e a versão do documento primeiro"
+        hint={
+          <>
+            Anexe a última versão vigente
+            {docVersion ? (
+              <>
+                {" "}
+                <em>({docVersion})</em>
+              </>
+            ) : (
+              ""
+            )}{" "}
+            do documento{docTitle ? ` "${docTitle}"` : ""}
+          </>
+        }
+        label="Arquivo"
+        maxCount={1}
+      />
+
+      <Divider />
 
       <SubmitButton label="Criar documento" labelWhenLoading="Enviando..." />
     </Form>
