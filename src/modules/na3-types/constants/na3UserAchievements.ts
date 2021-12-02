@@ -1,7 +1,4 @@
-import type {
-  Na3UserAchievement,
-  Na3UserAchievementId,
-} from "@modules/na3-types";
+import type { Na3UserAchievement, Na3UserAchievementId } from "../na3";
 
 export const NA3_USER_ACHIEVEMENTS: {
   [Id in Na3UserAchievementId]: Na3UserAchievement<Id>;
