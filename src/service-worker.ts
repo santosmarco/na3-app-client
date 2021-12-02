@@ -91,7 +91,7 @@ self.addEventListener("message", (event: { data?: { type?: string } }) => {
 const CACHE = "pwabuilder-offline-page";
 const QUEUE_NAME = "bgSyncQueue";
 
-const offlineFallbackPage = "offline.html";
+const offlineFallbackPage = "index.html";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
