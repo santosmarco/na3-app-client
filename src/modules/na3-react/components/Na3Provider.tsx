@@ -16,16 +16,19 @@ type Na3ProviderProps = {
   appVersion: string;
   children?: React.ReactNode;
   env?: ConfigState["environment"];
+  messagingTokensStorageKey?: string;
 };
 
 const defaultProps: Omit<Na3ProviderProps, "appVersion"> = {
   children: null,
   env: undefined,
+  messagingTokensStorageKey: undefined,
 };
 
 export function Na3Provider({
   appVersion,
   env,
+  messagingTokensStorageKey,
   children,
 }: Na3ProviderProps): JSX.Element {
   return (
@@ -34,6 +37,7 @@ export function Na3Provider({
       <Na3MainController
         appVersion={appVersion}
         env={env || process.env.NODE_ENV}
+        messagingTokensStorageKey={messagingTokensStorageKey}
       />
 
       {/* Auth & Users */}

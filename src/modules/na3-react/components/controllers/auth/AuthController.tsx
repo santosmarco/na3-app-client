@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
+import useLocalStorage from "react-use-localstorage";
 
 import { useNa3Users, useStateSlice } from "../../../hooks";
 import {
@@ -15,15 +16,19 @@ import {
 import { resolveCollectionId, timestamp } from "../../../utils";
 
 export function Na3AuthController(): null {
-  const { environment } = useStateSlice("config");
+  const { environment, messagingTokensStorageKey } = useStateSlice("config");
+
+  const dispatch = useDispatch();
+  const [storedMessagingTokens, setStoredMessagingTokens] = useLocalStorage(
+    messagingTokensStorageKey,
+    "[]"
+  );
 
   const [didUpdateLastSeen, setDidUpdateLastSeen] = useState(false);
 
   const {
     helpers: { extractRegistrationIdFromEmail },
   } = useNa3Users();
-
-  const dispatch = useDispatch();
 
   const [fbUser, fbUserLoading, fbUserError] = useAuthState(firebase.auth());
   const [na3UserCandidates, na3UserCandidatesLoading, na3UserCandidatesError] =
@@ -56,6 +61,20 @@ export function Na3AuthController(): null {
   useEffect(() => {
     dispatch(setAuthUser(na3UserCandidates?.[0] || null));
   }, [dispatch, na3UserCandidates]);
+
+  /* Update user's push notification tokens */
+
+  useEffect(() => {
+    const parsedTokens = JSON.parse(storedMessagingTokens) as Array<string>;
+    if (na3UserCandidates?.[0] && parsedTokens.length > 0) {
+      void na3UserCandidates[0].ref.update({
+        notificationTokens: firebase.firestore.FieldValue.arrayUnion(
+          ...parsedTokens
+        ),
+      });
+      setStoredMessagingTokens("[]");
+    }
+  }, [na3UserCandidates, storedMessagingTokens, setStoredMessagingTokens]);
 
   /* Update user's lastSeenAt field */
 

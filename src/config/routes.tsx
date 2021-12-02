@@ -28,7 +28,8 @@ import {
   MaintProjectsHomePage,
   MaintServiceOrdersCreatePage,
   MaintServiceOrdersHomePage,
-  UserAccountPage,
+  UserProfilePage,
+  UsersHomePage,
 } from "@pages";
 import React from "react";
 import type { SiderItem } from "src/components/layout/sider/Sider";
@@ -71,7 +72,8 @@ export type AppRoutePath =
   | "/manutencao/predprev"
   | "/manutencao/predprev/nova-predprev"
   | "/manutencao/projetos"
-  | "/manutencao/projetos/novo-projeto";
+  | "/manutencao/projetos/novo-projeto"
+  | "/usuarios";
 
 export type AppRoute = {
   component: React.ReactNode | null;
@@ -130,7 +132,7 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
   },
 
   "/conta": {
-    component: <UserAccountPage />,
+    component: <UserProfilePage asAccountPage={true} />,
     requiredPrivileges: null,
     icon: <UserOutlined />,
     title: "Conta",
@@ -288,6 +290,14 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     component: <MaintProjectsCreatePage isPredPrev={false} />,
     requiredPrivileges: ["maint_projects_write_all"],
     title: "Novo Projeto",
+  },
+
+  "/usuarios": {
+    component: <UsersHomePage />,
+    icon: <UserOutlined />,
+    requiredPrivileges: null,
+    isPublic: true,
+    title: "Perfil de usuário",
   },
 };
 

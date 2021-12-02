@@ -1,5 +1,7 @@
 import firebase from "firebase";
 
+import { storeMessagingToken } from "../notifications/push";
+
 type InitFirebaseCoreConfig = {
   apiKey: string;
   appId: string;
@@ -52,7 +54,7 @@ export async function initFirebaseMessaging({
     });
 
     if (messagingToken) {
-      console.info("[FCM-TOKEN-SUCCESS]", messagingToken);
+      storeMessagingToken(messagingToken);
     } else {
       console.info("[FCM-TOKEN-FAIL]", "No registration token available.");
     }

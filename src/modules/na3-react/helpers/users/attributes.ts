@@ -14,6 +14,7 @@ type UserAttributeHelpers = {
   getUserCompactDisplayName: () => string;
   getUserDepartments: () => Na3Department[];
   getUserFormattedDisplayName: () => string;
+  getUserFullName: () => string;
   getUserPositions: () => Na3Position[];
   getUserPrivileges: () => Na3UserPrivilegeId[];
 };
@@ -25,6 +26,13 @@ type UserAttrHelperDeps = {
 type UserAttrBuilderDeps = {
   departments: Falsy | Na3Department[];
 };
+
+function getUserFullName({ firstName, middleName, lastName }: Na3User): string {
+  return [firstName, middleName, lastName]
+    .filter((name): name is string => !!name)
+    .map((name) => name.trim())
+    .join(" ");
+}
 
 function getUserFormattedDisplayName({
   firstName,
@@ -101,6 +109,7 @@ function getUserAttributeHelpers(
       getUserPrivileges(user, { departments }),
     getUserFormattedDisplayName: (): string =>
       getUserFormattedDisplayName(user),
+    getUserFullName: (): string => getUserFullName(user),
   };
 }
 
@@ -144,6 +153,7 @@ export function buildAppUserAttributes(
     style: na3User.style,
     updatedAt: dayjs(na3User.updatedAt),
     bio: na3User.bio,
+    fullName: getUserFullName(na3User),
     lastSeenAt: dayjs(na3User.lastSeenAt),
   };
 }

@@ -2,7 +2,7 @@ import { AdminCreateUserForm, AdminUsersList, ListFormPage } from "@components";
 import { useQuery } from "@hooks";
 import type { AppUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
-import { AdminUserDetailsPage } from "@pages";
+import { UserProfilePage } from "@pages";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 
@@ -28,9 +28,7 @@ export function AdminUsersHomePage(): JSX.Element {
   }, [history]);
 
   return query.matricula ? (
-    <AdminUserDetailsPage
-      user={users.helpers.getByRegistrationId(query.matricula)}
-    />
+    <UserProfilePage fromAdmin={true} registrationId={query.matricula} />
   ) : (
     <ListFormPage
       actions={[{ label: "Novo usuário", onClick: handleUserCreateClick }]}

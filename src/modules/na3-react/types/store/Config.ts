@@ -1,5 +1,6 @@
 export type ConfigState = {
   environment: "development" | "production" | "test";
+  messagingTokensStorageKey: string;
 };
 
 export type ConfigSetEnvironmentAction = {
@@ -7,4 +8,11 @@ export type ConfigSetEnvironmentAction = {
   type: "CONFIG_SET_ENVIRONMENT";
 };
 
-export type ConfigAction = ConfigSetEnvironmentAction;
+export type ConfigSetMsgTokensStorageKeyAction = {
+  key: ConfigState["messagingTokensStorageKey"];
+  type: "CONFIG_SET_MSG_TOKENS_STORAGE_KEY";
+};
+
+export type ConfigAction =
+  | ConfigSetEnvironmentAction
+  | ConfigSetMsgTokensStorageKeyAction;

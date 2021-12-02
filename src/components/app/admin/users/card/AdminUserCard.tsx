@@ -19,6 +19,7 @@ export function AdminUserCard({
       title={data.displayName}
     >
       <UserPositionTag
+        direction="vertical"
         position={data.positions}
         tooltipPlacement="bottomLeft"
       />

@@ -1,4 +1,4 @@
-.AccountHeader {
+.ProfileHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,7 +44,7 @@
 
 /* md and up */
 @media screen and (min-width: 768px) {
-  .AccountHeader {
+  .ProfileHeader {
     margin-top: 0;
     padding-left: 0;
   }

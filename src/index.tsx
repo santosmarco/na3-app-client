@@ -21,7 +21,12 @@ import { App } from "./App";
 import { APP_VERSION } from "./config";
 import { BreadcrumbProvider } from "./contexts";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { initFirebaseCore, initFirebaseMessaging, initSentry } from "./utils";
+import {
+  initFirebaseCore,
+  initFirebaseMessaging,
+  initSentry,
+  MSG_TOKENS_STORAGE_KEY,
+} from "./utils";
 
 dayjs.extend(dayOfYear);
 dayjs.extend(duration);
@@ -52,7 +57,10 @@ void initFirebaseCore({
 function Root(): JSX.Element {
   return (
     <AntdConfigProvider input={{ autoComplete: "off" }} locale={ptBR}>
-      <Na3Provider appVersion={APP_VERSION}>
+      <Na3Provider
+        appVersion={APP_VERSION}
+        messagingTokensStorageKey={MSG_TOKENS_STORAGE_KEY}
+      >
         <Router history={routerHistory}>
           <BreadcrumbProvider>
             <App />

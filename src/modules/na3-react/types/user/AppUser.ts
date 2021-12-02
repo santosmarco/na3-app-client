@@ -28,6 +28,7 @@ type AppUserRaw = Omit<
 export type AppUserAttributes = AppUserRaw & {
   readonly compactDisplayName: string;
   readonly departments: Na3Department[];
+  readonly fullName: string;
   readonly positions: Na3Position[];
   readonly privileges: Na3UserPrivilegeId[];
 };

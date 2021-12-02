@@ -1,6 +1,4 @@
-export { UserAccountPage } from "./account/UserAccount";
 export { AdminHomePage } from "./admin/AdminHome";
-export { AdminUserDetailsPage } from "./admin/users/AdminUserDetails";
 export { AdminUsersCreatePage } from "./admin/users/AdminUsersCreate";
 export { AdminUsersHomePage } from "./admin/users/AdminUsersHome";
 export { AuthPage } from "./auth/Auth";
@@ -23,3 +21,5 @@ export { MaintProjectsCreatePage } from "./maintenance/projects/MaintProjectsCre
 export { MaintProjectsHomePage } from "./maintenance/projects/MaintProjectsHome";
 export { MaintServiceOrdersCreatePage } from "./maintenance/serviceOrders/MaintServiceOrdersCreate";
 export { MaintServiceOrdersHomePage } from "./maintenance/serviceOrders/MaintServiceOrdersHome";
+export { UserProfilePage } from "./users/UserProfile";
+export { UsersHomePage } from "./users/UsersHome";

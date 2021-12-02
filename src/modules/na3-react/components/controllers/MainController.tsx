@@ -7,6 +7,7 @@ import type { Na3Department } from "../../../na3-types";
 import { useNa3Auth } from "../../hooks";
 import {
   setConfigEnvironment,
+  setConfigMsgTokensStorageKey,
   setDepartmentsData,
   setDepartmentsError,
   setDepartmentsLoading,
@@ -19,11 +20,13 @@ import { getDevice, resolveCollectionId } from "../../utils";
 type Na3MainControllerProps = {
   appVersion: string;
   env: ConfigState["environment"];
+  messagingTokensStorageKey: string | undefined;
 };
 
 export function Na3MainController({
   env,
   appVersion,
+  messagingTokensStorageKey,
 }: Na3MainControllerProps): null {
   const { loading: authLoading } = useNa3Auth();
 
@@ -44,6 +47,12 @@ export function Na3MainController({
   useEffect(() => {
     dispatch(setConfigEnvironment(env));
   }, [dispatch, env]);
+
+  useEffect(() => {
+    if (messagingTokensStorageKey) {
+      dispatch(setConfigMsgTokensStorageKey(messagingTokensStorageKey));
+    }
+  }, [dispatch, messagingTokensStorageKey]);
 
   /* Departments state management hooks */
 

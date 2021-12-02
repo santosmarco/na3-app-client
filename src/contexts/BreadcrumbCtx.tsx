@@ -1,8 +1,10 @@
+import type { MaybeArray } from "@types";
 import React, { createContext, useCallback, useMemo } from "react";
+import type { Falsy } from "utility-types";
 
 export type BreadcrumbContext = {
   extra: string[];
-  setExtra: (extra: string[] | string | undefined) => void;
+  setExtra: (extra: Falsy | MaybeArray<string>) => void;
 };
 
 export const BreadcrumbCtx = createContext<BreadcrumbContext>({
@@ -18,7 +20,7 @@ export function BreadcrumbProvider({
   const [extra, setExtra] = React.useState<string[]>([]);
 
   const handleSetExtra = useCallback(
-    (updatedExtra: string[] | string | undefined) => {
+    (updatedExtra: Falsy | MaybeArray<string>) => {
       if (!updatedExtra) return setExtra([]);
       const extraArray =
         typeof updatedExtra === "string" ? [updatedExtra] : [...updatedExtra];
