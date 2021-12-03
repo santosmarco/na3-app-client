@@ -1,5 +1,5 @@
 .AchievementDetails {
-  max-width: 320px;
+  max-width: 350px;
 }
 
 .LevelTitle {
@@ -7,7 +7,18 @@
   font-weight: 800;
 }
 
-.LevelPoints {
+.LevelScore {
   margin-left: 12px;
   font-weight: 500;
+}
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .AchievementDetails {
+    max-height: calc(100vh / 2);
+    max-width: calc((100vw / 3) * 2);
+    overflow-y: scroll;
+    margin: -12px -16px;
+    padding: 12px 16px 0px;
+  }
 }

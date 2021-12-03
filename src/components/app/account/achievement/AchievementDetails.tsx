@@ -46,7 +46,7 @@ export function AchievementDetails({
               <Typography.Title className={classes.LevelTitle} level={5}>
                 {formatNumber(level.goal)}{" "}
                 <Typography.Text
-                  className={classes.LevelPoints}
+                  className={classes.LevelScore}
                   italic={true}
                   type="secondary"
                 >
