@@ -5,6 +5,7 @@ import classes from "./Page.module.css";
 type PageProps = {
   additionalPaddingBottom: number;
   children?: React.ReactNode;
+  preventScroll?: boolean;
   scrollTopOffset?: number;
   style?: React.CSSProperties;
 };
@@ -21,6 +22,7 @@ export function Page({
   scrollTopOffset,
   additionalPaddingBottom,
   style,
+  preventScroll,
 }: PageProps): JSX.Element {
   return (
     <div
@@ -34,6 +36,7 @@ export function Page({
           marginTop: -scrollTopOffset,
           paddingTop: scrollTopOffset,
         }),
+        overflowY: preventScroll ? "hidden" : undefined,
       }}
     >
       {children}

@@ -259,62 +259,62 @@ export function MaintProjectDetails({
 
       <Divider />
 
-      <Row gutter={12}>
-        <Col lg={6} xs={12}>
-          <DataItem label="Status" marginBottom={!breakpoint.lg}>
-            <MaintProjectStatusBadge
-              isPredPrev={isPredPrev}
-              status={projectStatus || "running"}
-            />
-          </DataItem>
-        </Col>
-
-        <Col lg={6} xs={12}>
-          <DataItem label="Prioridade">
-            <PriorityTag priority={project.priority} />
-          </DataItem>
-        </Col>
-
-        <Col lg={6} xs={12}>
-          <DataItem icon={<UserOutlined />} label="Responsável">
-            <MaintEmployeeTag maintainer={project.team.manager} />
-          </DataItem>
-        </Col>
-
-        <Col lg={6} xs={12}>
-          <DataItem icon={<TeamOutlined />} label="Equipe">
-            <Space size={4} wrap={true}>
-              {typeof project.team.others === "string"
-                ? project.team.others.trim()
-                : project.team.others.map((other) => (
-                    <MaintEmployeeTag
-                      key={typeof other === "string" ? nanoid() : other.uid}
-                      maintainer={other}
-                    />
-                  ))}
-            </Space>
-          </DataItem>
-        </Col>
-      </Row>
-
-      <Divider />
-
-      {breakpoint.lg ? (
-        <Row className={classes.TimelineLgContainer}>
-          <Col span={4}>
-            <DataItem label="Histórico" />
-          </Col>
-          <Col className={classes.TimelineLg} span={19}>
-            <Page scrollTopOffset={24}>
-              <MaintProjectTimeline
-                events={project.events}
+      <Page preventScroll={breakpoint.lg} scrollTopOffset={24}>
+        <Row gutter={12}>
+          <Col lg={6} xs={12}>
+            <DataItem label="Status" marginBottom={!breakpoint.lg}>
+              <MaintProjectStatusBadge
                 isPredPrev={isPredPrev}
+                status={projectStatus || "running"}
               />
-            </Page>
+            </DataItem>
+          </Col>
+
+          <Col lg={6} xs={12}>
+            <DataItem label="Prioridade">
+              <PriorityTag priority={project.priority} />
+            </DataItem>
+          </Col>
+
+          <Col lg={6} xs={12}>
+            <DataItem icon={<UserOutlined />} label="Responsável">
+              <MaintEmployeeTag maintainer={project.team.manager} />
+            </DataItem>
+          </Col>
+
+          <Col lg={6} xs={12}>
+            <DataItem icon={<TeamOutlined />} label="Equipe">
+              <Space size={4} wrap={true}>
+                {typeof project.team.others === "string"
+                  ? project.team.others.trim()
+                  : project.team.others.map((other) => (
+                      <MaintEmployeeTag
+                        key={typeof other === "string" ? nanoid() : other.uid}
+                        maintainer={other}
+                      />
+                    ))}
+              </Space>
+            </DataItem>
           </Col>
         </Row>
-      ) : (
-        <Page scrollTopOffset={24}>
+
+        <Divider />
+
+        {breakpoint.lg ? (
+          <Row className={classes.TimelineLgContainer}>
+            <Col span={4}>
+              <DataItem label="Histórico" />
+            </Col>
+            <Col className={classes.TimelineLg} span={19}>
+              <Page scrollTopOffset={24}>
+                <MaintProjectTimeline
+                  events={project.events}
+                  isPredPrev={isPredPrev}
+                />
+              </Page>
+            </Col>
+          </Row>
+        ) : (
           <Row>
             <Col span={24}>
               <DataItem label="Histórico" />
@@ -327,8 +327,8 @@ export function MaintProjectDetails({
               />
             </Col>
           </Row>
-        </Page>
-      )}
+        )}
+      </Page>
 
       <MaintProjectActionModal
         isVisible={!!actionModalType}
