@@ -10,7 +10,7 @@ import {
 } from "@components";
 import { useForm } from "@hooks";
 import { useNa3Auth } from "@modules/na3-react";
-import { message, Typography } from "antd";
+import { message } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 
@@ -69,7 +69,7 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
     <Page>
       <PageTitle>Entrar</PageTitle>
 
-      <PageAlert title="Atenção!" type="info">
+      {/* <PageAlert title="Atenção!" type="info">
         <Typography.Paragraph>
           O sistema de login mudou. A partir de agora, você entrará com o{" "}
           <strong>seu número de matrícula e senha.</strong>
@@ -94,7 +94,8 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
             </li>
           </ul>
         </Typography.Text>
-      </PageAlert>
+      </PageAlert> */}
+
       {currentUser && (
         <PageAlert type="warning">
           Você não possui acesso a esta área.
