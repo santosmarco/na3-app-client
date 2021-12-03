@@ -78,14 +78,11 @@ function getTimelineItemBody({
         return `Nova prioridade: ${parseStringId(payload.priority)}`;
       case "solutionStep":
         return (
-          <Space size="middle">
+          <Space direction="vertical" size={4}>
             {payload.solutionStep?.content || ""}
             {payload.solutionStep?.who && (
               <small>
-                <em>
-                  (Responsável:{" "}
-                  {getMaintPersonDisplayName(payload.solutionStep.who)})
-                </em>
+                <em>— {getMaintPersonDisplayName(payload.solutionStep.who)}</em>
               </small>
             )}
           </Space>
@@ -95,14 +92,11 @@ function getTimelineItemBody({
           return payload.solution;
         }
         return (
-          <Space size="middle">
+          <Space direction="vertical" size={4}>
             {payload.solution?.content || ""}
             {payload.solution?.who && (
               <small>
-                <em>
-                  (Responsável:{" "}
-                  {getMaintPersonDisplayName(payload.solution.who)})
-                </em>
+                <em>— {getMaintPersonDisplayName(payload.solution.who)}</em>
               </small>
             )}
           </Space>

@@ -27,6 +27,13 @@ export function MaintProjectTimeline({
         title: parseStringId(
           `maint-${isPredPrev ? "predprev" : "project"}-${ev.type}`
         ),
+        info: {
+          type: "tooltip",
+          content:
+            typeof ev.author === "string"
+              ? ev.author.trim()
+              : ev.author.displayName.trim(),
+        },
       }))}
     />
   );
