@@ -35,19 +35,115 @@
       "name": "Documentos",
       "shortName": "Documentos",
       "description": "Emita documentos diversos, como o de Transferência de Materiais",
-      "url": "/docs"
+      "url": "/docs",
+      "icons": [
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-36-36.png",
+          "sizes": "36x36",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-48-48.png",
+          "sizes": "48x48",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-72-72.png",
+          "sizes": "72x72",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-96-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-144-144.png",
+          "sizes": "144x144",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-01-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Etiquetas",
       "shortName": "Etiquetas",
       "description": "Imprima etiquetas a partir de modelos pré-definidos pelo PCP",
-      "url": "/etiquetas"
+      "url": "/etiquetas",
+      "icons": [
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-36-36.png",
+          "sizes": "36x36",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-48-48.png",
+          "sizes": "48x48",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-72-72.png",
+          "sizes": "72x72",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-96-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-144-144.png",
+          "sizes": "144x144",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-02-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Manutenção",
       "shortName": "Manutenção",
       "description": "Gerencie ou abra ordens de serviço para o setor de Manutenção",
-      "url": "/manutencao"
+      "url": "/manutencao",
+      "icons": [
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-36-36.png",
+          "sizes": "36x36",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-48-48.png",
+          "sizes": "48x48",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-72-72.png",
+          "sizes": "72x72",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-96-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-144-144.png",
+          "sizes": "144x144",
+          "type": "image/png"
+        },
+        {
+          "src": "assets/shortcuts/shortcut-icon-03-192-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "screenshots": [
@@ -82,5 +178,6 @@
   "orientation": "portrait",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "related_applications": []
+  "related_applications": [],
+  "id": "/"
 }
