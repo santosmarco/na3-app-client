@@ -205,3 +205,18 @@ messaging.onBackgroundMessage(function (payload) {
 
   void self.registration.showNotification(title, options);
 });
+
+/*
+ * === PERIODIC SYNC ===
+ */
+
+type PeriodicSyncEvent = Event & {
+  tag?: "update";
+  waitUntil?: FetchEvent["waitUntil"];
+};
+
+self.addEventListener("periodicsync", (event: PeriodicSyncEvent) => {
+  if (event.tag === "update") {
+    event.waitUntil?.(self.registration.update());
+  }
+});

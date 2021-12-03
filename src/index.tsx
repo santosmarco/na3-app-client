@@ -18,12 +18,17 @@ import ReactDOM from "react-dom";
 import { Router } from "react-router-dom";
 
 import { App } from "./App";
-import { APP_VERSION } from "./config";
+import {
+  APP_VERSION,
+  FIREBASE_CONFIG,
+  FIREBASE_MESSAGING_VAPID_KEY,
+  SENTRY_DSN,
+} from "./config";
 import { BreadcrumbProvider } from "./contexts";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import {
+  handleSwRegistration,
   initFirebaseCore,
-  initFirebaseMessaging,
   initSentry,
   MSG_TOKENS_STORAGE_KEY,
 } from "./utils";
@@ -40,19 +45,11 @@ const routerHistory = createBrowserHistory();
 
 initSentry({
   appVersion: APP_VERSION,
-  dsn: "https://c384ca31afea4def96034257d183c365@o1073983.ingest.sentry.io/6073606",
+  dsn: SENTRY_DSN,
   routerHistory,
 });
 
-void initFirebaseCore({
-  apiKey: "AIzaSyAynKF5joA-_wpax9jzatonSZgxSE-MaRQ",
-  appId: "1:810900069450:web:0f69447751bb45cac59ab3",
-  authDomain: "nova-a3-ind.firebaseapp.com",
-  measurementId: "G-PXKR7KDTEP",
-  messagingSenderId: "810900069450",
-  projectId: "nova-a3-ind",
-  storageBucket: "nova-a3-ind.appspot.com",
-});
+void initFirebaseCore(FIREBASE_CONFIG);
 
 function Root(): JSX.Element {
   return (
@@ -81,9 +78,11 @@ ReactDOM.render(
 // https://cra.link/PWA
 serviceWorkerRegistration.register({
   onSuccess: (swRegistration) =>
-    initFirebaseMessaging({
-      swRegistration,
-      vapidKey:
-        "BHAAggUsRBF-E-GWYHh8vY3A4r6kZMgHwrQ7qs1a6jXtU6tHxLq9WObBW-HalHDzA9YQ74U7mjiu-9nsKb0vabU",
+    handleSwRegistration(swRegistration, {
+      firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
+    }),
+  onUpdate: (swRegistration) =>
+    handleSwRegistration(swRegistration, {
+      firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
     }),
 });

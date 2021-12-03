@@ -4,6 +4,7 @@ export * from "./formatters";
 export * from "./forms/select";
 export * from "./initializers/firebase";
 export * from "./initializers/sentry";
+export * from "./initializers/sw";
 export * from "./maintenance";
 export * from "./notifications/push";
 export * from "./notifications/web";
