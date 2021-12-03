@@ -1,11 +1,14 @@
 import type { AppUser } from "@modules/na3-react";
-import { Typography } from "antd";
+import { Tooltip, Typography } from "antd";
 import React, { useMemo } from "react";
+
+import classes from "./UserDisplayName.module.css";
 
 type UserDisplayNameProps = {
   className?: string;
   fontWeight?: React.CSSProperties["fontWeight"];
   level?: 1 | 2 | 3 | 4 | 5;
+  showUidOnHover?: boolean;
   type?: "compact" | "default";
   user: AppUser;
 };
@@ -22,6 +25,7 @@ export function UserDisplayName({
   level,
   fontWeight,
   type,
+  showUidOnHover,
 }: UserDisplayNameProps): JSX.Element {
   const style = useMemo(
     () => ({ fontWeight: fontWeight || 500, marginBottom: 0 }),
@@ -29,13 +33,20 @@ export function UserDisplayName({
   );
 
   return (
-    <small>
-      <Typography.Title className={className} level={level} style={style}>
-        {`${type === "compact" ? user.compactDisplayName : user.displayName}`
-          .trim()
-          .toUpperCase()}
-      </Typography.Title>
-    </small>
+    <Tooltip
+      overlayClassName={classes.UidTooltip}
+      placement="topLeft"
+      title={user.uid}
+      visible={showUidOnHover ? undefined : false}
+    >
+      <small>
+        <Typography.Title className={className} level={level} style={style}>
+          {`${type === "compact" ? user.compactDisplayName : user.displayName}`
+            .trim()
+            .toUpperCase()}
+        </Typography.Title>
+      </small>
+    </Tooltip>
   );
 }
 

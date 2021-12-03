@@ -10,6 +10,7 @@ import {
   DataItem,
   Divider,
   Result404,
+  ScrollX,
   UserAvatar,
   UserDisplayName,
   UserPositionTag,
@@ -77,6 +78,7 @@ export function UserProfilePage({
             <UserDisplayName
               className={classes.DisplayName}
               level={4}
+              showUidOnHover={fromAdmin}
               user={user}
             />
 
@@ -116,7 +118,9 @@ export function UserProfilePage({
             iconMarginRight={4}
             label={asAccountPage ? "Suas posições" : "Posições"}
           >
-            <UserPositionTag position={user.positions} />
+            <ScrollX offset={6}>
+              <UserPositionTag position={user.positions} />
+            </ScrollX>
           </DataItem>
 
           <Divider marginBottom={16} />

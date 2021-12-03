@@ -49,6 +49,7 @@ export { Footer } from "./layout/footer/Footer";
 export { Header } from "./layout/header/Header";
 export { Sider } from "./layout/sider/Sider";
 export { Centered } from "./layout/utils/Centered";
+export { ScrollX } from "./layout/utils/ScrollX";
 export type { StaticListItemProps } from "./lists/components/StaticListItem";
 export { StaticListItem } from "./lists/components/StaticListItem";
 export type { ListRenderItem } from "./lists/List";
