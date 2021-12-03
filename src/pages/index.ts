@@ -19,6 +19,7 @@ export { MaintDashboardHomePage } from "./maintenance/dashboard/MaintDashboardHo
 export { MaintenanceHomePage } from "./maintenance/MaintenanceHome";
 export { MaintProjectsCreatePage } from "./maintenance/projects/MaintProjectsCreate";
 export { MaintProjectsHomePage } from "./maintenance/projects/MaintProjectsHome";
+export { MaintReportsHomePage } from "./maintenance/reports/MaintReportsHome";
 export { MaintServiceOrdersCreatePage } from "./maintenance/serviceOrders/MaintServiceOrdersCreate";
 export { MaintServiceOrdersHomePage } from "./maintenance/serviceOrders/MaintServiceOrdersHome";
 export { UserProfilePage } from "./users/UserProfile";

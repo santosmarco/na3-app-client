@@ -5,6 +5,10 @@ export type {
   Na3MaintenanceProjectStatus,
 } from "./maintenance/Na3MaintenanceProject";
 export type {
+  Na3MaintenanceReport,
+  Na3MaintenanceReportMonthly,
+} from "./maintenance/Na3MaintenanceReport";
+export type {
   Na3ServiceOrder,
   Na3ServiceOrderEvent,
   Na3ServiceOrderPriority,

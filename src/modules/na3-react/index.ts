@@ -6,6 +6,7 @@ export {
   useNa3Auth,
   useNa3Departments,
   useNa3MaintProjects,
+  useNa3MaintReports,
   useNa3People,
   useNa3Positions,
   useNa3Product,

@@ -1,0 +1,15 @@
+.PaginationPageItem {
+  width: 40px;
+}
+
+.PaginationContainer {
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* lg and up */
+@media screen and (min-width: 992px) {
+  .PaginationContainer {
+    margin-top: 16px;
+  }
+}

@@ -8,6 +8,7 @@ export type Na3UserPrivilegeId =
   | "labels_transf_print_own"
   | "maint_projects_read_all"
   | "maint_projects_write_all"
+  | "maint_reports_full_access"
   | "service_orders_read_all"
   | "service_orders_read_own"
   | "service_orders_write_maintenance"

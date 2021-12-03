@@ -16,6 +16,7 @@ export { MaintProjectTimeline } from "./app/maintenance/projects/details/MaintPr
 export { MaintProjectTimeRemaining } from "./app/maintenance/projects/details/MaintProjectTimeRemaining";
 export { MaintCreateProjectForm } from "./app/maintenance/projects/MaintCreateProjectForm";
 export { MaintProjectsList } from "./app/maintenance/projects/MaintProjectsList";
+export { MaintReportsFeatured } from "./app/maintenance/reports/MaintReportsFeatured";
 export { ConfirmServiceOrderModal } from "./app/maintenance/serviceOrders/actionModals/ConfirmServiceOrderModal";
 export { RejectSolutionModal } from "./app/maintenance/serviceOrders/actionModals/RejectSolutionModal";
 export { ServiceOrderSolutionActionsModal } from "./app/maintenance/serviceOrders/actionModals/ServiceOrderSolutionActionsModal";

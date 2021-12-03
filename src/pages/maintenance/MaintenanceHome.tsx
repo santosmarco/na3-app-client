@@ -1,10 +1,11 @@
-import { blue, geekblue, green, red } from "@ant-design/colors";
+import { blue, cyan, geekblue, green, red } from "@ant-design/colors";
 import { SettingOutlined } from "@ant-design/icons";
 import { MenuPage } from "@components";
 import type { MenuPageAction } from "@types";
 import React from "react";
 import {
   IoBuildOutline,
+  IoDocumentTextOutline,
   IoGridOutline,
   IoHammerOutline,
   IoSettingsOutline,
@@ -36,18 +37,26 @@ const maintenancePageActions: MenuPageAction[] = [
     title: "Dashboard",
   },
   {
-    colors: { background: blue[2], foreground: blue[8] },
+    colors: { background: cyan[2], foreground: cyan[8] },
     description: "Gerenciar os projetos de manutenção",
     href: "/manutencao/projetos",
     icon: <IoHammerOutline />,
     title: "Projetos de manutenção",
   },
   {
-    colors: { background: geekblue[2], foreground: geekblue[8] },
+    colors: { background: blue[2], foreground: blue[8] },
     description:
       "Gerenciar os projetos de preditiva/preventiva e lubrificação da Manutenção",
     href: "/manutencao/predprev",
     icon: <IoBuildOutline />,
     title: "Preditiva/Preventiva/Lubrificação",
+  },
+  {
+    colors: { background: geekblue[2], foreground: geekblue[8] },
+    description:
+      "Emita relatórios de ordens de serviço e projetos de manutenção",
+    href: "/manutencao/relatorios",
+    icon: <IoDocumentTextOutline />,
+    title: "Relatórios",
   },
 ];

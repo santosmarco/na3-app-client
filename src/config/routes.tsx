@@ -26,6 +26,7 @@ import {
   MaintenanceHomePage,
   MaintProjectsCreatePage,
   MaintProjectsHomePage,
+  MaintReportsHomePage,
   MaintServiceOrdersCreatePage,
   MaintServiceOrdersHomePage,
   UserProfilePage,
@@ -73,6 +74,7 @@ export type AppRoutePath =
   | "/manutencao/predprev/nova-predprev"
   | "/manutencao/projetos"
   | "/manutencao/projetos/novo-projeto"
+  | "/manutencao/relatorios"
   | "/usuarios";
 
 export type AppRoute = {
@@ -249,6 +251,7 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
         { path: "/manutencao/dashboard", title: "Dashboard" },
         { path: "/manutencao/projetos", title: "Projetos" },
         { path: "/manutencao/predprev", title: "Pred/Prev/Lub" },
+        { path: "/manutencao/relatorios", title: "Relatórios" },
       ],
     },
     title: "Manutenção",
@@ -290,6 +293,11 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     component: <MaintProjectsCreatePage isPredPrev={false} />,
     requiredPrivileges: ["maint_projects_write_all"],
     title: "Novo Projeto",
+  },
+  "/manutencao/relatorios": {
+    component: <MaintReportsHomePage />,
+    requiredPrivileges: ["maint_reports_full_access"],
+    title: "Relatórios",
   },
 
   "/usuarios": {
