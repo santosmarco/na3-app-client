@@ -10,7 +10,6 @@ import {
   DataItem,
   Divider,
   Result404,
-  ScrollX,
   UserAvatar,
   UserDisplayName,
   UserPositionTag,
@@ -18,8 +17,8 @@ import {
 import { useBreadcrumb } from "@hooks";
 import { useCurrentUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
-import { Button, Grid, Typography } from "antd";
-import React, { useEffect, useMemo } from "react";
+import { Button, Grid, notification, Typography } from "antd";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import classes from "./UserProfile.module.css";
 
@@ -44,7 +43,10 @@ export function UserProfilePage({
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
 
   const {
-    helpers: { getByRegistrationId: getUserByRegistrationId },
+    helpers: {
+      getByRegistrationId: getUserByRegistrationId,
+      setCurrentUserBio,
+    },
     loading,
   } = useNa3Users();
   const currentUser = useCurrentUser();
@@ -57,6 +59,20 @@ export function UserProfilePage({
         ? getUserByRegistrationId(registrationId)
         : undefined,
     [asAccountPage, currentUser, getUserByRegistrationId, registrationId]
+  );
+
+  const handleUserBioUpdate = useCallback(
+    async (updatedBio: string) => {
+      const operationRes = await setCurrentUserBio(updatedBio);
+
+      if (operationRes.error) {
+        notification.error({
+          description: operationRes.error.message,
+          message: "Erro ao atualizar bio",
+        });
+      }
+    },
+    [setCurrentUserBio]
   );
 
   useEffect(() => {
@@ -118,9 +134,7 @@ export function UserProfilePage({
             iconMarginRight={4}
             label={asAccountPage ? "Suas posições" : "Posições"}
           >
-            <ScrollX offset={6}>
-              <UserPositionTag position={user.positions} />
-            </ScrollX>
+            <UserPositionTag position={user.positions} />
           </DataItem>
 
           <Divider marginBottom={16} />
@@ -137,9 +151,7 @@ export function UserProfilePage({
         <Typography.Paragraph
           editable={
             asAccountPage && {
-              onChange: (): void => {
-                return;
-              },
+              onChange: handleUserBioUpdate,
               autoSize: { maxRows: 5, minRows: 3 },
             }
           }

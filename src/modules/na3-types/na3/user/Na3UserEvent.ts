@@ -1,6 +1,6 @@
 import type { Na3ServiceOrderPriority } from "../maintenance/Na3ServiceOrder";
 
-/* Map event types to their data and category */
+/* Map event types to their data and categories */
 type Na3UserEventMap = {
   SERVICE_ORDER_ACCEPT_SOLUTION: {
     category: "service_order_operator";
@@ -25,6 +25,10 @@ type Na3UserEventMap = {
   SERVICE_ORDER_REJECT_SOLUTION: {
     category: "service_order_operator";
     data: { id: string; refusalReason: string };
+  };
+  USER_SET_BIO: {
+    category: "user_profile";
+    data: { bio: string };
   };
 };
 
@@ -62,5 +66,9 @@ export type Na3UserEvent<Type extends Na3UserEventType = Na3UserEventType> = {
   | {
       data: Na3UserEventMap["SERVICE_ORDER_REJECT_SOLUTION"]["data"];
       readonly type: "SERVICE_ORDER_REJECT_SOLUTION";
+    }
+  | {
+      data: Na3UserEventMap["USER_SET_BIO"]["data"];
+      readonly type: "USER_SET_BIO";
     }
 );

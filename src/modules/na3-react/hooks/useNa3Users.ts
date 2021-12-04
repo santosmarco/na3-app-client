@@ -1,12 +1,14 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3DepartmentId,
   Na3DepartmentType,
   Na3Position,
   Na3PositionId,
+  Na3User,
   Na3UserRegistrationId,
 } from "@modules/na3-types";
-import { NA3_USER_ACHIEVEMENTS } from "@modules/na3-types";
+import { NA3_USER_ACHIEVEMENT_DEFINITIONS } from "@modules/na3-types";
 import firebase from "firebase";
 import { isArray } from "lodash";
 import { useCallback, useMemo } from "react";
@@ -17,8 +19,13 @@ import {
   buildAppUserAuthOnlyMethods,
   buildAppUserMethods,
 } from "../helpers";
-import type { AppUser, AppUserAuthenticated, MaybeArray } from "../types";
-import { resolveCollectionId } from "../utils";
+import type {
+  AppUser,
+  AppUserAuthenticated,
+  FirebaseOperationResult,
+  MaybeArray,
+} from "../types";
+import { buildNa3Error, resolveCollectionId } from "../utils";
 import { useNa3Departments } from "./useNa3Departments";
 import { useStateSlice } from "./useStateSlice";
 
@@ -40,6 +47,9 @@ export type UseNa3UsersResult = {
     getAuthEmail: (registrationId: string) => string;
     getByRegistrationId: (registrationId: string) => AppUser | undefined;
     getByUid: (uid: string) => AppUser | undefined;
+    setCurrentUserBio: (
+      updatedBio: string
+    ) => Promise<FirebaseOperationResult<string>>;
   };
   loading: boolean;
 };
@@ -77,7 +87,7 @@ export function useNa3Users(): UseNa3UsersResult {
     return na3Users.data.map((na3User) => {
       const baseUser = buildAppUserAttributes(na3User, {
         departments: departments.data,
-        availableAchievements: NA3_USER_ACHIEVEMENTS,
+        achievementDefinitions: NA3_USER_ACHIEVEMENT_DEFINITIONS,
       });
 
       return { ...baseUser, ...buildAppUserMethods(baseUser) };
@@ -161,6 +171,35 @@ export function useNa3Users(): UseNa3UsersResult {
     [data]
   );
 
+  const setCurrentUserBio = useCallback(
+    async (updatedBio: string): Promise<FirebaseOperationResult<string>> => {
+      if (!currentUser) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
+      const userRef = usersCollectionRef.doc(currentUser.uid);
+
+      try {
+        const updatedUser: Pick<Na3User, "bio"> = { bio: updatedBio };
+
+        await userRef.update(updatedUser);
+
+        void currentUser.registerEvents({ USER_SET_BIO: { bio: updatedBio } });
+
+        return { error: null, data: updatedBio };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
+      }
+    },
+    [currentUser, usersCollectionRef]
+  );
+
   return {
     data,
     error,
@@ -174,6 +213,7 @@ export function useNa3Users(): UseNa3UsersResult {
       getByRegistrationId,
       getAllInDepartments,
       getAllInPositions,
+      setCurrentUserBio,
     },
   };
 }

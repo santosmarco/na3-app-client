@@ -1,21 +1,19 @@
 import type {
+  NA3_USER_ACHIEVEMENT_DEFINITIONS,
   Na3Department,
   Na3Position,
   Na3User,
   Na3UserAchievement,
-  Na3UserAchievementId,
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
 import type { Falsy } from "utility-types";
 
-import type { AppUserAchievement, AppUserAttributes } from "../../types";
+import type { AppUserAttributes } from "../../types";
 import { removeDuplicates, removeNullables } from "../../utils";
 
-type AchievementMap = { [Id in Na3UserAchievementId]: Na3UserAchievement<Id> };
-
 type UserAttributeHelpers = {
-  getUserAchievements: () => AppUserAchievement[];
+  getUserAchievements: () => Na3UserAchievement[];
   getUserCompactDisplayName: () => string;
   getUserDepartments: () => Na3Department[];
   getUserFormattedDisplayName: () => string;
@@ -25,12 +23,12 @@ type UserAttributeHelpers = {
 };
 
 type UserAttrHelperDeps = {
-  availableAchievements: AchievementMap;
+  achievementDefinitions: typeof NA3_USER_ACHIEVEMENT_DEFINITIONS;
   departments: Na3Department[];
 };
 
 type UserAttrBuilderDeps = {
-  availableAchievements: AchievementMap;
+  achievementDefinitions: typeof NA3_USER_ACHIEVEMENT_DEFINITIONS;
   departments: Falsy | Na3Department[];
 };
 
@@ -52,10 +50,9 @@ function getUserFormattedDisplayName({
 
   return `${
     firstNames.length > 1
-      ? `${firstNames[0]} ${firstNames
-          .slice(1)
-          .map((name) => name[0].toUpperCase())
-          .join(" ")}`
+      ? `${firstNames[0]} ${removeNullables(
+          firstNames.slice(1).map((name) => name[0]?.toUpperCase() || undefined)
+        ).join(" ")}`
       : firstNames[0]
   } ${lastName}`.trim();
 }
@@ -107,39 +104,61 @@ function getUserPrivileges(
 function getUserAchievements(
   user: Na3User,
   dependencies: UserAttrHelperDeps
-): AppUserAchievement[] {
-  const { availableAchievements } = dependencies;
+): Na3UserAchievement[] {
+  const { achievementDefinitions: definitions } = dependencies;
 
   const userDpts = getUserDepartments(user, dependencies);
-  const achievable = Object.values(availableAchievements).filter(
-    (achievement) =>
-      achievement.targetDepartments.some((targetDpt) =>
+  const achievable = Object.values(definitions).filter(
+    (achievementDef) =>
+      achievementDef.targetDepartments === "all" ||
+      achievementDef.targetDepartments.some((targetDpt) =>
         userDpts.flatMap((dpt) => [dpt.id, dpt.type]).includes(targetDpt)
       )
   );
 
-  return achievable.map((achievement): AppUserAchievement => {
-    const progress = user.activityHistory.reduce(
-      (sum, ev) => (achievement.validate(ev) ? sum + 1 : sum),
-      0
-    );
-    const currentLevel = achievement.levels.filter(
-      (level) => level.goal < progress
-    ).length;
-    const progressPercent = progress / achievement.levels[currentLevel].goal;
-    const currentScore = achievement.levels
-      .slice(0, currentLevel)
-      .reduce((sum, level) => sum + level.score, 0);
-      const isDone = achievement.levels.reduce((sum, level) => sum + level.score, 0) <= currentScore
+  return achievable.map((achievementDef) => {
+    const validEvents = user.activityHistory.filter(achievementDef.validator);
+    const count = validEvents.length;
 
-    return {
-      ...achievement,
-      progress,
-      currentLevel,
-      progressPercent,
-      currentScore,
-      isDone
-    };
+    if (achievementDef.type === "progressive") {
+      const progress = count;
+      const currentLevelIdx = achievementDef.levels.filter(
+        (level) => level.goal < progress
+      ).length;
+      const currentLevel =
+        currentLevelIdx < achievementDef.levels.length
+          ? achievementDef.levels[currentLevelIdx]
+          : undefined;
+      const progressPercent = progress / (currentLevel?.goal || progress);
+      const currentScore = achievementDef.levels
+        .slice(0, currentLevelIdx)
+        .reduce((sum, level) => sum + level.score, 0);
+      const remainingToNextLevel = (currentLevel?.goal || progress) - progress;
+      const achieved =
+        achievementDef.levels.reduce((sum, level) => sum + level.score, 0) <=
+        currentScore;
+      const achievedAt = achieved
+        ? validEvents[
+            achievementDef.levels.reduce((sum, level) => sum + level.goal, 0)
+          ]?.timestamp
+        : null;
+
+      return {
+        ...achievementDef,
+        progress,
+        currentLevel: currentLevelIdx,
+        progressPercent,
+        currentScore,
+        achieved,
+        remainingToNextLevel,
+        achievedAt,
+      };
+    } else {
+      const achieved = count > 0;
+      const achievedAt = achieved ? validEvents[0]?.timestamp : null;
+
+      return { ...achievementDef, count, achieved, achievedAt };
+    }
   });
 }
 
@@ -156,7 +175,7 @@ function getUserAttributeHelpers(
     getUserFormattedDisplayName: (): string =>
       getUserFormattedDisplayName(user),
     getUserFullName: (): string => getUserFullName(user),
-    getUserAchievements: (): AppUserAchievement[] =>
+    getUserAchievements: (): Na3UserAchievement[] =>
       getUserAchievements(user, deps),
   };
 }

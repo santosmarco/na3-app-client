@@ -1,35 +1,38 @@
 import { Tag } from "@components";
-import type { WebColor } from "@modules/na3-types";
+import type { Na3UserAchievement } from "@modules/na3-types";
 import { formatNumber } from "@utils";
-import { Col, Row } from "antd";
+import { Col, Row, Typography } from "antd";
 import React from "react";
 
 import classes from "./AchievementTitle.module.css";
 
 type AchievementTitleProps = {
-  children: string;
-  color: WebColor;
-  currentScore: number;
-  isDone: boolean;
+  achievement: Na3UserAchievement;
 };
 
 export function AchievementTitle({
-  children,
-  color,
-  currentScore,
-  isDone,
+  achievement: { title, achieved, color, ...achievement },
 }: AchievementTitleProps): JSX.Element {
   return (
     <Row
       align="middle"
-      className={classes.AchievementTitle}
+      className={classes.AchievementTitleContainer}
       justify="space-between"
     >
-      <Col>{children}</Col>
+      <Col>
+        <Typography.Text className={classes.AchievementTitle}>
+          {title}
+        </Typography.Text>
+      </Col>
 
       <Col>
-        <Tag color={isDone ? "success" : color}>
-          Pontos: {formatNumber(currentScore)}
+        <Tag color={achieved ? "success" : color}>
+          Pontos:{" "}
+          {formatNumber(
+            achievement.type === "progressive"
+              ? achievement.currentScore
+              : achievement.score
+          )}
         </Tag>
       </Col>
     </Row>

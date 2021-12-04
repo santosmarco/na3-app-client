@@ -1,11 +1,11 @@
-import type { AppUserAchievement } from "@modules/na3-react";
+import type { Na3UserAchievement } from "@modules/na3-types";
 import { Space } from "antd";
 import React from "react";
 
 import { Achievement } from "./achievement/Achievement";
 
 type AccountAchievementsProps = {
-  achievements: AppUserAchievement[];
+  achievements: Na3UserAchievement[];
 };
 
 export function AccountAchievements({

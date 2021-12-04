@@ -1,4 +1,5 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import translateFirebaseError from "@modules/firebase-errors-pt-br";
 import type { Na3User } from "@modules/na3-types";
 import firebase from "firebase";
 import { useEffect, useRef } from "react";
@@ -78,7 +79,9 @@ export function Na3AuthController(): null {
             };
             void userRef.update(updatedUserLastSeenAt);
           } catch (err) {
-            dispatch(setAuthError(err as FirebaseError));
+            dispatch(
+              setAuthError(translateFirebaseError(err as FirebaseError))
+            );
           } finally {
             dispatch(setAuthLoading(false));
           }

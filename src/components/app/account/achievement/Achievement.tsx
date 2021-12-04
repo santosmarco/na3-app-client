@@ -1,15 +1,15 @@
 import * as colors from "@ant-design/colors";
-import type { AppUserAchievement } from "@modules/na3-react";
-import { Badge, Popover, Progress } from "antd";
+import { CheckCircleTwoTone } from "@ant-design/icons";
+import type { Na3UserAchievement } from "@modules/na3-types";
+import { Badge, Popover } from "antd";
 import React, { useMemo } from "react";
 
-import { AchievementContent } from "./AchievementContent";
+import classes from "./Achievement.module.css";
 import { AchievementDetails } from "./AchievementDetails";
-import { AchievementIcon } from "./AchievementIcon";
-import { AchievementTitle } from "./AchievementTitle";
+import { AchievementProgress } from "./AchievementProgress";
 
 type AchievementProps = {
-  achievement: AppUserAchievement;
+  achievement: Na3UserAchievement;
 };
 
 export function Achievement({ achievement }: AchievementProps): JSX.Element {
@@ -22,55 +22,44 @@ export function Achievement({ achievement }: AchievementProps): JSX.Element {
     () => ({
       backgroundColor: colors[achievement.color][2],
       color: colors[achievement.color][8],
+      zIndex: 50,
     }),
     [achievement.color]
   );
 
   return (
     <Popover
-      content={
-        <AchievementDetails
-          currentLevel={achievement.currentLevel}
-          description={achievement.description}
-          levelDescriptor={achievement.levelDescriptor}
-          levels={achievement.levels}
-          progress={achievement.progress}
-        />
-      }
+      content={<AchievementDetails achievement={achievement} />}
       key={achievement.id}
       placement="rightTop"
-      title={
-        <AchievementTitle
-          color={achievement.color}
-          currentScore={achievement.currentScore}
-          isDone={achievement.isDone}
-        >
-          {achievement.title}
-        </AchievementTitle>
-      }
     >
       <Badge
-        count={achievement.progress}
+        count={
+          achievement.type === "progressive" ? (
+            achievement.progress
+          ) : achievement.achieved ? (
+            <CheckCircleTwoTone
+              className={classes.AchievementBadgeIcon}
+              twoToneColor="#52c41a"
+            />
+          ) : (
+            0
+          )
+        }
         offset={[-7, size - 7]}
-        overflowCount={[...achievement.levels].pop()?.goal}
-        showZero={true}
+        overflowCount={
+          achievement.type === "progressive"
+            ? [...achievement.levels].pop()?.goal
+            : undefined
+        }
+        showZero={achievement.type === "progressive"}
         size="small"
         style={badgeStyle}
       >
-        <Progress
-          format={(): JSX.Element => (
-            <AchievementContent
-              color={achievement.color}
-              progressStrokeWidth={progressStrokeWidth}
-              size={size}
-            >
-              <AchievementIcon iconId={achievement.icon} />
-            </AchievementContent>
-          )}
-          percent={achievement.progressPercent * 100}
-          strokeWidth={progressStrokeWidth}
-          type="circle"
-          width={size}
+        <AchievementProgress
+          achievement={achievement}
+          progressStrokeWidth={progressStrokeWidth}
+          size={size}
         />
       </Badge>
     </Popover>

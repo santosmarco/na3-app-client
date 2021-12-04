@@ -45,6 +45,7 @@ export type {
 } from "./user/Na3User";
 export type {
   Na3UserAchievement,
+  Na3UserAchievementDefinition,
   Na3UserAchievementIconId,
   Na3UserAchievementId,
   Na3UserAchievementLevel,

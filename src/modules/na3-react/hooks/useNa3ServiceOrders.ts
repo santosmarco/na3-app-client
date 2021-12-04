@@ -243,14 +243,14 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
 
         await docRef.set(serviceOrder);
 
+        void user.registerEvents({ SERVICE_ORDER_CREATE: { id } });
+
         return { data: docRef, error: null };
       } catch (error) {
         return {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
-      } finally {
-        void user.registerEvents({ SERVICE_ORDER_CREATE: { id } });
       }
     },
     [device, user]
@@ -294,31 +294,32 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
+        void docRef.get().then((serviceOrderSnapshot) => {
+          const serviceOrder = serviceOrderSnapshot.data() as Omit<
+            Na3ServiceOrder,
+            "id"
+          >;
+
+          const lastDeliverEvent = [...serviceOrder.events]
+            .reverse()
+            .find((ev) => ev.type === "solutionTransmitted");
+
+          void user.registerEvents({
+            SERVICE_ORDER_ACCEPT_SOLUTION: {
+              id,
+              msFromDeliver: lastDeliverEvent
+                ? dayjs(lastDeliverEvent.timestamp).diff(dayjs())
+                : null,
+            },
+          });
+        });
+
         return { data: docRef, error: null };
       } catch (error) {
         return {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
-      } finally {
-        const serviceOrderSnapshot = await docRef.get();
-        const serviceOrder = serviceOrderSnapshot.data() as Omit<
-          Na3ServiceOrder,
-          "id"
-        >;
-
-        const lastDeliverEvent = [...serviceOrder.events]
-          .reverse()
-          .find((ev) => ev.type === "solutionTransmitted");
-
-        void user.registerEvents({
-          SERVICE_ORDER_ACCEPT_SOLUTION: {
-            id,
-            msFromDeliver: lastDeliverEvent
-              ? dayjs(lastDeliverEvent.timestamp).diff(dayjs())
-              : null,
-          },
-        });
       }
     },
     [device, user]
@@ -382,19 +383,19 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
-        return { data: docRef, error: null };
-      } catch (error) {
-        return {
-          data: null,
-          error: translateFirebaseError(error as FirebaseError),
-        };
-      } finally {
         void user.registerEvents({
           SERVICE_ORDER_REJECT_SOLUTION: {
             id,
             refusalReason: payload.reason.trim(),
           },
         });
+
+        return { data: docRef, error: null };
+      } catch (error) {
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
     [device, user]
@@ -453,13 +454,6 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
-        return { data: docRef, error: null };
-      } catch (error) {
-        return {
-          data: null,
-          error: translateFirebaseError(error as FirebaseError),
-        };
-      } finally {
         void user.registerEvents({
           SERVICE_ORDER_CONFIRM: {
             id,
@@ -467,6 +461,13 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
             priority: payload.priority,
           },
         });
+
+        return { data: docRef, error: null };
+      } catch (error) {
+        return {
+          data: null,
+          error: translateFirebaseError(error as FirebaseError),
+        };
       }
     },
     [device, user]
@@ -595,29 +596,30 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
+        void docRef.get().then((serviceOrderSnapshot) => {
+          const serviceOrder = serviceOrderSnapshot.data() as Omit<
+            Na3ServiceOrder,
+            "id"
+          >;
+
+          const createEvent = serviceOrder.events[0];
+
+          void user.registerEvents({
+            SERVICE_ORDER_DELIVER: {
+              id,
+              msFromCreation: createEvent
+                ? dayjs().diff(dayjs(createEvent.timestamp))
+                : null,
+            },
+          });
+        });
+
         return { data: docRef, error: null };
       } catch (error) {
         return {
           data: null,
           error: translateFirebaseError(error as FirebaseError),
         };
-      } finally {
-        const serviceOrderSnapshot = await docRef.get();
-        const serviceOrder = serviceOrderSnapshot.data() as Omit<
-          Na3ServiceOrder,
-          "id"
-        >;
-
-        const createEvent = serviceOrder.events[0];
-
-        void user.registerEvents({
-          SERVICE_ORDER_DELIVER: {
-            id,
-            msFromCreation: createEvent
-              ? dayjs().diff(dayjs(createEvent.timestamp))
-              : null,
-          },
-        });
       }
     },
     [device, user]
