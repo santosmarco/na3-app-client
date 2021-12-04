@@ -1,6 +1,7 @@
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { Divider } from "@components";
 import type { ButtonProps } from "antd";
-import { Button, Col, Divider, Grid, Row } from "antd";
+import { Button, Col, Grid, Row } from "antd";
 import { nanoid } from "nanoid";
 import React, { useMemo } from "react";
 import type { Falsy } from "utility-types";
@@ -80,7 +81,7 @@ export function ListFormPage({
       <Row gutter={28} style={rowStyle}>
         <Col className={classes.PageGridCol} lg={8} xl={7} xs={24} xxl={6}>
           <div className={classes.ListTitle}>
-            <Divider orientation="left">{listTitle}</Divider>
+            <Divider>{listTitle}</Divider>
           </div>
 
           <Page>{list}</Page>
@@ -88,9 +89,7 @@ export function ListFormPage({
 
         {breakpoint.lg && (
           <Col className={classes.PageGridCol} lg={16} xl={17} xs={0} xxl={18}>
-            <div>
-              <Divider orientation="left">{formTitle}</Divider>
-            </div>
+            <Divider>{formTitle}</Divider>
 
             <Page additionalPaddingBottom={24} scrollTopOffset={16}>
               {form}

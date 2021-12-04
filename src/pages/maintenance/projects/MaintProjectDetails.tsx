@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import {
   DataItem,
+  Divider,
   MaintCreateProjectForm,
   MaintEmployeeTag,
   MaintProjectActionModal,
@@ -27,16 +28,7 @@ import type {
   Na3MaintenanceProject,
 } from "@modules/na3-types";
 import { createErrorNotifier, getMaintProjectsRootUrl } from "@utils";
-import {
-  Button,
-  Col,
-  Divider,
-  Grid,
-  Modal,
-  notification,
-  Row,
-  Space,
-} from "antd";
+import { Button, Col, Grid, Modal, notification, Row, Space } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";

@@ -1,8 +1,8 @@
 import { blue, green, magenta, red } from "@ant-design/colors";
-import { Logo, StaticListItem } from "@components";
+import { Divider, Logo, StaticListItem } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
 import type { MenuPageAction } from "@types";
-import { Col, Divider, Row } from "antd";
+import { Col, Row } from "antd";
 import { nanoid } from "nanoid";
 import React from "react";
 import {
@@ -21,9 +21,7 @@ export function HomePage(): JSX.Element {
     <>
       {user && <Logo className={classes.Logo} />}
 
-      <div>
-        <Divider orientation="left">Acesso rápido</Divider>
-      </div>
+      <Divider>Acesso rápido</Divider>
 
       <Row
         gutter={[

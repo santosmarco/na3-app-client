@@ -1,10 +1,11 @@
 import labelLayout from "@assets/labelsTransfLayout.svg";
-import { Divider, Grid, Modal, Typography } from "antd";
+import { Divider } from "@components";
+import type { Na3ApiLabel } from "@modules/na3-types";
+import { Grid, Modal, Typography } from "antd";
 import barcode from "jsbarcode";
 import QrCode from "qrcode";
 import React, { useCallback, useMemo, useState } from "react";
 
-import type { Na3ApiLabel } from "../../../../modules/na3-types";
 import classes from "./LabelsTransfPreview.module.css";
 import { PreviewData } from "./PreviewData";
 import { PreviewFooter } from "./PreviewFooter";

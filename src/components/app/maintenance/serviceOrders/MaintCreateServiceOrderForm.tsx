@@ -1,5 +1,5 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Form, FormField, SubmitButton } from "@components";
+import { Divider, Form, FormField, SubmitButton } from "@components";
 import { useForm } from "@hooks";
 import {
   useCurrentUser,
@@ -8,10 +8,8 @@ import {
 } from "@modules/na3-react";
 import type { Na3Department, Na3DepartmentId } from "@modules/na3-types";
 import { createErrorNotifier } from "@utils";
-import { Col, Divider, Grid, Modal, notification, Row } from "antd";
+import { Col, Grid, Modal, notification, Row } from "antd";
 import React, { useCallback, useMemo, useState } from "react";
-
-import classes from "./MaintCreateServiceOrderForm.module.css";
 
 type MaintCreateServiceOrderFormProps = {
   onSubmit?: () => void;
@@ -256,7 +254,7 @@ export function MaintCreateServiceOrderForm({
         type="autoComplete"
       />
 
-      <Divider className={classes.FormDivider} />
+      <Divider marginY={16} />
 
       <Row gutter={36}>
         <Col lg={8} xs={24}>
@@ -293,7 +291,7 @@ export function MaintCreateServiceOrderForm({
         </Col>
       </Row>
 
-      <Divider className={classes.FormDivider} />
+      <Divider marginY={16} />
 
       <FormField
         label="Equipe responsável"
@@ -331,7 +329,7 @@ export function MaintCreateServiceOrderForm({
         type={breakpoint.md ? "radio" : "select"}
       />
 
-      <Divider className={classes.FormDivider} />
+      <Divider marginY={16} />
 
       <FormField
         label="Informações adicionais"

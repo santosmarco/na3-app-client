@@ -1,5 +1,6 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Divider, Grid, Typography } from "antd";
+import { Divider } from "@components";
+import { Button, Grid, Typography } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -44,17 +45,7 @@ export function PageTitle({
         </Button>
       )}
 
-      <Divider className={classes.Container} orientation="left">
-        {icon && <span className={classes.Icon}>{icon}</span>}
-
-        {pre && (
-          <small className={classes.PreTitle}>
-            <Typography.Text italic={true} type="secondary">
-              {pre}
-            </Typography.Text>
-          </small>
-        )}
-
+      <Divider icon={icon} marginTop={0} pre={pre}>
         {children}
       </Divider>
     </div>

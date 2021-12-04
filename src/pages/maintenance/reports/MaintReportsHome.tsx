@@ -17,6 +17,8 @@ export function MaintReportsHomePage(): JSX.Element {
         Emita relatórios de ordens de serviço e projetos de manutenção.
       </PageDescription>
 
+      <Divider>Em destaque</Divider>
+
       <MaintReportsFeatured monthly={getAllMonthlyReports()} />
 
       <Divider />

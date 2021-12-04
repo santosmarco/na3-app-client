@@ -1,7 +1,7 @@
-import { Card, Divider, Grid, Typography } from "antd";
+import { Divider } from "@components";
+import { Card, Grid, Typography } from "antd";
 import type { CSSProperties } from "react";
-import { useCallback } from "react";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import classes from "./DataCard.module.css";
 
@@ -78,7 +78,7 @@ export function DataCard<T>({
 
       {children && (
         <>
-          <Divider className={classes.Divider} />
+          <Divider marginBottom={12} marginTop={6} />
           {children}
         </>
       )}
