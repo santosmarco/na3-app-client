@@ -71,7 +71,7 @@ export function AchievementDetails({
                     `${formatNumber(achievement.score)} pontos`
                   }
                 >
-                  {achievement.achieved ? "Conquistado!" : "Não conquistado"}
+                  {achievement.achieved ? "Você conseguiu!" : "Não conquistado"}
                 </AchievementLevelTitle>
               }
             />
