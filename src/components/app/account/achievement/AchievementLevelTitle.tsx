@@ -15,6 +15,7 @@ export function AchievementLevelTitle({
   return (
     <Typography.Title className={classes.LevelTitle} level={5}>
       {children}
+
       <Typography.Text
         className={classes.LevelSubTitle}
         italic={true}
