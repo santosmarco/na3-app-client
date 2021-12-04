@@ -40,6 +40,7 @@ export function HomePage(): JSX.Element {
                 description={description}
                 href={href}
                 icon={icon}
+                preventAnimation={true}
                 title={title}
               />
             </Col>
