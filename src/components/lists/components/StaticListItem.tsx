@@ -11,6 +11,7 @@ export type StaticListItemProps = {
   href?: string;
   icon: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  preventAnimation?: boolean;
   title: React.ReactNode;
 };
 
@@ -22,6 +23,7 @@ export function StaticListItem({
   href,
   onClick,
   cardClassName,
+  preventAnimation,
 }: StaticListItemProps): JSX.Element {
   const history = useHistory();
 
@@ -40,11 +42,11 @@ export function StaticListItem({
 
   return (
     <Card
-      className={`${
-        classes.Card
-      } animate__animated animate__fadeIn animate__faster ${
-        cardClassName || ""
-      }`.trim()}
+      className={`${classes.Card} ${
+        preventAnimation
+          ? ""
+          : "animate__animated animate__fadeIn animate__faster"
+      } ${cardClassName || ""}`.trim()}
       hoverable={!!(onClick || href)}
       onClick={handleClick}
       size="small"
