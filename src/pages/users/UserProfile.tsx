@@ -17,6 +17,7 @@ import {
 import { useBreadcrumb } from "@hooks";
 import { useCurrentUser } from "@modules/na3-react";
 import { useNa3Users } from "@modules/na3-react";
+import { isTouchDevice } from "@utils";
 import { Button, Grid, notification, Typography } from "antd";
 import React, { useCallback, useEffect, useMemo } from "react";
 
@@ -153,6 +154,7 @@ export function UserProfilePage({
             asAccountPage && {
               onChange: handleUserBioUpdate,
               autoSize: { maxRows: 5, minRows: 3 },
+              tooltip: `${isTouchDevice() ? "Toque" : "Clique"} para editar`,
             }
           }
         >
