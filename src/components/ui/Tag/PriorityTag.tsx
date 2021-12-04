@@ -22,7 +22,7 @@ export function PriorityTag({
     return <Badge status={config.color} text={config.text} />;
   }
   return (
-    <Tag color={config.color} marginRight={marginRight}>
+    <Tag color={config.color} marginRight={marginRight} noStatusIcon={true}>
       {config.text.toUpperCase()}
     </Tag>
   );

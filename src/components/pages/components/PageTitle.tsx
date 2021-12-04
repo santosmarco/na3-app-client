@@ -1,6 +1,6 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Divider } from "@components";
-import { Button, Grid, Typography } from "antd";
+import { Button, Grid } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 

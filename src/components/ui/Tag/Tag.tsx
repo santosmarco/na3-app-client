@@ -18,6 +18,7 @@ export type TagProps = {
   color?: LiteralUnion<AntdTagProps["color"] | "stop" | "waiting", string>;
   icon?: React.ReactNode;
   marginRight?: "default";
+  noStatusIcon?: boolean;
   textColor?: string;
 };
 
@@ -34,6 +35,7 @@ export function Tag({
   marginRight,
   children,
   icon,
+  noStatusIcon,
 }: TagProps): JSX.Element {
   const style = useMemo(() => ({ color: textColor }), [textColor]);
 
@@ -41,7 +43,7 @@ export function Tag({
     <AntdTag
       className={marginRight === "default" ? undefined : classes.Tag}
       color={color}
-      icon={icon || getTagIcon(color)}
+      icon={icon || (!noStatusIcon && getTagIcon(color))}
       style={style}
     >
       <small>
