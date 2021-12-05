@@ -1,7 +1,6 @@
 import type { Na3UserAchievementIconId } from "@modules/na3-types";
 import React from "react";
-import { FaHeart } from "react-icons/fa";
-import { GiAutoRepair, GiCheckMark } from "react-icons/gi";
+import { FaCheckDouble, FaCogs, FaHeart } from "react-icons/fa";
 
 type AchievementIconProps = {
   iconId: Na3UserAchievementIconId;
@@ -9,11 +8,11 @@ type AchievementIconProps = {
 
 export function AchievementIcon({ iconId }: AchievementIconProps): JSX.Element {
   switch (iconId) {
-    case "repair":
-      return <GiAutoRepair />;
     case "check":
-      return <GiCheckMark />;
+      return <FaCheckDouble />;
     case "heart":
       return <FaHeart />;
+    case "repair":
+      return <FaCogs />;
   }
 }
