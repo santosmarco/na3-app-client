@@ -16,7 +16,10 @@ export const serviceOrdersReducer: Reducer<
 > = (state = initialState, action) => {
   switch (action.type) {
     case "SERVICE_ORDERS_SET_DATA":
-      return { ...state, data: sortStateData(action.data, "id") };
+      return {
+        ...state,
+        data: sortStateData(action.data, "id", { transformToNumber: true }),
+      };
     case "SERVICE_ORDERS_SET_LOADING":
       return { ...state, loading: action.loading };
     case "SERVICE_ORDERS_SET_ERROR":

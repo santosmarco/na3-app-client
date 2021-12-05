@@ -19,7 +19,7 @@ export function sortStateData<
 >(
   data: Array<T> | U,
   key: Extract<keyof ConditionalPick<T, number | string>, string>,
-  options?: { reverse?: boolean }
+  options?: { reverse?: boolean; transformToNumber?: boolean }
 ): Array<T> | U {
   if (!data) return data;
 
@@ -27,13 +27,13 @@ export function sortStateData<
 
   const sorted = dataCopy.sort((a, b) => {
     const valA =
-      typeof a[key] === "string"
+      typeof a[key] === "string" && !options?.transformToNumber
         ? (a[key] as string).trim().toLowerCase()
-        : (a[key] as number);
+        : +a[key];
     const valB =
-      typeof b[key] === "string"
+      typeof b[key] === "string" && !options?.transformToNumber
         ? (b[key] as string).trim().toLowerCase()
-        : (b[key] as number);
+        : +b[key];
 
     if (typeof valA === "string" && typeof valB === "string") {
       return valA.localeCompare(valB);
