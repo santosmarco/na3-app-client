@@ -1,4 +1,5 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type { Na3TransfLabelTemplate } from "@modules/na3-types";
 import firebase from "firebase";
 import { useCallback, useRef } from "react";
@@ -77,8 +78,11 @@ export function useNa3TransfLabelTemplates(): UseNa3TransfLabelTemplatesResult {
         )) as firebase.firestore.DocumentReference<Na3TransfLabelTemplate>;
 
         return { data: docRef, error: null };
-      } catch (error) {
-        return { data: null, error: error as FirebaseError };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
       }
     },
     []
@@ -97,8 +101,11 @@ export function useNa3TransfLabelTemplates(): UseNa3TransfLabelTemplatesResult {
         await docRef.update(templateData);
 
         return { data: docRef, error: null };
-      } catch (error) {
-        return { data: null, error: error as FirebaseError };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
       }
     },
     []
@@ -111,8 +118,8 @@ export function useNa3TransfLabelTemplates(): UseNa3TransfLabelTemplatesResult {
       await docRef.delete();
 
       return { error: null };
-    } catch (error) {
-      return { error: error as FirebaseError };
+    } catch (err) {
+      return { error: translateFirebaseError(err as FirebaseError) };
     }
   }, []);
 

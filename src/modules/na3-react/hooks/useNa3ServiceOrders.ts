@@ -252,10 +252,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         void user.registerEvents({ SERVICE_ORDER_CREATE: { id } });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
@@ -321,10 +321,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
@@ -397,10 +397,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
@@ -469,10 +469,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
@@ -532,10 +532,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
@@ -621,10 +621,10 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         });
 
         return { data: docRef, error: null };
-      } catch (error) {
+      } catch (err) {
         return {
           data: null,
-          error: translateFirebaseError(error as FirebaseError),
+          error: translateFirebaseError(err as FirebaseError),
         };
       }
     },
