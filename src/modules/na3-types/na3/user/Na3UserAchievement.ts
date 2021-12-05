@@ -9,7 +9,11 @@ export type Na3UserAchievementId =
   | "service_orders_solved"
   | "user_set_bio";
 
-export type Na3UserAchievementIconId = "check" | "heart" | "repair";
+export type Na3UserAchievementIconId =
+  | "check"
+  | "heart"
+  | "repair-user"
+  | "repair";
 
 export type Na3UserAchievementLevelDefinition = {
   goal: number;

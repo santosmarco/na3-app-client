@@ -12,7 +12,7 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
     title: "OS encerradas",
     description:
       "Encerre ordens de serviço com menos de 4 horas da solução transmitida",
-    icon: "check",
+    icon: "repair-user",
     id: "service_orders_closed",
     levels: [
       { goal: 10, score: 1000 },
