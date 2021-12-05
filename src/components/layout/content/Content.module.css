@@ -2,17 +2,10 @@
   display: flex;
   flex-flow: column;
   height: 100%;
-  margin: 0 16px;
+  margin: 0;
 }
 
 .Screen {
   height: 100%;
   overflow: hidden;
-}
-
-/* up to md */
-@media screen and (max-width: 768px) {
-  .Container {
-    margin: 0;
-  }
 }

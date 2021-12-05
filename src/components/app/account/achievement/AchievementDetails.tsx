@@ -11,74 +11,74 @@ import { AchievementTitle } from "./AchievementTitle";
 
 type AchievementDetailsProps = {
   achievement: Na3UserAchievement;
+  style?: React.CSSProperties;
 };
 
 export function AchievementDetails({
   achievement,
+  style,
 }: AchievementDetailsProps): JSX.Element {
   return (
-    <>
+    <div className={classes.AchievementDetails} style={style}>
       <AchievementTitle achievement={achievement} />
 
-      <div className={classes.AchievementDetails}>
-        <Typography.Paragraph
-          className={classes.AchievementDescription}
-          italic={true}
-          type="secondary"
-        >
-          {achievement.description}
-        </Typography.Paragraph>
+      <Typography.Paragraph
+        className={classes.AchievementDescription}
+        italic={true}
+        type="secondary"
+      >
+        {achievement.description}
+      </Typography.Paragraph>
 
-        {achievement.type === "progressive" ? (
-          <Steps
-            current={achievement.currentLevel.idx}
-            direction="vertical"
-            percent={achievement.currentLevel.progressPercent}
-            size="small"
-          >
-            {achievement.levels.map((level, idx) => (
-              <Steps.Step
-                description={achievement.levelDescriptor(achievement, idx)}
-                key={nanoid()}
-                title={
-                  <AchievementLevelTitle
-                    subTitle={`${formatNumber(level.score)} pontos`}
-                  >
-                    {level.goal}
-                  </AchievementLevelTitle>
-                }
-              />
-            ))}
-          </Steps>
-        ) : (
-          <Steps
-            direction="vertical"
-            progressDot={!achievement.achieved}
-            size="small"
-          >
+      {achievement.type === "progressive" ? (
+        <Steps
+          current={achievement.currentLevel.idx}
+          direction="vertical"
+          percent={achievement.currentLevel.progressPercent}
+          size="small"
+        >
+          {achievement.levels.map((level, idx) => (
             <Steps.Step
-              description={
-                achievement.achieved && achievement.achievedAt
-                  ? `Conquistado em ${dayjs(achievement.achievedAt).format(
-                      "DD/MM/YY [às] HH:mm"
-                    )}`
-                  : achievement.levelDescriptor
-              }
-              status={achievement.achieved ? "finish" : "wait"}
+              description={achievement.levelDescriptor(achievement, idx)}
+              key={nanoid()}
               title={
                 <AchievementLevelTitle
-                  subTitle={
-                    !achievement.achieved &&
-                    `${formatNumber(achievement.totalScore)} pontos`
-                  }
+                  subTitle={`${formatNumber(level.score)} pontos`}
                 >
-                  {achievement.achieved ? "Você conseguiu!" : "Não conquistado"}
+                  {level.goal}
                 </AchievementLevelTitle>
               }
             />
-          </Steps>
-        )}
-      </div>
-    </>
+          ))}
+        </Steps>
+      ) : (
+        <Steps
+          direction="vertical"
+          progressDot={!achievement.achieved}
+          size="small"
+        >
+          <Steps.Step
+            description={
+              achievement.achieved && achievement.achievedAt
+                ? `Conquistado em ${dayjs(achievement.achievedAt).format(
+                    "DD/MM/YY [às] HH:mm"
+                  )}`
+                : achievement.levelDescriptor
+            }
+            status={achievement.achieved ? "finish" : "wait"}
+            title={
+              <AchievementLevelTitle
+                subTitle={
+                  !achievement.achieved &&
+                  `${formatNumber(achievement.totalScore)} pontos`
+                }
+              >
+                {achievement.achieved ? "Você conseguiu!" : "Não conquistado"}
+              </AchievementLevelTitle>
+            }
+          />
+        </Steps>
+      )}
+    </div>
   );
 }

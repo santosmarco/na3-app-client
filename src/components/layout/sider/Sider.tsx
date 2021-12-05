@@ -1,5 +1,6 @@
 import { MenuOutlined } from "@ant-design/icons";
 import { ROUTES } from "@config";
+import { SIDER_COLLAPSED_WIDTH } from "@constants";
 import { useTheme } from "@hooks";
 import { Grid, Layout } from "antd";
 import { isArray } from "lodash";
@@ -98,11 +99,23 @@ export function Sider(): JSX.Element {
   return (
     <Layout.Sider
       collapsed={!!isCollapsed}
-      collapsedWidth={breakpoint.md || !isCollapsed ? 80 : 0}
+      collapsedWidth={
+        breakpoint.md || !isCollapsed
+          ? SIDER_COLLAPSED_WIDTH.MD
+          : SIDER_COLLAPSED_WIDTH.XS
+      }
       collapsible={true}
       onCollapse={handleCollapse}
       trigger={!breakpoint.md && isCollapsed && <MenuOutlined />}
-      width={breakpoint.md ? 220 : "100%"}
+      width={
+        breakpoint.xxl
+          ? 330
+          : breakpoint.lg
+          ? 275
+          : breakpoint.md
+          ? 220
+          : "100%"
+      }
       zeroWidthTriggerStyle={zeroWidthTriggerStyle}
     >
       <SiderLogo isCollapsed={!!isCollapsed} onClick={handleLogoNavigation} />

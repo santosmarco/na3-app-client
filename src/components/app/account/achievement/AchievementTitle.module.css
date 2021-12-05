@@ -6,3 +6,10 @@
 .AchievementTitle {
   font-weight: 500;
 }
+
+/* up to md */
+@media screen and (max-width: 768px) {
+  .AchievementTitleContainer {
+    margin-right: -8px;
+  }
+}

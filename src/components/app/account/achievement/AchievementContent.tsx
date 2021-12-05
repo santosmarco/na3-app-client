@@ -22,16 +22,17 @@ export function AchievementContent({
     () => ({
       backgroundColor: colors[color][2],
       color: colors[color][8],
+      width: size - progressStrokeWidth,
+      height: size - progressStrokeWidth,
       marginLeft: progressStrokeWidth / 2,
     }),
-    [color, progressStrokeWidth]
+    [color, size, progressStrokeWidth]
   );
 
   return (
     <Avatar
       className={classes.AchievementContent}
       icon={children}
-      size={size - progressStrokeWidth}
       style={style}
     />
   );

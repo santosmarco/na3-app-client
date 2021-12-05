@@ -4,6 +4,4 @@
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: scroll;
-  margin: 0 -28px 0;
-  padding: 0 28px 28px;
 }

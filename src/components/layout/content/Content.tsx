@@ -1,5 +1,6 @@
+import { MAIN_CONTENT_MARGIN } from "@constants";
 import { useTheme } from "@hooks";
-import { Layout } from "antd";
+import { Grid, Layout } from "antd";
 import React, { useMemo } from "react";
 
 import { Breadcrumb } from "../breadcrumb/Breadcrumb";
@@ -12,12 +13,19 @@ type ContentProps = {
 export function Content({ children }: ContentProps): JSX.Element {
   const [theme] = useTheme();
 
-  const contentStyle = useMemo(
-    () => ({
+  const breakpoint = Grid.useBreakpoint();
+
+  const contentStyle = useMemo(() => {
+    const marginX = breakpoint.md
+      ? MAIN_CONTENT_MARGIN.X.MD
+      : MAIN_CONTENT_MARGIN.X.XS;
+
+    return {
       backgroundColor: theme === "light" ? "#fff" : "#111",
-    }),
-    [theme]
-  );
+      marginLeft: marginX,
+      marginRight: marginX,
+    };
+  }, [theme, breakpoint.md]);
 
   return (
     <Layout.Content className={classes.Container} style={contentStyle}>

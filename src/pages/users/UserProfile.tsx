@@ -10,6 +10,7 @@ import {
   AchievementScoreTag,
   DataItem,
   Divider,
+  Page,
   Result404,
   UserAvatar,
   UserDisplayName,
@@ -123,78 +124,78 @@ export function UserProfilePage({
       </div>
 
       <Divider
-        marginBottom={!breakpoint.lg ? 16 : undefined}
-        marginTop={!breakpoint.lg ? 16 : undefined}
+        marginBottom={breakpoint.lg ? undefined : 16}
+        marginTop={breakpoint.lg ? undefined : 16}
       />
 
-      {!breakpoint.lg && (
-        <>
-          <DataItem
-            className={classes.DataItem}
-            hasColon={false}
-            icon={<UserSwitchOutlined />}
-            iconMarginRight={4}
-            label={asAccountPage ? "Suas posições" : "Posições"}
-          >
-            <UserPositionTag position={user.positions} />
-          </DataItem>
+      <Page scrollTopOffset={breakpoint.lg ? 24 : 16}>
+        {!breakpoint.lg && (
+          <>
+            <DataItem
+              hasColon={false}
+              icon={<UserSwitchOutlined />}
+              iconMarginRight={4}
+              label={asAccountPage ? "Suas posições" : "Posições"}
+            >
+              <UserPositionTag position={user.positions} />
+            </DataItem>
 
-          <Divider marginBottom={16} />
-        </>
-      )}
+            <Divider marginBottom={16} />
+          </>
+        )}
 
-      <DataItem
-        className={classes.DataItem}
-        hasColon={false}
-        icon={<HeartOutlined />}
-        iconMarginRight={4}
-        label="Bio"
-      >
-        <Typography.Paragraph
-          editable={
-            asAccountPage && {
-              onChange: handleUserBioUpdate,
-              autoSize: { maxRows: 5, minRows: 3 },
-              tooltip: `${isTouchDevice() ? "Toque" : "Clique"} para editar`,
+        <DataItem
+          className={classes.DataItem}
+          hasColon={false}
+          icon={<HeartOutlined />}
+          iconMarginRight={4}
+          label="Bio"
+        >
+          <Typography.Paragraph
+            editable={
+              asAccountPage && {
+                onChange: handleUserBioUpdate,
+                autoSize: { maxRows: 5, minRows: 3 },
+                tooltip: `${isTouchDevice() ? "Toque" : "Clique"} para editar`,
+              }
             }
+          >
+            {user.bio || (
+              <em>
+                {asAccountPage ? "Você" : "Este usuário"} ainda não definiu sua
+                bio.
+              </em>
+            )}
+          </Typography.Paragraph>
+        </DataItem>
+
+        <Divider
+          marginBottom={!breakpoint.lg ? 16 : undefined}
+          marginTop={!breakpoint.lg ? 16 : undefined}
+        />
+
+        <DataItem
+          hasColon={false}
+          icon={<TrophyOutlined />}
+          iconMarginRight={4}
+          label={asAccountPage ? "Suas conquistas" : "Conquistas"}
+          right={
+            <AchievementScoreTag
+              color={
+                user.score.current === user.score.total
+                  ? "success"
+                  : user.score.current > 0
+                  ? "blue"
+                  : undefined
+              }
+              score={user.score.current}
+              total={user.score.total}
+            />
           }
         >
-          {user.bio || (
-            <em>
-              {asAccountPage ? "Você" : "Este usuário"} ainda não definiu sua
-              bio.
-            </em>
-          )}
-        </Typography.Paragraph>
-      </DataItem>
-
-      <Divider
-        marginBottom={!breakpoint.lg ? 16 : undefined}
-        marginTop={!breakpoint.lg ? 16 : undefined}
-      />
-
-      <DataItem
-        className={classes.DataItem}
-        hasColon={false}
-        icon={<TrophyOutlined />}
-        iconMarginRight={4}
-        label={asAccountPage ? "Suas conquistas" : "Conquistas"}
-        right={
-          <AchievementScoreTag
-            color={
-              user.score.current === user.score.total
-                ? "success"
-                : user.score.current > 0
-                ? "blue"
-                : undefined
-            }
-            score={user.score.current}
-            total={user.score.total}
-          />
-        }
-      >
-        <AccountAchievements achievements={user.achievements} />
-      </DataItem>
+          <AccountAchievements achievements={user.achievements} />
+        </DataItem>
+      </Page>
     </>
   ) : (
     <Result404

@@ -2,12 +2,4 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 28px;
-  padding-bottom: 0;
-}
-
-@media screen and (max-width: 768px) {
-  .PageContainer {
-    padding: 8px 14px 0;
-  }
 }

@@ -7,3 +7,4 @@ export { useId } from "./useId";
 export { usePdf } from "./usePdf";
 export { useQuery } from "./useQuery";
 export { useTheme } from "./useTheme";
+export { useWindowSize } from "./useWindowSize";
