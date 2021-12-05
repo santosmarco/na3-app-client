@@ -4,6 +4,7 @@ import type {
   Na3Machine,
   Na3MaintenancePerson,
   Na3ServiceOrder,
+  Na3ServiceOrderEvent,
   Na3ServiceOrderPriority,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
@@ -35,6 +36,11 @@ export type UseNa3ServiceOrdersResult = {
       id: string,
       data: ServiceOrderBuilderData
     ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
+    calculateStops: (serviceOrder: Na3ServiceOrder) => {
+      loss: number | undefined;
+      machine: number;
+      production: number;
+    };
     confirm: (
       id: string,
       payload: {
@@ -625,6 +631,108 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
     [device, user]
   );
 
+  const getMsBetweenEvents = useCallback(
+    (
+      laterEvent: Na3ServiceOrderEvent | undefined,
+      earlierEvent: Na3ServiceOrderEvent | undefined
+    ): number => {
+      if (!laterEvent || !earlierEvent) return 0;
+      return dayjs(laterEvent.timestamp).diff(dayjs(earlierEvent.timestamp));
+    },
+    []
+  );
+
+  const calcMachineStoppedMs = useCallback(
+    (serviceOrder: Na3ServiceOrder): number => {
+      if (!serviceOrder.interruptions.equipment) {
+        return 0;
+      }
+
+      const deliverEvents = serviceOrder.events.filter(
+        (ev) => ev.type === "solutionTransmitted"
+      );
+
+      let totalMs = 0;
+
+      if (deliverEvents.length === 0) {
+        totalMs = dayjs().diff(dayjs(serviceOrder.createdAt));
+      } else {
+        const creationEvents = serviceOrder.events.filter(
+          (ev) => ev.type === "ticketCreated"
+        );
+        const reopenEvents = serviceOrder.events.filter(
+          (ev) => ev.type === "ticketReopened"
+        );
+
+        totalMs = deliverEvents.reduce(
+          (acc, deliverEv, idx) =>
+            acc +
+            getMsBetweenEvents(
+              deliverEv,
+              [...creationEvents, ...reopenEvents][idx]
+            ),
+          0
+        );
+
+        totalMs += reopenEvents.reduce(
+          (acc, reopenEv, idx) =>
+            acc + getMsBetweenEvents(reopenEv, deliverEvents[idx]),
+          0
+        );
+      }
+
+      if (serviceOrder.interruptions.line) {
+        // Multiply by number of machines in line
+      }
+
+      return totalMs;
+    },
+    [getMsBetweenEvents]
+  );
+
+  const calcProdStoppedMs = useCallback(
+    (serviceOrder: Na3ServiceOrder): number => {
+      if (
+        !serviceOrder.interruptions.production ||
+        serviceOrder.maintenanceType === "preventiva"
+      ) {
+        return 0;
+      }
+
+      return calcMachineStoppedMs(serviceOrder);
+    },
+    [calcMachineStoppedMs]
+  );
+
+  const calcLoss = useCallback(
+    (serviceOrder: Na3ServiceOrder): number | undefined => {
+      const serviceOrderMachine = departments.helpers.getDepartmentMachineById(
+        serviceOrder.username,
+        serviceOrder.machine
+      );
+
+      if (!serviceOrderMachine || !serviceOrderMachine.hourlyProdRate) {
+        return;
+      }
+      return (
+        serviceOrderMachine.hourlyProdRate *
+        dayjs.duration(calcProdStoppedMs(serviceOrder)).asHours()
+      );
+    },
+    [departments.helpers, calcProdStoppedMs]
+  );
+
+  const calculateStops = useCallback(
+    (serviceOrder: Na3ServiceOrder) => {
+      return {
+        machine: calcMachineStoppedMs(serviceOrder),
+        production: calcProdStoppedMs(serviceOrder),
+        loss: calcLoss(serviceOrder),
+      };
+    },
+    [calcMachineStoppedMs, calcProdStoppedMs, calcLoss]
+  );
+
   return {
     ...serviceOrders,
     helpers: {
@@ -645,6 +753,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       sortById,
       sortByPriority,
       sortByStatus,
+      calculateStops,
     },
   };
 }

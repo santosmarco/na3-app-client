@@ -40,7 +40,7 @@ export function Achievement({ achievement }: AchievementProps): JSX.Element {
           ) : achievement.achieved ? (
             <CheckCircleTwoTone
               className={classes.AchievementBadgeIcon}
-              twoToneColor="#52c41a"
+              twoToneColor={colors.green.primary}
             />
           ) : (
             0

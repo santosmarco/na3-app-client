@@ -254,7 +254,7 @@ export function MaintCreateServiceOrderForm({
         type="autoComplete"
       />
 
-      <Divider marginY={16} />
+      <Divider />
 
       <Row gutter={36}>
         <Col lg={8} xs={24}>
@@ -291,7 +291,7 @@ export function MaintCreateServiceOrderForm({
         </Col>
       </Row>
 
-      <Divider marginY={16} />
+      <Divider />
 
       <FormField
         label="Equipe responsável"
@@ -329,7 +329,7 @@ export function MaintCreateServiceOrderForm({
         type={breakpoint.md ? "radio" : "select"}
       />
 
-      <Divider marginY={16} />
+      <Divider />
 
       <FormField
         label="Informações adicionais"

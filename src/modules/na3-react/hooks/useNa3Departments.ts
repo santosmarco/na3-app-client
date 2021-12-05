@@ -3,6 +3,7 @@ import type {
   Na3Department,
   Na3DepartmentId,
   Na3DepartmentType,
+  Na3Machine,
   Na3PositionId,
 } from "@modules/na3-types";
 import { isArray } from "lodash";
@@ -30,6 +31,10 @@ export type UseNa3DepartmentsResult = {
     getByType: <T extends Na3DepartmentType>(
       type: T
     ) => Na3Department<T>[] | undefined;
+    getDepartmentMachineById: (
+      dptId: LiteralUnion<Na3DepartmentId<"shop-floor">, string>,
+      machineId: string
+    ) => Na3Machine | undefined;
     isDptType: (type: unknown) => type is Na3DepartmentType;
   };
   loading: boolean;
@@ -101,6 +106,19 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     [getById]
   );
 
+  const getDepartmentMachineById = useCallback(
+    (
+      dptId: LiteralUnion<Na3DepartmentId<"shop-floor">, string>,
+      machineId: string
+    ): Na3Machine | undefined => {
+      const dpt = getById(dptId);
+      return dpt?.machines
+        ? Object.entries(dpt?.machines).find(([id]) => id === machineId)?.[1]
+        : undefined;
+    },
+    [getById]
+  );
+
   const isDptType = useCallback((type: unknown): type is Na3DepartmentType => {
     return (
       typeof type === "string" &&
@@ -117,6 +135,7 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
       getByType,
       getByPositionIds,
       isDptType,
+      getDepartmentMachineById,
     },
   };
 }

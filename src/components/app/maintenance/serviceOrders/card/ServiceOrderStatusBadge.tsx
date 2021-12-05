@@ -1,4 +1,5 @@
 import type { Na3ServiceOrder } from "@modules/na3-types";
+import { parseStringId } from "@utils";
 import type { BadgeProps } from "antd";
 import { Badge } from "antd";
 import React, { useMemo } from "react";
@@ -12,11 +13,11 @@ export function ServiceOrderStatusBadge({
 }: ServiceOrderStatusBadgeProps): JSX.Element {
   const badgePropsMap: Record<Na3ServiceOrder["status"], BadgeProps> = useMemo(
     () => ({
-      closed: { status: "success", text: "Encerrada" },
-      pending: { status: "warning", text: "Pendente" },
-      refused: { status: "error", text: "Recusada" },
-      solved: { color: "lime", text: "Solucionada" },
-      solving: { status: "processing", text: "Resolvendo" },
+      closed: { status: "success" },
+      pending: { status: "warning" },
+      refused: { status: "error" },
+      solved: { color: "lime" },
+      solving: { status: "processing" },
     }),
     []
   );
@@ -25,7 +26,7 @@ export function ServiceOrderStatusBadge({
     <Badge
       color={badgePropsMap[orderStatus].color}
       status={badgePropsMap[orderStatus].status}
-      text={badgePropsMap[orderStatus].text}
+      text={parseStringId(orderStatus)}
     />
   );
 }

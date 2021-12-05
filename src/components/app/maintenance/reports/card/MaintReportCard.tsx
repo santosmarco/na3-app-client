@@ -5,6 +5,7 @@ import React, { useMemo } from "react";
 import { MaintReportCardHeader } from "./MaintReportCardHeader";
 
 type MaintReportCardProps = {
+  onClick: ((report: Na3MaintenanceReport) => void) | null | undefined;
   preTitle?: string;
   report: Na3MaintenanceReport;
   title?: string;
@@ -16,11 +17,12 @@ export function MaintReportCard({
   report,
   type,
   preTitle,
+  onClick,
 }: MaintReportCardProps): JSX.Element {
   const reportData = useMemo((): Na3MaintenanceReport => {
     if (type === "serviceOrders") return { ...report, projects: [] };
     else if (type === "projects") return { ...report, serviceOrders: [] };
-    else return { ...report, projects: [] };
+    else return { ...report };
   }, [report, type]);
 
   return (
@@ -32,8 +34,9 @@ export function MaintReportCard({
           serviceOrderCount={reportData.serviceOrders.length}
         />
       }
+      onClick={onClick}
       preTitle={preTitle}
       title={title || reportData.title}
-    ></DataCard>
+    />
   );
 }

@@ -6,7 +6,7 @@ type ThemeMode = "dark" | "light";
 
 type ToggleTheme = () => void;
 
-export function useTheme(): readonly [ThemeMode, ToggleTheme] {
+export function useTheme(): [ThemeMode, ToggleTheme] {
   const [storedTheme, setStoredTheme] = useLocalStorage(
     "NA3_APP_PREFERRED_THEME",
     "light"

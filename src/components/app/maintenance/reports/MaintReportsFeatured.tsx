@@ -1,4 +1,7 @@
-import type { Na3MaintenanceReportMonthly } from "@modules/na3-types";
+import type {
+  Na3MaintenanceReport,
+  Na3MaintenanceReportMonthly,
+} from "@modules/na3-types";
 import { Col, Pagination, Row } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useState } from "react";
@@ -8,16 +11,21 @@ import classes from "./MaintReportsFeatured.module.css";
 
 type MaintReportsFeaturedProps = {
   monthly: Na3MaintenanceReportMonthly[];
+  onDownload: (report: Na3MaintenanceReport) => void;
 };
 
 export function MaintReportsFeatured({
   monthly,
+  onDownload,
 }: MaintReportsFeaturedProps): JSX.Element {
-  const [selectedMonthIdx, setSelectedMonthIdx] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(monthly[0]);
 
-  const handleMonthChange = useCallback((page: number) => {
-    setSelectedMonthIdx(page - 1);
-  }, []);
+  const handleMonthChange = useCallback(
+    (page: number) => {
+      setSelectedMonth(monthly[page - 1]);
+    },
+    [monthly]
+  );
 
   const handlePaginationRenderItem = useCallback(
     (
@@ -44,16 +52,18 @@ export function MaintReportsFeatured({
       <Row gutter={[16, 8]}>
         <Col md={12} xs={24}>
           <MaintReportCard
+            onClick={onDownload}
             preTitle="Rel. mensal"
-            report={monthly[selectedMonthIdx]}
+            report={selectedMonth}
             type="serviceOrders"
           />
         </Col>
 
         <Col md={12} xs={24}>
           <MaintReportCard
+            onClick={null}
             preTitle="Rel. mensal"
-            report={monthly[selectedMonthIdx]}
+            report={selectedMonth}
             type="projects"
           />
         </Col>
