@@ -11,9 +11,16 @@ export type Na3UserAchievementId =
 
 export type Na3UserAchievementIconId = "check" | "heart" | "repair";
 
-export type Na3UserAchievementLevel = {
+export type Na3UserAchievementLevelDefinition = {
   goal: number;
   score: number;
+};
+
+export type Na3UserAchievementLevel = Na3UserAchievementLevelDefinition & {
+  idx: number;
+  progress: number;
+  progressPercent: number;
+  remainingToNextLevel: number;
 };
 
 export type Na3UserAchievementDefinition = {
@@ -26,32 +33,35 @@ export type Na3UserAchievementDefinition = {
   validator: (ev: Na3UserEvent) => boolean;
 } & (
   | {
-      levelDescriptor: (achievement: Na3UserAchievementProgressive) => string;
-      levels: Na3UserAchievementLevel[];
+      levelDescriptor: (
+        achievement: Na3UserAchievementProgressive,
+        levelIdx: number
+      ) => string;
+      levels: Na3UserAchievementLevelDefinition[];
       type: "progressive";
     }
   | {
       levelDescriptor: string;
-      score: number;
+      totalScore: number;
       type: "one-time";
     }
 );
 
-type Na3UserAchievementBase = Na3UserAchievementDefinition & {
+type Na3UserAchievementDynamic = Na3UserAchievementDefinition & {
   achieved: boolean;
   achievedAt: string | null;
+  currentScore: number;
+  totalScore: number;
 };
 
-type Na3UserAchievementProgressive = Na3UserAchievementBase & {
-  currentLevel: number;
-  currentScore: number;
-  progress: number;
-  progressPercent: number;
-  remainingToNextLevel: number;
+type Na3UserAchievementProgressive = Na3UserAchievementDynamic & {
+  currentLevel: Na3UserAchievementLevel;
+  totalProgress: number;
+  totalProgressPercent: number;
   type: "progressive";
 };
 
-type Na3UserAchievementOneTime = Na3UserAchievementBase & {
+type Na3UserAchievementOneTime = Na3UserAchievementDynamic & {
   count: number;
   type: "one-time";
 };

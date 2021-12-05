@@ -20,10 +20,14 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
       { goal: 100, score: 10000 },
     ],
     targetDepartments: ["shop-floor"],
-    levelDescriptor: ({ remainingToNextLevel }) =>
-      `Encerre mais ${remainingToNextLevel} orde${
-        remainingToNextLevel > 1 ? "ns" : "m"
-      } de serviço para alcançar esse nível`,
+    levelDescriptor: ({ currentLevel, levels, totalProgress }, lvlIdx) => {
+      const remainingToLevel = levels[lvlIdx].goal - totalProgress;
+      return currentLevel.idx > lvlIdx
+        ? "Concluído!"
+        : `Encerre mais ${remainingToLevel} orde${
+            currentLevel.remainingToNextLevel > 1 ? "ns" : "m"
+          } de serviço para alcançar esse nível`;
+    },
     validator: (ev) =>
       !!(
         ev.type === "SERVICE_ORDER_ACCEPT_SOLUTION" &&
@@ -45,10 +49,14 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
       { goal: 500, score: 25000 },
     ],
     targetDepartments: ["manutencao"],
-    levelDescriptor: ({ remainingToNextLevel }) =>
-      `Solucione mais ${remainingToNextLevel} orde${
-        remainingToNextLevel > 1 ? "ns" : "m"
-      } de serviço para alcançar esse nível`,
+    levelDescriptor: ({ currentLevel, levels, totalProgress }, lvlIdx) => {
+      const remainingToLevel = levels[lvlIdx].goal - totalProgress;
+      return currentLevel.idx > lvlIdx
+        ? "Concluído!"
+        : `Solucione mais ${remainingToLevel} orde${
+            currentLevel.remainingToNextLevel > 1 ? "ns" : "m"
+          } de serviço para alcançar esse nível`;
+    },
     validator: (ev) =>
       !!(
         ev.type === "SERVICE_ORDER_DELIVER" &&
@@ -68,6 +76,6 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
       'Defina sua bio na aba "Minha Conta" para desbloquear essa conquista',
     validator: (ev) => !!(ev.type === "USER_SET_BIO"),
     type: "one-time",
-    score: 500,
+    totalScore: 500,
   },
 };

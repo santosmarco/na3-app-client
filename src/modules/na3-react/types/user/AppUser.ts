@@ -25,6 +25,11 @@ type AppUserRaw = Omit<
   readonly updatedAt: Dayjs;
 };
 
+export type AppUserScore = {
+  readonly current: number;
+  readonly total: number;
+};
+
 export type AppUserAttributes = AppUserRaw & {
   readonly achievements: Na3UserAchievement[];
   readonly compactDisplayName: string;
@@ -32,6 +37,7 @@ export type AppUserAttributes = AppUserRaw & {
   readonly fullName: string;
   readonly positions: Na3Position[];
   readonly privileges: Na3UserPrivilegeId[];
+  readonly score: AppUserScore;
 };
 
 export type AppUserMethods = {

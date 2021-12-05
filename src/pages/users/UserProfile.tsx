@@ -7,6 +7,7 @@ import {
 import {
   AccountAchievements,
   AccountRegistrationId,
+  AchievementScoreTag,
   DataItem,
   Divider,
   Result404,
@@ -178,6 +179,19 @@ export function UserProfilePage({
         icon={<TrophyOutlined />}
         iconMarginRight={4}
         label={asAccountPage ? "Suas conquistas" : "Conquistas"}
+        right={
+          <AchievementScoreTag
+            color={
+              user.score.current === user.score.total
+                ? "success"
+                : user.score.current > 0
+                ? "blue"
+                : undefined
+            }
+            score={user.score.current}
+            total={user.score.total}
+          />
+        }
       >
         <AccountAchievements achievements={user.achievements} />
       </DataItem>

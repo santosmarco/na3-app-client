@@ -32,7 +32,7 @@ export function AchievementProgress({
           ? achieved
             ? 100
             : 0
-          : achievement.progressPercent * 100
+          : achievement.totalProgressPercent
       }
       strokeWidth={progressStrokeWidth}
       type="circle"

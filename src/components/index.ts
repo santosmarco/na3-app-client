@@ -73,6 +73,7 @@ export { PopoverSectionDivider } from "./ui/Popover/PopoverSectionDivider";
 export { Result } from "./ui/Result/Result";
 export { Result404 } from "./ui/Result/Result404";
 export { Spinner } from "./ui/Spinner/Spinner";
+export { AchievementScoreTag } from "./ui/Tag/AchievementScoreTag";
 export { DocStdTypeTag } from "./ui/Tag/DocStdTypeTag";
 export { MaintEmployeeTag } from "./ui/Tag/MaintEmployeeTag";
 export { PriorityTag } from "./ui/Tag/PriorityTag";

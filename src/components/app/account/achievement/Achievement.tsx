@@ -36,7 +36,7 @@ export function Achievement({ achievement }: AchievementProps): JSX.Element {
       <Badge
         count={
           achievement.type === "progressive" ? (
-            achievement.progress
+            achievement.totalProgress
           ) : achievement.achieved ? (
             <CheckCircleTwoTone
               className={classes.AchievementBadgeIcon}

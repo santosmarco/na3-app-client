@@ -4,12 +4,13 @@ import type {
   Na3Position,
   Na3User,
   Na3UserAchievement,
+  Na3UserAchievementLevel,
   Na3UserPrivilegeId,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
 import type { Falsy } from "utility-types";
 
-import type { AppUserAttributes } from "../../types";
+import type { AppUserAttributes, AppUserScore } from "../../types";
 import { removeDuplicates, removeNullables } from "../../utils";
 
 type UserAttributeHelpers = {
@@ -116,50 +117,87 @@ function getUserAchievements(
       )
   );
 
-  return achievable.map((achievementDef) => {
+  return achievable.map((achievementDef): Na3UserAchievement => {
     const validEvents = user.activityHistory.filter(achievementDef.validator);
     const count = validEvents.length;
 
     if (achievementDef.type === "progressive") {
-      const progress = count;
-      const currentLevelIdx = achievementDef.levels.filter(
-        (level) => level.goal < progress
-      ).length;
-      const currentLevel =
-        currentLevelIdx < achievementDef.levels.length
-          ? achievementDef.levels[currentLevelIdx]
-          : undefined;
-      const progressPercent = progress / (currentLevel?.goal || progress);
-      const currentScore = achievementDef.levels
-        .slice(0, currentLevelIdx)
-        .reduce((sum, level) => sum + level.score, 0);
-      const remainingToNextLevel = (currentLevel?.goal || progress) - progress;
-      const achieved =
-        achievementDef.levels.reduce((sum, level) => sum + level.score, 0) <=
-        currentScore;
+      const totalProgress = count;
+
+      let currLvlIdx = achievementDef.levels.findIndex(
+        (level) => level.goal > totalProgress
+      );
+      currLvlIdx =
+        currLvlIdx === -1 ? achievementDef.levels.length - 1 : currLvlIdx;
+
+      const { goal: currLvlGoal, score: currLvlScore } =
+        achievementDef.levels[currLvlIdx];
+      const remainingToNextLevel = currLvlGoal - totalProgress;
+      const currLvlProgress = currLvlGoal - remainingToNextLevel;
+      const currLvlProgressPercent =
+        (currLvlProgress / (currLvlProgress + remainingToNextLevel)) * 100;
+
+      const currLvl: Na3UserAchievementLevel = {
+        idx: currLvlIdx,
+        goal: currLvlGoal,
+        score: currLvlScore,
+        progress: currLvlProgress,
+        progressPercent: currLvlProgressPercent,
+        remainingToNextLevel,
+      };
+
+      const [currScore, totalScore, totalGoal] = achievementDef.levels.reduce(
+        ([sumCurrScore, sumTotalScore, sumTotalGoal], level, idx) => [
+          sumCurrScore + (idx < currLvlIdx ? level.score : 0),
+          sumTotalScore + level.score,
+          sumTotalGoal + level.goal,
+        ],
+        [0, 0, 0]
+      );
+
+      const totalProgressPercent = (totalProgress / totalGoal) * 100;
+
+      const achieved = currLvlIdx === achievementDef.levels.length - 1;
+
       const achievedAt = achieved
-        ? validEvents[
-            achievementDef.levels.reduce((sum, level) => sum + level.goal, 0)
-          ]?.timestamp
+        ? validEvents[currLvl.goal - 1]?.timestamp
         : null;
 
       return {
         ...achievementDef,
-        progress,
-        currentLevel: currentLevelIdx,
-        progressPercent,
-        currentScore,
+        totalProgress,
+        currentLevel: currLvl,
+        totalProgressPercent,
+        currentScore: currScore,
         achieved,
-        remainingToNextLevel,
         achievedAt,
+        totalScore,
       };
     } else {
       const achieved = count > 0;
       const achievedAt = achieved ? validEvents[0]?.timestamp : null;
 
-      return { ...achievementDef, count, achieved, achievedAt };
+      return {
+        ...achievementDef,
+        count,
+        achieved,
+        achievedAt,
+        currentScore: achieved ? achievementDef.totalScore : 0,
+      };
     }
   });
+}
+
+function getUserScore(userAchievements: Na3UserAchievement[]): AppUserScore {
+  const [current, total] = userAchievements.reduce(
+    (arr, achievement) => [
+      arr[0] + achievement.currentScore,
+      arr[1] + achievement.totalScore,
+    ],
+    [0, 0]
+  );
+
+  return { current, total };
 }
 
 function getUserAttributeHelpers(
@@ -198,6 +236,7 @@ export function buildAppUserAttributes(
 
   const userPositions = getUserPositions();
   const userDepartments = getUserDepartments();
+  const userAchievements = getUserAchievements();
 
   return {
     activityHistory: na3User.activityHistory,
@@ -224,6 +263,7 @@ export function buildAppUserAttributes(
     bio: na3User.bio,
     fullName: getUserFullName(),
     lastSeenAt: dayjs(na3User.lastSeenAt),
-    achievements: getUserAchievements(),
+    achievements: userAchievements,
+    score: getUserScore(userAchievements),
   };
 }

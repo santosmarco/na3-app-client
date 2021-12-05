@@ -31,17 +31,14 @@ export function AchievementDetails({
 
         {achievement.type === "progressive" ? (
           <Steps
-            current={achievement.currentLevel}
+            current={achievement.currentLevel.idx}
             direction="vertical"
+            percent={achievement.currentLevel.progressPercent}
             size="small"
           >
-            {achievement.levels.map((level) => (
+            {achievement.levels.map((level, idx) => (
               <Steps.Step
-                description={
-                  achievement.progress > level.goal
-                    ? "Concluído!"
-                    : achievement.levelDescriptor(achievement)
-                }
+                description={achievement.levelDescriptor(achievement, idx)}
                 key={nanoid()}
                 title={
                   <AchievementLevelTitle
@@ -54,7 +51,11 @@ export function AchievementDetails({
             ))}
           </Steps>
         ) : (
-          <Steps direction="vertical" size="small">
+          <Steps
+            direction="vertical"
+            progressDot={!achievement.achieved}
+            size="small"
+          >
             <Steps.Step
               description={
                 achievement.achieved && achievement.achievedAt
@@ -68,7 +69,7 @@ export function AchievementDetails({
                 <AchievementLevelTitle
                   subTitle={
                     !achievement.achieved &&
-                    `${formatNumber(achievement.score)} pontos`
+                    `${formatNumber(achievement.totalScore)} pontos`
                   }
                 >
                   {achievement.achieved ? "Você conseguiu!" : "Não conquistado"}

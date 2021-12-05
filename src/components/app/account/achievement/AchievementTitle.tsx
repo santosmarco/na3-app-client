@@ -1,6 +1,5 @@
-import { Tag } from "@components";
+import { AchievementScoreTag } from "@components";
 import type { Na3UserAchievement } from "@modules/na3-types";
-import { formatNumber } from "@utils";
 import { Col, Row, Typography } from "antd";
 import React from "react";
 
@@ -11,7 +10,7 @@ type AchievementTitleProps = {
 };
 
 export function AchievementTitle({
-  achievement: { title, achieved, color, ...achievement },
+  achievement: { title, achieved, color, currentScore, ...achievement },
 }: AchievementTitleProps): JSX.Element {
   return (
     <Row
@@ -26,14 +25,12 @@ export function AchievementTitle({
       </Col>
 
       <Col>
-        <Tag color={achieved ? "success" : color}>
-          Pontos:{" "}
-          {formatNumber(
-            achievement.type === "progressive"
-              ? achievement.currentScore
-              : achievement.score
-          )}
-        </Tag>
+        {(achievement.type === "progressive" || achieved) && (
+          <AchievementScoreTag
+            color={achieved ? "success" : color}
+            score={currentScore}
+          />
+        )}
       </Col>
     </Row>
   );
