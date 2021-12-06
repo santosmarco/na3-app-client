@@ -8,6 +8,7 @@ import type { Na3PeopleState } from "./Na3People";
 import type { Na3ProductsState } from "./Na3Products";
 import type { Na3UsersState } from "./Na3Users";
 import type { ServiceOrdersState } from "./ServiceOrders";
+import type { StdDocsState } from "./StdDocs";
 
 export type RootState = {
   auth: AuthState;
@@ -20,4 +21,5 @@ export type RootState = {
   na3Products: Na3ProductsState;
   na3Users: Na3UsersState;
   serviceOrders: ServiceOrdersState;
+  stdDocs: StdDocsState;
 };

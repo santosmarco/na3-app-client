@@ -36,7 +36,7 @@ export function UserDisplayName({
     <Tooltip
       overlayClassName={classes.UidTooltip}
       placement="topLeft"
-      title={user.uid}
+      title={<em>UID: {user.uid}</em>}
       visible={showUidOnHover ? undefined : false}
     >
       <small>

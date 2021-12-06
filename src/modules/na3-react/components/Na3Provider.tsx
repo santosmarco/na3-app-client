@@ -9,6 +9,7 @@ import { Na3MaintenanceProjectsController } from "./controllers/MaintProjectsCon
 import { Na3PeopleController } from "./controllers/na3/Na3PeopleController";
 import { Na3ProductsController } from "./controllers/na3/Na3ProductsController";
 import { Na3ServiceOrdersController } from "./controllers/ServiceOrdersController";
+import { Na3StdDocsController } from "./controllers/StdDocs";
 import { Na3TransfLabelTemplatesController } from "./controllers/TransfLabelTemplatesController";
 import { Na3UsersController } from "./controllers/UsersController";
 
@@ -48,10 +49,10 @@ export function Na3Provider({
       <Na3ProductsController />
       <Na3PeopleController />
 
-      {/* Firebase */}
       <Na3TransfLabelTemplatesController />
       <Na3ServiceOrdersController />
       <Na3MaintenanceProjectsController />
+      <Na3StdDocsController />
 
       {/* App */}
       {children}

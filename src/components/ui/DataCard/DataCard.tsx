@@ -1,4 +1,5 @@
 import { Divider } from "@components";
+import { ANIMATION_FADE_IN, ANIMATION_FASTER } from "@constants";
 import { Card, Grid, Typography } from "antd";
 import type { CSSProperties } from "react";
 import React, { useCallback, useMemo } from "react";
@@ -13,6 +14,7 @@ type DataCardProps<T> = {
   header?: React.ReactNode;
   onClick?: ((data: T) => void) | null;
   preTitle?: string;
+  preventAnimation?: boolean;
   title: string;
 };
 
@@ -34,6 +36,7 @@ export function DataCard<T>({
   title,
   preTitle,
   children,
+  preventAnimation,
 }: DataCardProps<T>): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
@@ -54,11 +57,17 @@ export function DataCard<T>({
   return (
     <Card
       bodyStyle={cardBodyStyle}
-      className={`${
-        classes.Card
-      } animate__animated animate__fadeIn animate__faster ${
-        className || ""
-      }`.trim()}
+      className={[
+        classes.Card,
+        preventAnimation
+          ? undefined
+          : `${ANIMATION_FADE_IN} ${ANIMATION_FASTER}`,
+        className,
+      ]
+        .filter(
+          (className): className is NonNullable<typeof className> => !!className
+        )
+        .join(" ")}
       hoverable={!!onClick}
       onClick={handleClick}
     >

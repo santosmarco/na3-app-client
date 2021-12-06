@@ -10,5 +10,6 @@ export * from "./store/Na3Products";
 export * from "./store/Na3Users";
 export * from "./store/Root";
 export * from "./store/ServiceOrders";
+export * from "./store/StdDocs";
 export * from "./user/AppUser";
 export * from "./utils";

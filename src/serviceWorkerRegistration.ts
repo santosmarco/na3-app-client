@@ -1,5 +1,3 @@
-// Original: https://github.com/cra-template/pwa/blob/master/packages/cra-template-pwa-typescript/template/src/serviceWorkerRegistration.ts
-
 type RegistryConfig = {
   onSuccess?: (registration: ServiceWorkerRegistration) => void;
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
@@ -20,19 +18,17 @@ export function register(config?: RegistryConfig): void {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
     if (publicUrl.origin !== window.location.origin) {
-      // Our service worker won't work if PUBLIC_URL is on a different origin
-      // from what our page is served on. This might happen if a CDN is used to
-      // serve assets; see https://github.com/facebook/create-react-app/issues/2374
+      // The service worker won't work if PUBLIC_URL is on a different origin
+      // from what the page is served on. This might happen if a CDN is used to
+      // serve assets; see https://github.com/facebook/create-react-app/issues/2374.
       return;
     }
 
     window.addEventListener("load", () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.
         checkValidServiceWorker(swUrl, config);
-
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
         void navigator.serviceWorker.ready.then(() => {
@@ -42,7 +38,7 @@ export function register(config?: RegistryConfig): void {
           );
         });
       } else {
-        // Is not localhost. Just register service worker
+        // Is not localhost. Just register service worker.
         registerValidSW(swUrl, config);
       }
     });
@@ -68,8 +64,7 @@ function registerValidSW(swUrl: string, config?: RegistryConfig): void {
                 "New content is available and will be used when all " +
                   "tabs for this page are closed. See https://cra.link/PWA."
               );
-
-              // Execute callback
+              // Execute callback.
               if (config?.onUpdate) {
                 config.onUpdate(registration);
               }
@@ -78,8 +73,7 @@ function registerValidSW(swUrl: string, config?: RegistryConfig): void {
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
               console.log("Content is cached for offline use.");
-
-              // Execute callback
+              // Execute callback.
               if (config?.onSuccess) {
                 config.onSuccess(registration);
               }

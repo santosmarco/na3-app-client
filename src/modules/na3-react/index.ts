@@ -12,6 +12,7 @@ export {
   useNa3Product,
   useNa3ProductCustomers,
   useNa3ServiceOrders,
+  useNa3StdDocs,
   useNa3TransfLabelTemplates,
   useNa3Users,
 } from "./hooks";

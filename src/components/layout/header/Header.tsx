@@ -1,5 +1,6 @@
 import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Logo } from "@components";
+import { ANIMATION_FADE_IN } from "@constants";
 import { useTheme } from "@hooks";
 import { useNa3Auth } from "@modules/na3-react";
 import { Button, message, Tooltip } from "antd";
@@ -50,7 +51,7 @@ export function Header(): JSX.Element {
           title={auth.currentUser ? "Sair" : "Entrar"}
         >
           <Button
-            className={`${classes.AuthButton} animate__animated animate__fadeIn`}
+            className={`${classes.AuthButton} ${ANIMATION_FADE_IN}`}
             danger={!!auth.currentUser}
             icon={auth.currentUser ? <LogoutOutlined /> : <LoginOutlined />}
             onClick={auth.currentUser ? handleSignOut : handleAuthRedirect}

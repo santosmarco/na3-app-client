@@ -1,3 +1,4 @@
+import { ANIMATION_FADE_IN, ANIMATION_FASTER } from "@constants";
 import { Avatar, Card } from "antd";
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
@@ -42,11 +43,17 @@ export function StaticListItem({
 
   return (
     <Card
-      className={`${classes.Card} ${
+      className={[
+        classes.Card,
         preventAnimation
-          ? ""
-          : "animate__animated animate__fadeIn animate__faster"
-      } ${cardClassName || ""}`.trim()}
+          ? undefined
+          : `${ANIMATION_FADE_IN} ${ANIMATION_FASTER}`,
+        cardClassName,
+      ]
+        .filter(
+          (className): className is NonNullable<typeof className> => !!className
+        )
+        .join(" ")}
       hoverable={!!(onClick || href)}
       onClick={handleClick}
       size="small"

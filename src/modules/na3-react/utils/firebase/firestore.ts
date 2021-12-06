@@ -8,6 +8,7 @@ export function resolveCollectionId(
     | "API-PEOPLE"
     | "API-PRODUCTS"
     | "departments"
+    | "docs-std"
     | "manut-projects"
     | "tickets"
     | "transf-label-templates"

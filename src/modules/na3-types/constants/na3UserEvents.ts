@@ -10,4 +10,5 @@ export const NA3_USER_EVENT_CATEGORY_MAP: Record<
   SERVICE_ORDER_CONFIRM: "service_order_maintenance",
   SERVICE_ORDER_DELIVER: "service_order_maintenance",
   USER_SET_BIO: "user_profile",
+  DOCS_STD_CREATE: "docs_std_manager",
 };

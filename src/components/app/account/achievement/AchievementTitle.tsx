@@ -10,7 +10,7 @@ type AchievementTitleProps = {
 };
 
 export function AchievementTitle({
-  achievement: { title, achieved, color, currentScore, ...achievement },
+  achievement: { title, achieved, currentScore, ...achievement },
 }: AchievementTitleProps): JSX.Element {
   return (
     <Row
@@ -26,10 +26,7 @@ export function AchievementTitle({
 
       <Col>
         {(achievement.type === "progressive" || achieved) && (
-          <AchievementScoreTag
-            color={achieved ? "success" : color}
-            score={currentScore}
-          />
+          <AchievementScoreTag achieved={achieved} score={currentScore} />
         )}
       </Col>
     </Row>

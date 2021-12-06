@@ -181,13 +181,7 @@ export function UserProfilePage({
           label={asAccountPage ? "Suas conquistas" : "Conquistas"}
           right={
             <AchievementScoreTag
-              color={
-                user.score.current === user.score.total
-                  ? "success"
-                  : user.score.current > 0
-                  ? "blue"
-                  : undefined
-              }
+              achieved={user.score.current === user.score.total}
               score={user.score.current}
               total={user.score.total}
             />

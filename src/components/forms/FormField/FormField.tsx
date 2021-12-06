@@ -17,6 +17,11 @@ import { FieldLabel } from "../components/FieldLabel/FieldLabel";
 import { FieldPreSuffix } from "../components/FieldPreSuffix/FieldPreSuffix";
 import type { AutoCompleteAsFieldProps } from "../fields/AutoComplete/AutoComplete";
 import { AutoComplete } from "../fields/AutoComplete/AutoComplete";
+import type {
+  FileUploadAsFieldProps,
+  UploadFile,
+} from "../fields/FileUpload/FileUpload";
+import { FileUpload } from "../fields/FileUpload/FileUpload";
 import type { InputDateAsFieldProps } from "../fields/InputDate/InputDate";
 import { InputDate } from "../fields/InputDate/InputDate";
 import { InputMask } from "../fields/InputMask/InputMask";
@@ -27,6 +32,7 @@ import classes from "./FormField.module.css";
 type FieldType =
   | "autoComplete"
   | "date"
+  | "file"
   | "input"
   | "mask"
   | "number"
@@ -36,7 +42,7 @@ type FieldType =
   | "switch"
   | "textArea";
 
-type FieldValue = string[] | boolean | string;
+type FieldValue = string[] | UploadFile[] | boolean | string;
 
 export type FieldStatus = "invalid" | "loading" | "untouched" | "valid";
 
@@ -73,6 +79,7 @@ type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
   autoUpperCase?: boolean;
   defaultHelp?: React.ReactNode;
   disabled?: boolean;
+  helpWhenDisabled?: React.ReactNode;
   helpWhenLoading?: React.ReactNode;
   helpWhenValid?: React.ReactNode | ((value: Value) => React.ReactNode);
   hidden?: boolean;
@@ -102,6 +109,7 @@ export type FormFieldProps<SelectValue extends string[] | string> = {
       SelectValue extends Array<string> ? SelectValue[number] : SelectValue
     > &
       FormFieldBaseProps<"autoComplete", SelectValue>)
+  | (FileUploadAsFieldProps & FormFieldBaseProps<"file", UploadFile[]>)
   | (FormFieldBaseProps<"date", string> & InputDateAsFieldProps)
   | (FormFieldBaseProps<"input", string> & InputBaseOptionalProps)
   | (FormFieldBaseProps<"mask", string> &
@@ -159,6 +167,7 @@ export function FormField<SelectValue extends string = string>(
     labelSpan,
     helpWhenLoading,
     helpWhenValid,
+    helpWhenDisabled,
     required,
     placeholder: placeholderProp,
     tooltip,
@@ -236,7 +245,14 @@ export function FormField<SelectValue extends string = string>(
         if (typeof extractedValue === "string") {
           extractedValue = extractedValue.toUpperCase();
         } else if (isArray(extractedValue)) {
-          extractedValue = extractedValue.map((v) => v.toUpperCase());
+          if (isUploadFileArray(extractedValue)) {
+            extractedValue = extractedValue.map((v) => ({
+              ...v,
+              fileName: v.fileName?.toUpperCase(),
+            }));
+          } else {
+            extractedValue = extractedValue.map((v) => v.toUpperCase());
+          }
         }
       }
 
@@ -264,7 +280,13 @@ export function FormField<SelectValue extends string = string>(
       }
 
       if (isArray(extractedValue) && sortValues) {
-        extractedValue = [...extractedValue].sort((a, b) => sortValues(a, b));
+        if (isUploadFileArray(extractedValue)) {
+          extractedValue = [...extractedValue].sort((a, b) =>
+            sortValues(a.fileName || a.name, b.fileName || b.name)
+          );
+        } else {
+          extractedValue = [...extractedValue].sort((a, b) => sortValues(a, b));
+        }
       }
 
       onChange(extractedValue);
@@ -331,6 +353,10 @@ export function FormField<SelectValue extends string = string>(
         case "radio":
         case "switch":
           return "";
+        case "file":
+          return isTouchDevice()
+            ? "Toque para selecionar um arquivo"
+            : "Clique ou arraste um arquivo para cá";
       }
     }
   }, [placeholderProp, type]);
@@ -348,6 +374,7 @@ export function FormField<SelectValue extends string = string>(
   const helpComponent = useMemo(
     (): JSX.Element => (
       <FieldHelp
+        contentWhenDisabled={helpWhenDisabled}
         contentWhenLoading={helpWhenLoading}
         contentWhenValid={
           typeof helpWhenValid === "function"
@@ -357,6 +384,7 @@ export function FormField<SelectValue extends string = string>(
         defaultContent={defaultHelp}
         error={error?.message}
         fieldStatus={status}
+        isDisabled={disabled}
         isFormSubmitting={isSubmitting}
         isHidden={status === "valid" ? !!hideHelpWhenValid : false}
       />
@@ -366,9 +394,11 @@ export function FormField<SelectValue extends string = string>(
       error?.message,
       status,
       isSubmitting,
+      disabled,
       hideHelpWhenValid,
       helpWhenLoading,
       helpWhenValid,
+      helpWhenDisabled,
       value,
     ]
   );
@@ -486,7 +516,10 @@ export function FormField<SelectValue extends string = string>(
             options={props.options}
             placeholder={placeholder}
             showSearch={props.showSearch || false}
-            value={(value !== true && value) || undefined}
+            value={
+              (value !== true && !isUploadFileArray(value) && value) ||
+              undefined
+            }
           />
         );
       case "radio":
@@ -536,6 +569,21 @@ export function FormField<SelectValue extends string = string>(
             value={typeof value === "string" ? value : ""}
           />
         );
+      case "file":
+        return (
+          <FileUpload
+            disabled={disabled}
+            fileTransform={props.fileTransform || null}
+            hint={props.hint || null}
+            id={name}
+            maxCount={props.maxCount || 1}
+            multiple={props.multiple || false}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            placeholder={placeholder}
+            value={isUploadFileArray(value) ? value : []}
+          />
+        );
     }
   }, [
     name,
@@ -581,3 +629,16 @@ export function FormField<SelectValue extends string = string>(
 }
 
 FormField.defaultProps = defaultProps;
+
+function isUploadFileArray(value: FieldValue): value is UploadFile[] {
+  if (!isArray(value)) {
+    return false;
+  }
+  let hasString = false;
+  value.forEach((v) => {
+    if (typeof v === "string") {
+      hasString = true;
+    }
+  });
+  return !hasString;
+}

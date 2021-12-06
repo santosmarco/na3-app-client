@@ -1,5 +1,7 @@
 export type Na3UserPrivilegeId =
   | "_super"
+  | "comex_read_all"
+  | "comex_write_all"
   | "docs_std_read_all"
   | "docs_std_read_own"
   | "docs_std_write_new"

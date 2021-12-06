@@ -1,6 +1,6 @@
+import type { UploadFile } from "@components";
 import {
   Divider,
-  FileUpload,
   Form,
   FormField,
   FormItem,
@@ -8,32 +8,31 @@ import {
   SubmitButton,
 } from "@components";
 import { useForm } from "@hooks";
-import { useNa3Departments } from "@modules/na3-react";
-import type {
-  Na3PositionId,
-  Na3StdDocumentType,
-  Na3UserPrivilegeId,
-} from "@modules/na3-types";
-import { getStdDocTypeSelectOptions } from "@utils";
-import { Col, Row } from "antd";
+import { useNa3Departments, useNa3StdDocs } from "@modules/na3-react";
+import type { Na3PositionId, Na3StdDocumentType } from "@modules/na3-types";
+import { createErrorNotifier, getStdDocTypeSelectOptions } from "@utils";
+import { Col, Modal, notification, Row } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useState } from "react";
+
+type DocsCreateStdFormProps = {
+  onSubmit?: () => void;
+};
 
 type FormValues = {
   code: string;
   description: string;
+  file: UploadFile[];
   nextRevisionAt: string;
-  privilegesApprove: Na3UserPrivilegeId[];
-  privilegesDownload: Na3UserPrivilegeId[];
-  privilegesPrint: Na3UserPrivilegeId[];
-  privilegesRead: Na3UserPrivilegeId[];
   timeBetweenRevisionsDays: string;
   title: string;
   type: Na3StdDocumentType | "";
   versionNumber: string;
 };
 
-export function DocsCreateStdForm(): JSX.Element {
+export function DocsCreateStdForm({
+  onSubmit,
+}: DocsCreateStdFormProps): JSX.Element {
   const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>([]);
   const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>([]);
   const [approverPosIds, setApproverPosIds] = useState<Na3PositionId[]>([]);
@@ -44,20 +43,20 @@ export function DocsCreateStdForm(): JSX.Element {
   const {
     helpers: { getByPositionIds: getDepartmentsByPositionIds },
   } = useNa3Departments();
+  const {
+    helpers: { createDocument },
+  } = useNa3StdDocs();
 
   const form = useForm<FormValues>({
     defaultValues: {
       code: "",
       description: "",
-      privilegesApprove: [],
-      privilegesDownload: [],
-      privilegesPrint: [],
-      privilegesRead: [],
       timeBetweenRevisionsDays: "",
       title: "",
       type: "",
       nextRevisionAt: "",
       versionNumber: "",
+      file: [],
     },
   });
 
@@ -73,11 +72,79 @@ export function DocsCreateStdForm(): JSX.Element {
     [form]
   );
 
-  const handleSubmit = useCallback(() => {
-    return;
-  }, []);
+  const handleFileNameTransform = useCallback(
+    (file: UploadFile): UploadFile => ({
+      ...file,
+      fileName: `${docTitle}_v${docVersion}`,
+    }),
+    [docTitle, docVersion]
+  );
 
-  console.log(viewerPosIds, downloaderPosIds, approverPosIds);
+  const handleSubmit = useCallback(
+    (formValues: FormValues) => {
+      const notifyError = createErrorNotifier("Erro ao criar o documento");
+
+      const confirmModal = Modal.confirm({
+        content: (
+          <>
+            Confirma a criação do document <em>{formValues.title.trim()}</em>?
+          </>
+        ),
+        okText: "Criar",
+        onOk: async () => {
+          if (formValues.type === "") {
+            notifyError("Atribua um tipo ao documento.");
+            return;
+          }
+
+          confirmModal.update({ okText: "Enviando..." });
+
+          const operationRes = await createDocument({
+            code: formValues.code,
+            title: formValues.title,
+            description: formValues.description,
+            nextRevisionAt: formValues.nextRevisionAt,
+            currentVersionNumber: +formValues.versionNumber,
+            type: formValues.type,
+            timeBetweenRevisionsMs:
+              +formValues.timeBetweenRevisionsDays * 24 * 60 * 60 * 1000,
+            permissions: {
+              approve: viewerPosIds,
+              download: downloaderPosIds,
+              print: viewerPosIds,
+              read: approverPosIds,
+            },
+          });
+
+          if (operationRes.error) {
+            notifyError(operationRes.error.message);
+          } else {
+            notification.success({
+              description: (
+                <>
+                  Documento <em>({formValues.title.trim()})</em> criado com
+                  sucesso!
+                </>
+              ),
+              message: "Documento criado",
+            });
+
+            form.resetForm();
+            onSubmit?.();
+          }
+        },
+        title: "Criar documento?",
+      });
+    },
+    [
+      form,
+      viewerPosIds,
+      downloaderPosIds,
+      approverPosIds,
+      onSubmit,
+      createDocument,
+    ]
+  );
 
   return (
     <Form
@@ -238,10 +305,9 @@ export function DocsCreateStdForm(): JSX.Element {
 
       <Divider />
 
-      <FileUpload
+      <FormField
         disabled={!docTitle || !docVersion}
-        fileNameTransform={(): string => `${docTitle}_v${docVersion}`}
-        folderPath="docs/standards"
+        fileTransform={handleFileNameTransform}
         helpWhenDisabled="Defina o título e a versão do documento primeiro"
         hint={
           <>
@@ -258,7 +324,9 @@ export function DocsCreateStdForm(): JSX.Element {
           </>
         }
         label="Arquivo"
-        maxCount={1}
+        name={form.fieldNames.file}
+        rules={{ required: "Anexe o arquivo do documento" }}
+        type="file"
       />
 
       <Divider />

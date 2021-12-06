@@ -7,5 +7,6 @@ export * from "./maintProjects/maintProjects";
 export * from "./reports";
 export * from "./serviceOrders/builders";
 export * from "./serviceOrders/formatters";
+export * from "./stdDocs/builders";
 export * from "./typeGuards";
 export * from "./users";

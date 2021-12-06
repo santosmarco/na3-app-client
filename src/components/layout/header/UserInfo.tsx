@@ -1,4 +1,5 @@
 import { UserAvatar, UserDisplayName } from "@components";
+import { ANIMATION_FADE_IN, ANIMATION_FADE_OUT } from "@constants";
 import type { AppUser } from "@modules/na3-react";
 import { useNa3ServiceOrders } from "@modules/na3-react";
 import { Badge, Grid, Popover, Tooltip } from "antd";
@@ -54,9 +55,6 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
     }
   }, [messageCount]);
 
-  if (!user) {
-    return null;
-  }
   return (
     <Tooltip
       onVisibleChange={handleTooltipVisibilityChange}
@@ -83,7 +81,9 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
         visible={popoverIsVisible}
       >
         <div
-          className={`${classes.UserInfo} animate__animated animate__fadeIn`}
+          className={`${classes.UserInfo} ${
+            user ? ANIMATION_FADE_IN : ANIMATION_FADE_OUT
+          }`}
         >
           <Badge count={messageCount} size="small">
             <UserAvatar size="small" type="icon" user={user} />

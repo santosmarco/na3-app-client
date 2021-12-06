@@ -32,7 +32,9 @@ export type {
 } from "./Na3Position";
 export type {
   Na3StdDocument,
-  Na3StdDocumentPrivileges,
+  Na3StdDocumentEvent,
+  Na3StdDocumentEventOrigin,
+  Na3StdDocumentPermissions,
   Na3StdDocumentType,
   Na3StdDocumentTypeId,
   Na3StdDocumentVersion,
