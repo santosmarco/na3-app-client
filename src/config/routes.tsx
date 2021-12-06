@@ -231,12 +231,18 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
   },
   "/etiquetas/imprimir": {
     component: <LabelsPrintPage />,
-    requiredPrivileges: ["labels_transf_print_own"],
+    requiredPrivileges: {
+      privileges: ["labels_transf_print_own", "labels_transf_print_all"],
+      every: false,
+    },
     title: "Imprimir",
   },
   "/etiquetas/imprimir/transferencia": {
     component: <LabelsTransfPrintPage />,
-    requiredPrivileges: ["labels_transf_print_own"],
+    requiredPrivileges: {
+      privileges: ["labels_transf_print_own", "labels_transf_print_all"],
+      every: false,
+    },
     title: "Transferência",
   },
 
