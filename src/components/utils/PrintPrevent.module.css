@@ -1,0 +1,43 @@
+.PrintPrevent {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+  z-index: 9999;
+}
+
+.PrintPreventContent {
+  width: 80vw;
+  text-align: center;
+  margin-bottom: 96px;
+}
+
+.PrintPreventLogo {
+  margin-bottom: 96px;
+}
+
+.PrintPreventTitle {
+  color: #111 !important;
+  margin: 0 !important;
+}
+
+.PrintPreventHelp {
+  color: #111;
+}
+
+@media print {
+  .PrintPreventEnabled {
+    display: flex;
+  }
+
+  .PrintPreventDisabled {
+    display: none;
+  }
+}
