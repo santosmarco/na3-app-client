@@ -6,11 +6,7 @@ import { clientsClaim } from "workbox-core";
 import { ExpirationPlugin } from "workbox-expiration";
 import * as navigationPreload from "workbox-navigation-preload";
 import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
-import {
-  registerRoute,
-  setCatchHandler,
-  setDefaultHandler,
-} from "workbox-routing";
+import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
   CacheFirst,
   NetworkFirst,
@@ -153,6 +149,14 @@ registerRoute(
   })
 );
 
+registerRoute(
+  new RegExp("/*"),
+  new StaleWhileRevalidate({
+    cacheName: CACHE,
+    plugins: handlerPlugins,
+  })
+);
+
 self.addEventListener("install", (event) => {
   const files = [PAGE_FALLBACK];
   if (IMAGE_FALLBACK) {
@@ -178,9 +182,39 @@ self.addEventListener("message", (event: { data?: { type?: string } }) => {
 
 self.addEventListener("periodicsync", (event: PeriodicSyncEvent) => {
   if (event.tag === "update") {
-    event.waitUntil?.(self.registration.update());
+    event.waitUntil?.(() => self.registration.update());
   }
 });
+
+self.addEventListener(
+  "fetch",
+  (event: FetchEvent & { preloadResponse?: Promise<Response> }) => {
+    if (event.request.mode === "navigate") {
+      event.respondWith(
+        (async (): Promise<Response> => {
+          try {
+            const preloadResp = await event.preloadResponse;
+
+            if (preloadResp) {
+              return preloadResp;
+            }
+
+            const networkResp = await fetch(event.request);
+            return networkResp;
+          } catch (error) {
+            const cache = await caches.open(CACHE);
+            const cachedResp = await cache.match(PAGE_FALLBACK);
+
+            if (!cachedResp) {
+              return Response.error();
+            }
+            return cachedResp;
+          }
+        })()
+      );
+    }
+  }
+);
 
 firebase.messaging().onBackgroundMessage((payload) => {
   const title = payload.notification?.title || "Nova A3";
