@@ -17,7 +17,7 @@ export function buildStdDocument(
   origin: { device: Na3AppDevice; user: AppUser }
 ): Omit<Na3StdDocument, "id"> {
   const creationEvent = buildStdDocumentEvents(
-    { type: "create", payload: null },
+    { type: "create", payload: { comment: null } },
     origin
   );
 
@@ -36,9 +36,9 @@ export function buildStdDocument(
         createdAt: timestamp(),
         id: nanoid(),
         number: data.currentVersionNumber,
+        events: [creationEvent],
       },
     ],
-    events: [creationEvent],
   };
 
   return doc;
@@ -66,17 +66,13 @@ export function buildStdDocumentEvents<T extends Na3StdDocumentEvent>(
   function buildOneEvent(
     config: EventBuildConfig<T>
   ): Na3StdDocumentEvent | undefined {
-    const id = nanoid();
-    switch (config.type) {
-      case "create":
-        return {
-          type: "create",
-          payload: null,
-          id,
-          origin: { device: origin.device, uid: origin.user.uid },
-          timestamp: now,
-        };
-    }
+    return {
+      type: config.type,
+      payload: config.payload,
+      id: nanoid(),
+      origin: { device: origin.device, uid: origin.user.uid },
+      timestamp: now,
+    };
   }
 
   if (!("length" in eventOrEvents)) {

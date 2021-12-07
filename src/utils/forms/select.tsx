@@ -3,16 +3,16 @@ import type {
   SelectOptionBase,
   SelectOptionGroup,
 } from "@components";
-import { DocStdTypeTag } from "@components";
+import { DocsStdTypeTag } from "@components";
 import { PriorityTag } from "@components";
 import { Tag } from "@components";
-import { NA3_STD_DOCUMENT_TYPES } from "@constants";
 import type { AppUser } from "@modules/na3-react";
 import type {
   Na3Department,
   Na3DepartmentId,
   Na3StdDocumentTypeId,
 } from "@modules/na3-types";
+import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
 import React from "react";
 import type { ConditionalPick } from "type-fest";
 import type { Falsy } from "utility-types";
@@ -113,8 +113,8 @@ export function getStdDocTypeSelectOptions(): SelectOptionBase<Na3StdDocumentTyp
   return Object.values(NA3_STD_DOCUMENT_TYPES)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((docType) => ({
-      label: <DocStdTypeTag type={docType} variant="dot" />,
-      labelWhenSelected: <DocStdTypeTag type={docType} />,
+      label: <DocsStdTypeTag type={docType} variant="dot" />,
+      labelWhenSelected: <DocsStdTypeTag type={docType} />,
       value: docType.id,
     }));
 }

@@ -2,6 +2,8 @@ import { useCallback, useMemo } from "react";
 import type {
   FieldValues,
   Path,
+  PathValue,
+  UnpackNestedValue,
   UseFormProps as UseFormOriginalProps,
   UseFormReturn as UseFormOriginalReturn,
 } from "react-hook-form";
@@ -55,10 +57,16 @@ export function useForm<
   const resetForm = useCallback(() => {
     const formValues = form.getValues();
 
-    Object.keys(formValues).forEach((key) => {
+    Object.entries<UnpackNestedValue<PathValue<Fields, Path<Fields>>>>(
+      formValues
+    ).forEach(([key, val]) => {
       const fieldName = key as Path<Fields>;
+      const defaultFieldVal = config.defaultValues[fieldName];
 
-      form.setValue(fieldName, config.defaultValues[fieldName]);
+      form.setValue(
+        fieldName,
+        defaultFieldVal === undefined ? val : defaultFieldVal
+      );
       form.clearErrors(fieldName);
     });
   }, [config.defaultValues, form]);

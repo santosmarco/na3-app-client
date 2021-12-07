@@ -37,6 +37,9 @@ const stringIdsDictionary = {
   solved: "Solucionada",
   closed: "Encerrada",
   refused: "Recusada",
+  approved: "Aprovado",
+  draft: "Rascunho",
+  rejected: "Recusado",
 };
 
 export function parseStringId(

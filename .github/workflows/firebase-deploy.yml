@@ -21,17 +21,17 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Install client scripts' dependencies
-        run: yarn scripts:install
+        run: cd scripts && yarn
       - name: Run ESLint
-        run: yarn lint:fix
+        run: yarn eslint --fix src/ --ext .ts,.tsx
       - name: Format code
-        run: yarn prettier:write
+        run: yarn prettier --write src/
       - name: Build client scripts
-        run: yarn scripts:build
+        run: cd scripts && yarn tsc
       - name: Update version's timestamp
-        run: yarn scripts:vtimestamp
+        run: cd scripts && yarn node build/meta-version-timestamp-update.js
       - name: Build app
-        run: yarn build
+        run: yarn craco build
 
       - name: Deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -42,4 +42,4 @@ jobs:
           projectId: nova-a3-ind
 
       - name: Update version
-        run: yarn scripts:vincrement
+        run: cd scripts && yarn node build/meta-version-increment.js

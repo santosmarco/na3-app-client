@@ -35,6 +35,7 @@ export type {
   Na3StdDocumentEvent,
   Na3StdDocumentEventOrigin,
   Na3StdDocumentPermissions,
+  Na3StdDocumentStatus,
   Na3StdDocumentType,
   Na3StdDocumentTypeId,
   Na3StdDocumentVersion,

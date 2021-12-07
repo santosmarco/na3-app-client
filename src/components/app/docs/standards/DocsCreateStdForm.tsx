@@ -9,7 +9,7 @@ import {
 } from "@components";
 import { useForm } from "@hooks";
 import { useNa3Departments, useNa3StdDocs } from "@modules/na3-react";
-import type { Na3PositionId, Na3StdDocumentType } from "@modules/na3-types";
+import type { Na3PositionId, Na3StdDocumentTypeId } from "@modules/na3-types";
 import { createErrorNotifier, getStdDocTypeSelectOptions } from "@utils";
 import { Col, Modal, notification, Row } from "antd";
 import dayjs from "dayjs";
@@ -22,11 +22,11 @@ type DocsCreateStdFormProps = {
 type FormValues = {
   code: string;
   description: string;
-  file: UploadFile[];
+  fileList: UploadFile[];
   nextRevisionAt: string;
   timeBetweenRevisionsDays: string;
   title: string;
-  type: Na3StdDocumentType | "";
+  type: Na3StdDocumentTypeId | "";
   versionNumber: string;
 };
 
@@ -56,7 +56,7 @@ export function DocsCreateStdForm({
       type: "",
       nextRevisionAt: "",
       versionNumber: "",
-      file: [],
+      fileList: [],
     },
   });
 
@@ -87,13 +87,21 @@ export function DocsCreateStdForm({
       const confirmModal = Modal.confirm({
         content: (
           <>
-            Confirma a criação do document <em>{formValues.title.trim()}</em>?
+            Confirma a criação do documento {`"${formValues.title.trim()}"`}{" "}
+            <em>(v. {formValues.versionNumber})</em>?
           </>
         ),
         okText: "Criar",
         onOk: async () => {
           if (formValues.type === "") {
             notifyError("Atribua um tipo ao documento.");
+            return;
+          }
+
+          if (!formValues.fileList[0]?.originFileObj) {
+            notifyError(
+              "Anexe o arquivo referente à última versão vigente do documento."
+            );
             return;
           }
 
@@ -114,6 +122,7 @@ export function DocsCreateStdForm({
               print: viewerPosIds,
               read: approverPosIds,
             },
+            file: formValues.fileList[0].originFileObj,
           });
 
           if (operationRes.error) {
@@ -324,7 +333,7 @@ export function DocsCreateStdForm({
           </>
         }
         label="Arquivo"
-        name={form.fieldNames.file}
+        name={form.fieldNames.fileList}
         rules={{ required: "Anexe o arquivo do documento" }}
         type="file"
       />

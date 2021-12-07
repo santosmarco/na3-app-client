@@ -1,7 +1,4 @@
-import type {
-  Na3StdDocumentType,
-  Na3StdDocumentTypeId,
-} from "@modules/na3-types";
+import type { Na3StdDocumentType, Na3StdDocumentTypeId } from "../na3";
 
 export const NA3_STD_DOCUMENT_TYPES: Record<
   Na3StdDocumentTypeId,
