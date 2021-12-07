@@ -95,13 +95,6 @@ if (navigationPreload.isSupported()) {
   navigationPreload.enable();
 }
 
-setDefaultHandler(
-  new StaleWhileRevalidate({
-    cacheName: CACHE,
-    plugins: handlerPlugins,
-  })
-);
-
 // Set up App Shell-style routing.
 const fileExtensionRegex = new RegExp("/[^/?]+\\.[^/]+$");
 registerRoute(
@@ -173,6 +166,7 @@ self.addEventListener("install", (event) => {
     self.caches
       .open(OFFLINE_FALLBACKS_CACHE)
       .then((cache) => cache.addAll(files))
+      .then(() => self.skipWaiting())
   );
 });
 
