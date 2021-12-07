@@ -6,6 +6,7 @@ import classes from "./Divider.module.css";
 
 type DividerProps = AntdDividerProps & {
   children?: React.ReactNode;
+  color?: string;
   icon?: React.ReactNode;
   marginBottom?: number;
   marginTop?: number;
@@ -33,14 +34,16 @@ export function Divider({
   icon,
   pre,
   marginY,
+  color,
 }: DividerProps): JSX.Element {
   const style = useMemo(
     () => ({
       ...styleProp,
       marginBottom: marginBottom ?? marginY ?? styleProp?.marginBottom,
       marginTop: marginTop ?? marginY ?? styleProp?.marginTop,
+      backgroundColor: color ?? styleProp?.color,
     }),
-    [styleProp, marginBottom, marginTop, marginY]
+    [styleProp, marginBottom, marginTop, marginY, color]
   );
 
   return (
