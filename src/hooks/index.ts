@@ -6,5 +6,6 @@ export { useForm } from "./useForm";
 export { useId } from "./useId";
 export { usePdf } from "./usePdf";
 export { useQuery } from "./useQuery";
+export type { ThemeMode } from "./useTheme";
 export { useTheme } from "./useTheme";
 export { useWindowSize } from "./useWindowSize";

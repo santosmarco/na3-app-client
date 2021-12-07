@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import useLocalStorage from "react-use-localstorage";
 
-type ThemeMode = "dark" | "light";
+export type ThemeMode = "dark" | "light";
 
 type ToggleTheme = () => void;
 
