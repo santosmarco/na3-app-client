@@ -572,6 +572,7 @@ export function FormField<SelectValue extends string = string>(
       case "file":
         return (
           <FileUpload
+            acceptOnly={props.acceptOnly || null}
             disabled={disabled}
             fileTransform={props.fileTransform || null}
             hint={props.hint || null}

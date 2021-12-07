@@ -1,9 +1,13 @@
 import { FileOutlined } from "@ant-design/icons";
 import { Overlay } from "@components";
+import type { MaybeArray } from "@types";
 import { Upload } from "antd";
+import { isArray } from "lodash";
 import React, { useCallback } from "react";
 
 type UploadFileStatus = "done" | "error" | "removed" | "success" | "uploading";
+
+type FileUploadAccept = "application/pdf";
 
 type OriginFile = Readonly<File & { lastModifiedDate: Date; uid: string }>;
 
@@ -25,6 +29,7 @@ export type UploadFile = {
 };
 
 export type FileUploadAsFieldProps = {
+  acceptOnly?: MaybeArray<FileUploadAccept> | null | undefined;
   fileTransform?:
     | ((file: UploadFile, index: number, files: UploadFile[]) => UploadFile)
     | null
@@ -54,6 +59,7 @@ export function FileUpload({
   placeholder,
   value,
   fileTransform,
+  acceptOnly,
 }: FileUploadProps): JSX.Element {
   const handleChange = useCallback(
     ({ fileList }: { fileList: UploadFile[] }) => {
@@ -84,6 +90,9 @@ export function FileUpload({
     <div>
       <Overlay visible={disabled}>
         <Upload.Dragger
+          accept={
+            isArray(acceptOnly) ? acceptOnly.join(",") : acceptOnly || undefined
+          }
           beforeUpload={handleBeforeUpload}
           disabled={disabled}
           fileList={value}
