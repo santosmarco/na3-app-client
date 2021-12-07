@@ -1,21 +1,24 @@
 import logoLight from "@assets/novaa3Logo.svg";
 import logoDark from "@assets/novaa3LogoDark.svg";
 import { ANIMATION_FADE_IN } from "@constants";
+import type { ThemeMode } from "@hooks";
 import { useTheme } from "@hooks";
-import React from "react";
+import React, { useMemo } from "react";
 
 type LogoProps = {
   className?: string;
   height?: number;
+  theme?: ThemeMode;
 };
 
-const defaultProps = {
-  className: undefined,
-  height: 32,
-};
+export function Logo({
+  height,
+  className,
+  theme: themeProp,
+}: LogoProps): JSX.Element {
+  const [appTheme] = useTheme();
 
-export function Logo({ height, className }: LogoProps): JSX.Element {
-  const [theme] = useTheme();
+  const theme = useMemo(() => themeProp || appTheme, [themeProp, appTheme]);
 
   return (
     <div className={className}>
@@ -29,5 +32,3 @@ export function Logo({ height, className }: LogoProps): JSX.Element {
     </div>
   );
 }
-
-Logo.defaultProps = defaultProps;
