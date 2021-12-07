@@ -4,6 +4,7 @@ export { AdminUsersHomePage } from "./admin/users/AdminUsersHome";
 export { AuthPage } from "./auth/Auth";
 export { DocsHomePage } from "./docs/DocsHome";
 export { DocsStdCreatePage } from "./docs/standards/DocsStdCreate";
+export { DocsStdDetailsPage } from "./docs/standards/DocsStdDetails";
 export { DocsStdHomePage } from "./docs/standards/DocsStdHome";
 export { DocsTransfHomePage } from "./docs/transfs/DocsTransfHome";
 export { NoMatchPage } from "./error/NoMatch";

@@ -2,6 +2,7 @@ import type {
   Na3AppDevice,
   Na3StdDocument,
   Na3StdDocumentEvent,
+  Na3StdDocumentVersion,
 } from "@modules/na3-types";
 import { nanoid } from "nanoid";
 
@@ -42,6 +43,13 @@ export function buildStdDocument(
   };
 
   return doc;
+}
+
+export function buildStdDocumentUrl(
+  doc: Na3StdDocument,
+  version: Na3StdDocumentVersion
+): string {
+  return `${doc.id}_v${version.id}`;
 }
 
 type EventBuildConfig<T extends Na3StdDocumentEvent> = Omit<

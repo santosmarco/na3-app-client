@@ -315,6 +315,7 @@ export function DocsCreateStdForm({
       <Divider />
 
       <FormField
+        acceptOnly="application/pdf"
         disabled={!docTitle || !docVersion}
         fileTransform={handleFileNameTransform}
         helpWhenDisabled="Defina o título e a versão do documento primeiro"

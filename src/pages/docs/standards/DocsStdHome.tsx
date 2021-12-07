@@ -4,6 +4,8 @@ import { useNa3StdDocs } from "@modules/na3-react";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 
+import { DocsStdDetailsPage } from "./DocsStdDetails";
+
 export function DocsStdHomePage(): JSX.Element {
   const history = useHistory();
   const query = useQuery("id");
@@ -22,7 +24,7 @@ export function DocsStdHomePage(): JSX.Element {
   );
 
   return query.id ? (
-    <>DETAILS</>
+    <DocsStdDetailsPage docId={query.id} />
   ) : (
     <ListFormPage
       actions={[{ label: "Novo documento", onClick: handleStdDocCreateClick }]}
