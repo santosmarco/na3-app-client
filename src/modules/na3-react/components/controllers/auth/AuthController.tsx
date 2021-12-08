@@ -1,7 +1,14 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import translateFirebaseError from "@modules/firebase-errors-pt-br";
 import type { Na3User } from "@modules/na3-types";
-import firebase from "firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import useLocalStorage from "react-use-localstorage";
@@ -13,7 +20,7 @@ import {
   setAuthLoading,
   setAuthUser,
 } from "../../../store/actions";
-import { resolveCollectionId, timestamp } from "../../../utils";
+import { getCollection, timestamp } from "../../../utils";
 
 export function Na3AuthController(): null {
   const { environment, messagingTokensStorageKey } = useStateSlice("config");
@@ -26,67 +33,81 @@ export function Na3AuthController(): null {
     "[]"
   );
 
-  const usersCollectionRef = useRef(
-    firebase.firestore().collection(resolveCollectionId("users", environment))
-  );
+  const usersCollectionRef = useRef(getCollection("users", environment));
 
   useEffect(() => {
     let unsubscribeFromUserChanges: (() => void) | undefined = undefined;
 
-    const unsubscribeFromAuthStateChanges = firebase
-      .auth()
-      .onAuthStateChanged(async (fbUser) => {
-        if (!fbUser) {
-          // Signed out.
-          dispatch(setAuthFirebaseUser(null));
-          dispatch(setAuthUser(null));
-          dispatch(setAuthLoading(false));
-          dispatch(setAuthError(null));
-        } else {
-          // Set auth's _firebaseUser.
-          dispatch(setAuthFirebaseUser(fbUser));
-          // Set auth's loading to true. We will start fetching the user.
-          dispatch(setAuthLoading(true));
-
-          // The user's Firestore reference based on its uid.
-          const userRef = usersCollectionRef.current.doc(fbUser.uid);
-
-          try {
-            const userSnapshot = await userRef.get();
-            const user: Na3User = {
-              ...(userSnapshot.data() as Omit<Na3User, "uid">),
-              uid: userSnapshot.id,
-            };
-
-            // Set auth's user.
-            dispatch(setAuthUser(user));
-
-            // Subscribe to changes in the user's data.
-            unsubscribeFromUserChanges = userRef.onSnapshot(
-              (updatedUserSnapshot) => {
-                const updatedUser: Na3User = {
-                  ...(updatedUserSnapshot.data() as Omit<Na3User, "uid">),
-                  uid: updatedUserSnapshot.id,
-                };
-                // Update auth's user.
-                dispatch(setAuthUser(updatedUser));
-              }
-            );
-
-            // Update user's lastSeenAt field.
-            const updatedUserLastSeenAt: Pick<Na3User, "lastSeenAt"> = {
-              lastSeenAt: timestamp(),
-            };
-            void userRef.update(updatedUserLastSeenAt);
-          } catch (err) {
-            dispatch(
-              setAuthError(translateFirebaseError(err as FirebaseError))
-            );
-          } finally {
+    const unsubscribeFromAuthStateChanges = onAuthStateChanged(
+      getAuth(),
+      (fbUser) => {
+        void (async (): Promise<void> => {
+          if (!fbUser) {
+            // Signed out.
+            dispatch(setAuthFirebaseUser(null));
+            dispatch(setAuthUser(null));
             dispatch(setAuthLoading(false));
+            dispatch(setAuthError(null));
+          } else {
+            // Set auth's _firebaseUser.
+            dispatch(setAuthFirebaseUser(fbUser));
+            // Set auth's loading to true. We will start fetching the user.
+            dispatch(setAuthLoading(true));
+
+            // The user's Firestore reference based on its uid.
+            const userRef = doc(usersCollectionRef.current, fbUser.uid);
+
+            try {
+              const userSnapshot = await getDoc(userRef);
+              const userData = userSnapshot.data();
+
+              if (!userData) {
+                // TODO: Handle user not found error
+                return;
+              }
+
+              const user: Na3User = { ...userData, uid: userSnapshot.id };
+
+              // Set auth's user.
+              dispatch(setAuthUser(user));
+
+              // Subscribe to changes in the user's data.
+              unsubscribeFromUserChanges = onSnapshot(
+                userRef,
+                (updatedUserSnapshot) => {
+                  const updatedUserData = updatedUserSnapshot.data();
+
+                  if (!updatedUserData) {
+                    // TODO: Handle user not found error
+                    return;
+                  }
+
+                  const updatedUser: Na3User = {
+                    ...updatedUserData,
+                    uid: updatedUserSnapshot.id,
+                  };
+
+                  // Update auth's user.
+                  dispatch(setAuthUser(updatedUser));
+                }
+              );
+
+              // Update user's lastSeenAt field.
+              const updatedUserLastSeenAt: Pick<Na3User, "lastSeenAt"> = {
+                lastSeenAt: timestamp(),
+              };
+              void updateDoc(userRef, updatedUserLastSeenAt);
+            } catch (err) {
+              dispatch(
+                setAuthError(translateFirebaseError(err as FirebaseError))
+              );
+            } finally {
+              dispatch(setAuthLoading(false));
+            }
           }
-        }
-      });
+        })();
+      }
+    );
 
     return (): void => {
       unsubscribeFromAuthStateChanges();
@@ -100,12 +121,10 @@ export function Na3AuthController(): null {
     // If there's a user and some tokens
     if (user && parsedTokens.length > 0) {
       // The user's Firestore reference based on its uid.
-      const userRef = usersCollectionRef.current.doc(user.uid);
+      const userRef = doc(usersCollectionRef.current, user.uid);
       // Update the user's tokens.
-      void userRef.update({
-        notificationTokens: firebase.firestore.FieldValue.arrayUnion(
-          ...parsedTokens
-        ),
+      void updateDoc(userRef, {
+        notificationTokens: arrayUnion(...parsedTokens),
       });
       // Clear all locally-stored tokens.
       setStoredMessagingTokens("[]");

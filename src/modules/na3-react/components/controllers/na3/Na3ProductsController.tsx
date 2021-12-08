@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setNa3ProductsError,
   setNa3ProductsLoading,
 } from "../../../store/actions";
-import { resolveCollectionId } from "../../../utils";
+import { getCollection } from "../../../utils";
 
 export function Na3ProductsController(): null {
   const { environment } = useStateSlice("config");
@@ -19,12 +19,7 @@ export function Na3ProductsController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase.firestore().collection(
-        resolveCollectionId("API-PRODUCTS", environment, {
-          forceProduction: true,
-        })
-      ),
+    () => getCollection("API-PRODUCTS", environment, { forceProduction: true }),
     [environment]
   );
 
@@ -55,12 +50,12 @@ export function Na3ProductsController(): null {
     dispatch(setNa3ProductsData(null));
 
     if (_firebaseUser) {
-      const na3ProductsSnapshot = await fbCollectionRef.get();
+      const na3ProductsSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setNa3ProductsData(
           na3ProductsSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3ApiProduct),
+            ...doc.data(),
             id: doc.id,
           })) || null
         )

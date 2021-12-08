@@ -1,14 +1,21 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type { Na3User } from "@modules/na3-types";
-import firebase from "firebase";
+import type { UserCredential } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut as signOutFromFirebase,
+} from "firebase/auth";
+import { doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
 import type { AppUserAuthenticated, AuthState } from "../types";
 import {
   buildNa3Error,
   createRandomUserStyle,
-  resolveCollectionId,
+  getCollection,
   timestamp,
 } from "../utils";
 import { useNa3Users } from "./useNa3Users";
@@ -23,7 +30,7 @@ export type UseNa3AuthResult = {
       password: string
     ) => Promise<
       | { error: FirebaseError; user: null }
-      | { error: null; user: firebase.auth.UserCredential }
+      | { error: null; user: UserCredential }
     >;
     signOut: () => Promise<{ error: FirebaseError } | { error: null }>;
     signUp: (
@@ -48,9 +55,7 @@ export function useNa3Auth(): UseNa3AuthResult {
     currentUser,
   } = useNa3Users();
 
-  const usersCollectionRef = useRef(
-    firebase.firestore().collection(resolveCollectionId("users", environment))
-  );
+  const usersCollectionRef = useRef(getCollection("users", environment));
 
   const signIn = useCallback(
     async (
@@ -58,12 +63,14 @@ export function useNa3Auth(): UseNa3AuthResult {
       password: string
     ): Promise<
       | { error: FirebaseError; user: null }
-      | { error: null; user: firebase.auth.UserCredential }
+      | { error: null; user: UserCredential }
     > => {
       try {
-        const user = await firebase
-          .auth()
-          .signInWithEmailAndPassword(getAuthEmail(registrationId), password);
+        const user = await signInWithEmailAndPassword(
+          getAuth(),
+          getAuthEmail(registrationId),
+          password
+        );
         return { error: null, user };
       } catch (err) {
         return {
@@ -79,7 +86,7 @@ export function useNa3Auth(): UseNa3AuthResult {
     { error: FirebaseError } | { error: null }
   > => {
     try {
-      await firebase.auth().signOut();
+      await signOutFromFirebase(getAuth());
       return { error: null };
     } catch (err) {
       return {
@@ -101,9 +108,12 @@ export function useNa3Auth(): UseNa3AuthResult {
       const formattedRegId = formatRegistrationId(registrationId);
 
       try {
-        const userCandidates = await usersCollectionRef.current
-          .where("registrationId", "==", formattedRegId)
-          .get();
+        const userCandidates = await getDocs(
+          query(
+            usersCollectionRef.current,
+            where("registrationId", "==", formattedRegId)
+          )
+        );
 
         if (!userCandidates.empty) {
           return {
@@ -135,12 +145,11 @@ export function useNa3Auth(): UseNa3AuthResult {
           bio: null,
         };
 
-        const credentials = await firebase
-          .auth()
-          .createUserWithEmailAndPassword(
-            getAuthEmail(formattedRegId),
-            `novaa3-${formattedRegId}`
-          );
+        const credentials = await createUserWithEmailAndPassword(
+          getAuth(),
+          getAuthEmail(formattedRegId),
+          `novaa3-${formattedRegId}`
+        );
 
         if (!credentials.user) {
           return {
@@ -149,7 +158,10 @@ export function useNa3Auth(): UseNa3AuthResult {
           };
         }
 
-        await usersCollectionRef.current.doc(credentials.user.uid).set(user);
+        await setDoc(
+          doc(usersCollectionRef.current, credentials.user.uid),
+          user
+        );
 
         void signOut();
 

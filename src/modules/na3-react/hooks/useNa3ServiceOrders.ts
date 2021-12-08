@@ -8,7 +8,7 @@ import type {
   Na3ServiceOrderPriority,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
-import firebase from "firebase";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseDocOperationResult } from "../types";
@@ -18,7 +18,7 @@ import {
   buildServiceOrder,
   buildServiceOrderEvents,
   formatServiceOrderId,
-  resolveCollectionId,
+  getCollection,
   timestamp,
 } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
@@ -91,9 +91,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
   const user = useCurrentUser();
   const departments = useNa3Departments();
 
-  const fbCollectionRef = useRef(
-    firebase.firestore().collection(resolveCollectionId("tickets", environment))
-  );
+  const fbCollectionRef = useRef(getCollection("tickets", environment));
 
   const getNextId = useCallback((): string | undefined => {
     const lastId = serviceOrders.data
@@ -243,11 +241,9 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       const serviceOrder = buildServiceOrder(id, data, { device, user });
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+        const docRef = doc(fbCollectionRef.current, id);
 
-        await docRef.set(serviceOrder);
+        await setDoc(docRef, serviceOrder);
 
         void user.registerEvents({ SERVICE_ORDER_CREATE: { id } });
 
@@ -273,9 +269,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         };
       }
 
-      const docRef = fbCollectionRef.current.doc(
-        id
-      ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+      const docRef = doc(fbCollectionRef.current, id);
 
       try {
         const update: Required<Pick<Na3ServiceOrder, "closedAt" | "status">> = {
@@ -283,9 +277,9 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           status: "closed",
         };
 
-        await docRef.update({
+        await updateDoc(docRef, {
           ...update,
-          events: firebase.firestore.FieldValue.arrayUnion(
+          events: arrayUnion(
             ...buildServiceOrderEvents(
               [
                 { type: "solutionAccepted" },
@@ -300,11 +294,13 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
-        void docRef.get().then((serviceOrderSnapshot) => {
-          const serviceOrder = serviceOrderSnapshot.data() as Omit<
-            Na3ServiceOrder,
-            "id"
-          >;
+        void getDoc(docRef).then((serviceOrderSnapshot) => {
+          const serviceOrder = serviceOrderSnapshot.data();
+
+          if (!serviceOrder) {
+            // TODO: Handle doc not found error
+            return;
+          }
 
           const lastDeliverEvent = [...serviceOrder.events]
             .reverse()
@@ -344,22 +340,9 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       }
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+        const docRef = doc(fbCollectionRef.current, id);
 
-        const update: Required<
-          Pick<
-            Na3ServiceOrder,
-            | "acceptedAt"
-            | "priority"
-            | "refusalReason"
-            | "reopenedAt"
-            | "solution"
-            | "solvedAt"
-            | "status"
-          >
-        > = {
+        await updateDoc(docRef, {
           acceptedAt: null,
           priority: null,
           refusalReason: payload.reason.trim(),
@@ -367,11 +350,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           solution: null,
           solvedAt: null,
           status: "pending",
-        };
-
-        await docRef.update({
-          ...update,
-          events: firebase.firestore.FieldValue.arrayUnion(
+          events: arrayUnion(
             ...buildServiceOrderEvents(
               [
                 {
@@ -423,30 +402,19 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       }
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+        const docRef = doc(fbCollectionRef.current, id);
 
         const sanitizedAssignee = {
           uid: payload.assignee.uid,
           displayName: payload.assignee.displayName,
         };
 
-        const update: Required<
-          Pick<
-            Na3ServiceOrder,
-            "acceptedAt" | "assignedMaintainer" | "priority" | "status"
-          >
-        > = {
+        await updateDoc(docRef, {
           acceptedAt: timestamp(),
           assignedMaintainer: sanitizedAssignee,
           priority: payload.priority,
           status: "solving",
-        };
-
-        await docRef.update({
-          ...update,
-          events: firebase.firestore.FieldValue.arrayUnion(
+          events: arrayUnion(
             buildServiceOrderEvents(
               {
                 payload: {
@@ -492,29 +460,16 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       }
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          id
-        ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+        const docRef = doc(fbCollectionRef.current, id);
 
         const sanitizedAssignee = {
           uid: payload.assignee.uid,
           displayName: payload.assignee.displayName,
         };
 
-        const update: Required<
-          Record<
-            keyof Pick<Na3ServiceOrder, "solutionSteps">,
-            firebase.firestore.FieldValue
-          >
-        > = {
-          solutionSteps: firebase.firestore.FieldValue.arrayUnion(
-            payload.status.trim()
-          ),
-        };
-
-        await docRef.update({
-          ...update,
-          events: firebase.firestore.FieldValue.arrayUnion(
+        await updateDoc(docRef, {
+          solutionSteps: arrayUnion(payload.status.trim()),
+          events: arrayUnion(
             buildServiceOrderEvents(
               {
                 payload: {
@@ -554,9 +509,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
         };
       }
 
-      const docRef = fbCollectionRef.current.doc(
-        id
-      ) as firebase.firestore.DocumentReference<Na3ServiceOrder>;
+      const docRef = doc(fbCollectionRef.current, id);
 
       try {
         const sanitizedAssignee = {
@@ -564,17 +517,11 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           displayName: payload.assignee.displayName,
         };
 
-        const update: Required<
-          Pick<Na3ServiceOrder, "solution" | "solvedAt" | "status">
-        > = {
+        await updateDoc(docRef, {
           solution: payload.solution.trim(),
           solvedAt: timestamp(),
           status: "solved",
-        };
-
-        await docRef.update({
-          ...update,
-          events: firebase.firestore.FieldValue.arrayUnion(
+          events: arrayUnion(
             ...buildServiceOrderEvents(
               [
                 {
@@ -602,11 +549,13 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           ),
         });
 
-        void docRef.get().then((serviceOrderSnapshot) => {
-          const serviceOrder = serviceOrderSnapshot.data() as Omit<
-            Na3ServiceOrder,
-            "id"
-          >;
+        void getDoc(docRef).then((serviceOrderSnapshot) => {
+          const serviceOrder = serviceOrderSnapshot.data();
+
+          if (!serviceOrder) {
+            // TODO: Handle doc not found error
+            return;
+          }
 
           const createEvent = serviceOrder.events[0];
 

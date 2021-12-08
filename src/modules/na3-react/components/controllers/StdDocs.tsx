@@ -1,5 +1,5 @@
 import type { Na3StdDocument } from "@modules/na3-types";
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setStdDocsError,
   setStdDocsLoading,
 } from "../../store/actions";
-import { resolveCollectionId } from "../../utils";
+import { getCollection } from "../../utils";
 
 export function Na3StdDocsController(): null {
   const { environment } = useStateSlice("config");
@@ -19,10 +19,7 @@ export function Na3StdDocsController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase
-        .firestore()
-        .collection(resolveCollectionId("docs-std", environment)),
+    () => getCollection("docs-std", environment),
     [environment]
   );
 
@@ -55,14 +52,12 @@ export function Na3StdDocsController(): null {
     dispatch(setStdDocsData(null));
 
     if (_firebaseUser) {
-      const stdDocsSnapshot = await fbCollectionRef.get();
+      const stdDocsSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setStdDocsData(
-          stdDocsSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3StdDocument),
-            id: doc.id,
-          })) || null
+          stdDocsSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) ||
+            null
         )
       );
     }

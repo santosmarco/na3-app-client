@@ -6,7 +6,9 @@ import type {
   Na3UserEventType,
 } from "@modules/na3-types";
 import { NA3_USER_EVENT_CATEGORY_MAP } from "@modules/na3-types";
-import firebase from "firebase";
+import { getAuth, signOut, updatePassword } from "firebase/auth";
+import type { CollectionReference } from "firebase/firestore";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { nanoid } from "nanoid";
 
 import type {
@@ -17,7 +19,7 @@ import type {
 import { buildNa3Error, timestamp } from "../../utils";
 
 type UserAuthOnlyMethodDeps = {
-  fbCollectionRef: firebase.firestore.CollectionReference;
+  fbCollectionRef: CollectionReference;
   onRedirect: () => void;
 };
 
@@ -47,8 +49,8 @@ function createRegisterEventsMethod(
         }
       );
 
-      await fbCollectionRef.doc(uid).update({
-        activityHistory: firebase.firestore.FieldValue.arrayUnion(...eventsArr),
+      await updateDoc(doc(fbCollectionRef, uid), {
+        activityHistory: arrayUnion(...eventsArr),
       });
 
       return { error: null };
@@ -72,7 +74,7 @@ function createUpdatePasswordMethod({
     | { error: null; warning: null }
   > => {
     try {
-      const firebaseAppUser = firebase.auth().currentUser;
+      const firebaseAppUser = getAuth().currentUser;
 
       if (!firebaseAppUser) {
         return {
@@ -81,20 +83,20 @@ function createUpdatePasswordMethod({
         };
       }
 
-      await firebaseAppUser.updatePassword(newPassword);
+      await updatePassword(firebaseAppUser, newPassword);
 
       const updatedUser: Pick<Na3User, "isPasswordDefault"> = {
         isPasswordDefault: false,
       };
 
-      await fbCollectionRef.doc(firebaseAppUser.uid).update(updatedUser);
+      await updateDoc(doc(fbCollectionRef, firebaseAppUser.uid), updatedUser);
 
       return { error: null, warning: null };
     } catch (err) {
       const firebaseError = err as FirebaseError;
 
       if (firebaseError.code === "auth/requires-recent-login") {
-        await firebase.auth().signOut();
+        await signOut(getAuth());
         onRedirect();
 
         return {

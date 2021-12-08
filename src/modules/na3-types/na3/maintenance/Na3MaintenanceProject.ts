@@ -1,4 +1,4 @@
-import type firebase from "firebase";
+import type { Timestamp } from "firebase/firestore";
 
 import type { Na3MaintenancePerson } from "./Na3MaintenancePerson";
 
@@ -6,7 +6,7 @@ export type Na3MaintenanceProjectStatus = "finished" | "late" | "running";
 
 export type Na3MaintenanceProjectEvent = {
   author: Na3MaintenancePerson | /* Legacy: */ string;
-  timestamp: firebase.firestore.Timestamp;
+  timestamp: Timestamp;
 } & (
   | { changes: Na3MaintenanceProjectEventEditChanges; type: "edit" }
   | { message: string; type: "status" }
@@ -16,7 +16,7 @@ export type Na3MaintenanceProjectEvent = {
 
 type Na3MaintenanceProjectBase = {
   description: string;
-  eta: firebase.firestore.Timestamp;
+  eta: Timestamp;
   events: Na3MaintenanceProjectEvent[];
   id: string;
   internalId: number;

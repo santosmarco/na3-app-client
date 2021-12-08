@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setNa3UsersError,
   setNa3UsersLoading,
 } from "../../store/actions";
-import { resolveCollectionId } from "../../utils";
+import { getCollection } from "../../utils";
 
 export function Na3UsersController(): null {
   const { environment } = useStateSlice("config");
@@ -19,10 +19,7 @@ export function Na3UsersController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase
-        .firestore()
-        .collection(resolveCollectionId("users", environment)),
+    () => getCollection("users", environment),
     [environment]
   );
 
@@ -53,12 +50,12 @@ export function Na3UsersController(): null {
     dispatch(setNa3UsersData(null));
 
     if (_firebaseUser) {
-      const na3UsersSnapshot = await fbCollectionRef.get();
+      const na3UsersSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setNa3UsersData(
           na3UsersSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3User),
+            ...doc.data(),
             uid: doc.id,
           })) || null
         )

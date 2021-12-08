@@ -11,7 +11,12 @@ import {
 } from "@components";
 import { useAppReady } from "@modules/na3-react";
 import { Layout, message, notification } from "antd";
-import firebase from "firebase";
+import {
+  disableNetwork,
+  enableNetwork,
+  getFirestore,
+  waitForPendingWrites,
+} from "firebase/firestore";
 import React, { useEffect, useRef } from "react";
 import { ThemeSwitcherProvider } from "react-css-theme-switcher";
 import Div100vh from "react-div-100vh";
@@ -40,7 +45,7 @@ function Main(): JSX.Element {
           // Queue all Firestore's write operations and make all snapshot
           // listeners and document requests retrieve results from the cache
           // until user is back online.
-          await firebase.firestore().disableNetwork();
+          await disableNetwork(getFirestore());
           // Display a persistent "You are offline" message.
           void message.warn({
             content: "Você está offline",
@@ -60,9 +65,9 @@ function Main(): JSX.Element {
         // Start onOnline routine
         void (async (): Promise<void> => {
           // Re-enable Firestore's network access.
-          await firebase.firestore().enableNetwork();
+          await enableNetwork(getFirestore());
           // Wait for pending Firestore's writes.
-          await firebase.firestore().waitForPendingWrites();
+          await waitForPendingWrites(getFirestore());
           // Display a "You are online" message.
           void message.success("Você está online");
           // Destroy the "You are offline" message.

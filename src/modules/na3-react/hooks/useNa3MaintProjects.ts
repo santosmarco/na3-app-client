@@ -6,16 +6,14 @@ import type {
   Na3MaintenanceProjectStatus,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
-import firebase from "firebase";
+import { arrayUnion } from "firebase/firestore";
+import { addDoc, doc, updateDoc } from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseDocOperationResult } from "../types";
 import type { MaintProjectBuilderData } from "../utils";
-import {
-  buildMaintProject,
-  buildMaintProjectEvents,
-  resolveCollectionId,
-} from "../utils";
+import { getCollection } from "../utils";
+import { buildMaintProject, buildMaintProjectEvents } from "../utils";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3MaintProjectsResult = {
@@ -25,7 +23,7 @@ export type UseNa3MaintProjectsResult = {
     add: (
       internalId: number,
       projectData: MaintProjectBuilderData
-    ) => Promise<FirebaseDocOperationResult<Na3MaintenanceProject>>;
+    ) => Promise<FirebaseDocOperationResult<Omit<Na3MaintenanceProject, "id">>>;
     deliverProject: (
       projectId: string,
       eventData: { author: Na3MaintenancePerson; message?: string | null }
@@ -65,11 +63,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
   const { environment } = useStateSlice("config");
   const maintProjects = useStateSlice("maintProjects");
 
-  const fbCollectionRef = useRef(
-    firebase
-      .firestore()
-      .collection(resolveCollectionId("manut-projects", environment))
-  );
+  const fbCollectionRef = useRef(getCollection("manut-projects", environment));
 
   const getNextInternalId = useCallback((): number | undefined => {
     const lastId = maintProjects.data
@@ -161,9 +155,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       const project = buildMaintProject(internalId, projectData);
 
       try {
-        const docRef = (await fbCollectionRef.current.add(
-          project
-        )) as firebase.firestore.DocumentReference<Na3MaintenanceProject>;
+        const docRef = await addDoc(fbCollectionRef.current, project);
 
         return { data: docRef, error: null };
       } catch (err) {
@@ -188,13 +180,9 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       });
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          projectId
-        ) as firebase.firestore.DocumentReference<Na3MaintenanceProject>;
+        const docRef = doc(fbCollectionRef.current, projectId);
 
-        await docRef.update({
-          events: firebase.firestore.FieldValue.arrayUnion(ev),
-        });
+        await updateDoc(docRef, { events: arrayUnion(ev) });
 
         return { data: docRef, error: null };
       } catch (err) {
@@ -219,13 +207,9 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       });
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          projectId
-        ) as firebase.firestore.DocumentReference<Na3MaintenanceProject>;
+        const docRef = doc(fbCollectionRef.current, projectId);
 
-        await docRef.update({
-          events: firebase.firestore.FieldValue.arrayUnion(ev),
-        });
+        await updateDoc(docRef, { events: arrayUnion(ev) });
 
         return { data: docRef, error: null };
       } catch (err) {
@@ -254,9 +238,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       });
 
       try {
-        const docRef = fbCollectionRef.current.doc(
-          projectId
-        ) as firebase.firestore.DocumentReference<Na3MaintenanceProject>;
+        const docRef = doc(fbCollectionRef.current, projectId);
 
         const projectToUpdate = getById(projectId);
 
@@ -264,8 +246,9 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
           projectToUpdate &&
           projectToUpdate.events[0].author !== updateData.author
         ) {
-          await docRef.update({
+          await updateDoc(docRef, {
             ...updated,
+            isPredPrev: updated.isPredPrev || undefined,
             events: [
               buildMaintProjectEvents({
                 type: "create",
@@ -275,9 +258,10 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
             ],
           });
         } else {
-          await docRef.update({
+          await updateDoc(docRef, {
             ...updated,
-            events: firebase.firestore.FieldValue.arrayUnion(ev),
+            isPredPrev: updated.isPredPrev || undefined,
+            events: arrayUnion(ev),
           });
         }
 

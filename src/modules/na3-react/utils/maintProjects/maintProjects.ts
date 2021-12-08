@@ -4,7 +4,7 @@ import type {
   Na3MaintenanceProjectEvent,
 } from "@modules/na3-types";
 import type { Dayjs } from "dayjs";
-import firebase from "firebase";
+import { Timestamp } from "firebase/firestore";
 
 export type MaintProjectBuilderData = Required<
   Omit<
@@ -65,9 +65,7 @@ export function buildMaintProject(
 
   const project: Omit<Na3MaintenanceProject, "events" | "id" | "ref"> = {
     description: data.description.trim(),
-    eta: firebase.firestore.Timestamp.fromDate(
-      data.eta.clone().endOf("day").toDate()
-    ),
+    eta: Timestamp.fromDate(data.eta.clone().endOf("day").toDate()),
     internalId,
     isPredPrev: data.isPredPrev,
     priority: data.priority,
@@ -108,7 +106,7 @@ export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
         uid: config.author.uid,
         displayName: config.author.displayName,
       },
-      timestamp: firebase.firestore.Timestamp.now(),
+      timestamp: Timestamp.now(),
     };
   }
 

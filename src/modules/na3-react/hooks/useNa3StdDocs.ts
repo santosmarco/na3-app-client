@@ -10,7 +10,8 @@ import type {
   Na3StdDocumentVersion,
 } from "@modules/na3-types";
 import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
-import firebase from "firebase";
+import { addDoc } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
 import type { AppUser, FirebaseOperationResult, StdDocsState } from "../types";
@@ -19,7 +20,7 @@ import {
   buildNa3Error,
   buildStdDocument,
   buildStdDocumentUrl,
-  resolveCollectionId,
+  getCollection,
 } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
 import { useStateSlice } from "./useStateSlice";
@@ -60,14 +61,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
   const user = useCurrentUser();
 
-  const fbCollectionRef = useRef(
-    firebase
-      .firestore()
-      .collection(resolveCollectionId("docs-std", environment))
-  );
-  const fbStorageRef = useRef(
-    firebase.storage().ref(resolveCollectionId("docs-std", environment))
-  );
+  const fbCollectionRef = useRef(getCollection("docs-std", environment));
 
   const getDocumentById = useCallback(
     (docId: string) => {
@@ -134,9 +128,9 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       }
 
       try {
-        const url = await (fbStorageRef.current
-          .child(buildStdDocumentUrl(doc, latestVersion))
-          .getDownloadURL() as Promise<string>);
+        const url = await getDownloadURL(
+          ref(getStorage(), buildStdDocumentUrl(doc, latestVersion))
+        );
 
         return { error: null, data: url };
       } catch (err) {
@@ -233,13 +227,17 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       const document = buildStdDocument(data, { device, user });
 
       try {
-        const docRef = await fbCollectionRef.current.add(document);
+        const docRef = await addDoc(fbCollectionRef.current, document);
 
         const addedDocument = { ...document, id: docRef.id };
 
-        await fbStorageRef.current
-          .child(buildStdDocumentUrl(addedDocument, addedDocument.versions[0]))
-          .put(data.file);
+        await uploadBytes(
+          ref(
+            getStorage(),
+            buildStdDocumentUrl(addedDocument, addedDocument.versions[0])
+          ),
+          data.file
+        );
 
         void user.registerEvents({ DOCS_STD_CREATE: { docId: docRef.id } });
 

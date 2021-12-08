@@ -1,11 +1,11 @@
-import type firebase from "firebase";
+import type { User } from "firebase/auth";
 import type { ConditionalExcept } from "type-fest";
 
 import type { FirebaseError } from "../../../firebase-errors-pt-br";
 import type { Na3User } from "../../../na3-types";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type FirebaseUser = ConditionalExcept<firebase.User, Function>;
+type FirebaseUser = ConditionalExcept<User, Function>;
 
 export type AuthState = {
   _firebaseUser: FirebaseUser | null | undefined;

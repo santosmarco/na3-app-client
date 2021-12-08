@@ -12,6 +12,7 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { initializeApp } from "firebase/app";
 import { createBrowserHistory } from "history";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -49,7 +50,7 @@ initSentry({
   routerHistory,
 });
 
-void initFirebaseCore(FIREBASE_CONFIG);
+const firebase = initFirebaseCore(FIREBASE_CONFIG);
 
 function Root(): JSX.Element {
   return (
@@ -78,11 +79,11 @@ ReactDOM.render(
 // https://cra.link/PWA
 serviceWorkerRegistration.register({
   onSuccess: (swRegistration) =>
-    handleSwRegistration(swRegistration, {
+    handleSwRegistration(firebase, swRegistration, {
       firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
     }),
   onUpdate: (swRegistration) =>
-    handleSwRegistration(swRegistration, {
+    handleSwRegistration(firebase, swRegistration, {
       firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
     }),
 });

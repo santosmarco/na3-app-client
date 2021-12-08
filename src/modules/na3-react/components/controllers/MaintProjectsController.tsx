@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setMaintProjectsError,
   setMaintProjectsLoading,
 } from "../../store/actions";
-import { resolveCollectionId } from "../../utils";
+import { getCollection } from "../../utils";
 
 export function Na3MaintenanceProjectsController(): null {
   const { environment } = useStateSlice("config");
@@ -19,10 +19,7 @@ export function Na3MaintenanceProjectsController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase
-        .firestore()
-        .collection(resolveCollectionId("manut-projects", environment)),
+    () => getCollection("manut-projects", environment),
     [environment]
   );
 
@@ -53,12 +50,12 @@ export function Na3MaintenanceProjectsController(): null {
     dispatch(setMaintProjectsData(null));
 
     if (_firebaseUser) {
-      const maintProjectsSnapshot = await fbCollectionRef.get();
+      const maintProjectsSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setMaintProjectsData(
           maintProjectsSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3MaintenanceProject),
+            ...doc.data(),
             id: doc.id,
           })) || null
         )

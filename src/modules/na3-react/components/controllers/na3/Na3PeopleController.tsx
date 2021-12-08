@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setNa3PeopleError,
   setNa3PeopleLoading,
 } from "../../../store/actions";
-import { resolveCollectionId } from "../../../utils";
+import { getCollection } from "../../../utils";
 
 export function Na3PeopleController(): null {
   const { environment } = useStateSlice("config");
@@ -19,21 +19,14 @@ export function Na3PeopleController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase.firestore().collection(
-        resolveCollectionId("API-PEOPLE", environment, {
-          forceProduction: true,
-        })
-      ),
+    () => getCollection("API-PEOPLE", environment, { forceProduction: true }),
     [environment]
   );
 
   const [fbNa3People, fbNa3PeopleLoading, fbNa3PeopleError] = useCollectionData<
     Na3ApiPerson,
     "id"
-  >(fbCollectionRef, {
-    idField: "id",
-  });
+  >(fbCollectionRef, { idField: "id" });
 
   /* Na3People state management hooks */
 
@@ -57,12 +50,12 @@ export function Na3PeopleController(): null {
     dispatch(setNa3PeopleData(null));
 
     if (_firebaseUser) {
-      const na3PeopleSnapshot = await fbCollectionRef.get();
+      const na3PeopleSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setNa3PeopleData(
           na3PeopleSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3ApiPerson),
+            ...doc.data(),
             id: doc.id,
           })) || null
         )

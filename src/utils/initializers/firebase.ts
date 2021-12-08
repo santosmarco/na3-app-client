@@ -1,52 +1,52 @@
-import firebase from "firebase";
+import { initializeAnalytics } from "firebase/analytics";
+import type { FirebaseApp, FirebaseOptions } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import type { Firestore } from "firebase/firestore";
+import {
+  enableIndexedDbPersistence,
+  enableNetwork,
+  getFirestore,
+} from "firebase/firestore";
+import { getMessaging, getToken } from "firebase/messaging";
+import { initializePerformance } from "firebase/performance";
 
 import { storeMessagingToken } from "../notifications/push";
-
-type InitFirebaseCoreConfig = {
-  apiKey: string;
-  appId: string;
-  authDomain: string;
-  measurementId: string;
-  messagingSenderId: string;
-  projectId: string;
-  storageBucket: string;
-};
 
 type InitFirebaseMessagingConfig = {
   swRegistration: ServiceWorkerRegistration;
   vapidKey: string;
 };
 
-function setupFirestore(): void {
-  void firebase.firestore().enablePersistence({ synchronizeTabs: true });
-  void firebase.firestore().enableNetwork();
+function setupFirestore(firestore: Firestore): void {
+  void enableIndexedDbPersistence(firestore);
+  void enableNetwork(firestore);
 }
 
-export function initFirebaseCore(config: InitFirebaseCoreConfig): void {
-  // Initialize default app
-  if (firebase.apps.length === 0) {
-    firebase.initializeApp(config);
+export function initFirebaseCore(config: FirebaseOptions): FirebaseApp {
+  // Init and retrieve Firebase
+  if (getApps().length === 0) {
+    initializeApp(config);
   }
-
+  const firebase = getApp();
   // Configure Firestore
-  setupFirestore();
-
+  setupFirestore(getFirestore(firebase));
   // Init Firebase's Performance service
-  firebase.performance();
-
+  initializePerformance(firebase);
   // Init Firebase's Analytics service
-  firebase.analytics();
+  initializeAnalytics(firebase);
+
+  return firebase;
 }
 
-export async function initFirebaseMessaging({
-  swRegistration,
-  vapidKey,
-}: InitFirebaseMessagingConfig): Promise<void> {
+export async function initFirebaseMessaging(
+  firebase: FirebaseApp,
+  { swRegistration, vapidKey }: InitFirebaseMessagingConfig
+): Promise<void> {
   // Init and retrieve Firebase's Messaging service
-  const messaging = firebase.messaging();
+  const messaging = getMessaging(firebase);
 
   try {
-    const messagingToken = await messaging.getToken({
+    const messagingToken = await getToken(messaging, {
       serviceWorkerRegistration: swRegistration,
       vapidKey,
     });

@@ -1,3 +1,5 @@
+import type { FirebaseApp } from "firebase/app";
+
 import { initFirebaseMessaging } from "./firebase";
 
 type BackgroundSyncOptions = {
@@ -17,6 +19,7 @@ type SwRegistrationHandlerConfig = {
 };
 
 async function registerUpdateSync(
+  firebaseApp: FirebaseApp,
   swRegistration: SwRegistration
 ): Promise<void> {
   // Check if periodicSync is supported
@@ -42,11 +45,12 @@ async function registerUpdateSync(
 }
 
 export function handleSwRegistration(
+  firebaseApp: FirebaseApp,
   registration: SwRegistration,
   config: SwRegistrationHandlerConfig
 ): void {
-  void registerUpdateSync(registration);
-  void initFirebaseMessaging({
+  void registerUpdateSync(firebaseApp, registration);
+  void initFirebaseMessaging(firebaseApp, {
     swRegistration: registration,
     vapidKey: config.firebaseMessagingVapidKey,
   });

@@ -1,13 +1,12 @@
-import type firebase from "firebase";
-
-import type { FirebaseError } from "../../../firebase-errors-pt-br";
+import type { FirebaseError } from "@modules/firebase-errors-pt-br";
+import type { DocumentReference } from "firebase/firestore";
 
 export type FirebaseNullOperationResult =
   | { error: FirebaseError }
   | { error: null };
 
 export type FirebaseDocOperationResult<T> =
-  | { data: firebase.firestore.DocumentReference<T>; error: null }
+  | { data: DocumentReference<T>; error: null }
   | { data: null; error: FirebaseError };
 
 export type FirebaseOperationResult<T> =

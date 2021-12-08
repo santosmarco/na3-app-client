@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
   setServiceOrdersError,
   setServiceOrdersLoading,
 } from "../../store/actions";
-import { resolveCollectionId } from "../../utils";
+import { getCollection } from "../../utils";
 
 export function Na3ServiceOrdersController(): null {
   const { environment } = useStateSlice("config");
@@ -19,10 +19,7 @@ export function Na3ServiceOrdersController(): null {
   const dispatch = useDispatch();
 
   const fbCollectionRef = useMemo(
-    () =>
-      firebase
-        .firestore()
-        .collection(resolveCollectionId("tickets", environment)),
+    () => getCollection("tickets", environment),
     [environment]
   );
 
@@ -53,12 +50,12 @@ export function Na3ServiceOrdersController(): null {
     dispatch(setServiceOrdersData(null));
 
     if (_firebaseUser) {
-      const serviceOrdersSnapshot = await fbCollectionRef.get();
+      const serviceOrdersSnapshot = await getDocs(fbCollectionRef);
 
       dispatch(
         setServiceOrdersData(
           serviceOrdersSnapshot.docs.map((doc) => ({
-            ...(doc.data() as Na3ServiceOrder),
+            ...doc.data(),
             id: doc.id,
           })) || null
         )

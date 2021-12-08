@@ -5,11 +5,10 @@ import type {
   Na3DepartmentType,
   Na3Position,
   Na3PositionId,
-  Na3User,
   Na3UserRegistrationId,
 } from "@modules/na3-types";
 import { NA3_USER_ACHIEVEMENT_DEFINITIONS } from "@modules/na3-types";
-import firebase from "firebase";
+import { doc, updateDoc } from "firebase/firestore";
 import { isArray } from "lodash";
 import { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
@@ -25,7 +24,7 @@ import type {
   FirebaseOperationResult,
   MaybeArray,
 } from "../types";
-import { buildNa3Error, resolveCollectionId } from "../utils";
+import { buildNa3Error, getCollection } from "../utils";
 import { useNa3Departments } from "./useNa3Departments";
 import { useStateSlice } from "./useStateSlice";
 
@@ -64,10 +63,7 @@ export function useNa3Users(): UseNa3UsersResult {
   const history = useHistory();
 
   const usersCollectionRef = useMemo(
-    () =>
-      firebase
-        .firestore()
-        .collection(resolveCollectionId("users", environment)),
+    () => getCollection("users", environment),
     [environment]
   );
 
@@ -180,12 +176,10 @@ export function useNa3Users(): UseNa3UsersResult {
         };
       }
 
-      const userRef = usersCollectionRef.doc(currentUser.uid);
+      const userRef = doc(usersCollectionRef, currentUser.uid);
 
       try {
-        const updatedUser: Pick<Na3User, "bio"> = { bio: updatedBio };
-
-        await userRef.update(updatedUser);
+        await updateDoc(userRef, { bio: updatedBio });
 
         void currentUser.registerEvents({ USER_SET_BIO: { bio: updatedBio } });
 

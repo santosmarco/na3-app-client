@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import type firebase from "firebase";
+import type { Timestamp } from "firebase/firestore";
 import React, { useMemo } from "react";
 
 type MaintProjectTimeRemainingProps = {
-  eta: firebase.firestore.Timestamp;
+  eta: Timestamp;
 };
 
 export function MaintProjectTimeRemaining({

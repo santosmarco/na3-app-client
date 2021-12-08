@@ -1,9 +1,7 @@
-import firebase from "firebase";
 import { useEffect } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
-import type { Na3Department } from "../../../na3-types";
 import { useNa3Auth } from "../../hooks";
 import {
   setConfigEnvironment,
@@ -15,7 +13,7 @@ import {
   setGlobalLoading,
 } from "../../store/actions";
 import type { ConfigState } from "../../types";
-import { getDevice, resolveCollectionId } from "../../utils";
+import { getCollection, getDevice } from "../../utils";
 
 type Na3MainControllerProps = {
   appVersion: string;
@@ -33,13 +31,8 @@ export function Na3MainController({
   const dispatch = useDispatch();
 
   const [fbDepartments, fbDepartmentsLoading, fbDepartmentsError] =
-    useCollectionData<Na3Department, "id">(
-      firebase
-        .firestore()
-        .collection(
-          resolveCollectionId("departments", env, { forceProduction: true })
-        ),
-      { idField: "id" }
+    useCollectionData(
+      getCollection("departments", env, { forceProduction: true })
     );
 
   /* Config state management hook */
