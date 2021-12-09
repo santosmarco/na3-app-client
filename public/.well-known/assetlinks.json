@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.novaa3.app.twa",
+      "sha256_cert_fingerprints": [
+        "8D:83:AB:3A:7D:33:1B:D0:F6:FA:2E:E0:8F:BD:28:E0:C7:23:DC:96:15:18:92:3C:13:9E:21:DA:7E:D5:20:67"
+      ]
+    }
+  }
+]
