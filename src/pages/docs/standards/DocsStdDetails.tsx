@@ -2,6 +2,7 @@ import {
   Divider,
   PageDescription,
   PageTitle,
+  PdfViewer,
   PrintPrevent,
   Result,
   Result404,
@@ -53,7 +54,6 @@ export function DocsStdDetailsPage({
     if (doc && currentUser && userPermissions?.read && !pdfDownloadUrl) {
       void (async (): Promise<void> => {
         const downloadUrlRes = await getDocumentDownloadUrl(doc);
-
         if (downloadUrlRes.error) {
           notification.error({
             description: downloadUrlRes.error.message,
@@ -62,7 +62,6 @@ export function DocsStdDetailsPage({
           setPdfDownloadUrl(undefined);
           return;
         }
-
         setPdfDownloadUrl(downloadUrlRes.data);
       })();
     }
@@ -78,8 +77,6 @@ export function DocsStdDetailsPage({
     setBreadcrumbExtra(doc?.title);
   }, [setBreadcrumbExtra, doc]);
 
-  console.log(pdfDownloadUrl);
-
   return doc && currentUser ? (
     userPermissions?.read ? (
       <PrintPrevent disabled={userPermissions?.print}>
@@ -88,7 +85,7 @@ export function DocsStdDetailsPage({
 
         <Divider />
 
-        {pdfDownloadUrl && <iframe src={`${pdfDownloadUrl}#toolbar=0`} />}
+        {pdfDownloadUrl && <PdfViewer url={pdfDownloadUrl} />}
       </PrintPrevent>
     ) : (
       <Result
