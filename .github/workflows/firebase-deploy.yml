@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  deploy_live_website:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,3 +43,6 @@ jobs:
 
       - name: Update version
         run: cd scripts && yarn node build/meta-version-increment.js
+
+      - name: Auto commit
+        uses: EndBug/add-and-commit@v7
