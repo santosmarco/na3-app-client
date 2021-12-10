@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useCursor } from "./useCursor";
 
 type UseDownloadReturn = {
-  download: (encodedUri: string, fileName: string) => Promise<void>;
+  download: (fileUrl: string, fileName: `${string}.${string}`) => Promise<void>;
   isDownloading: boolean;
 };
 
@@ -13,23 +13,17 @@ export function useDownload(): UseDownloadReturn {
   const [cursor, setCursor] = useCursor();
 
   const download = useCallback(
-    (encodedUri: string, fileName: string): Promise<void> => {
+    async (fileUrl: string, fileName: `${string}.${string}`): Promise<void> => {
       setIsDownloading(true);
-
-      return new Promise<void>((resolve) => {
+      await new Promise<void>((resolve) => {
         const anchorEl = document.createElement("a");
-
-        anchorEl.setAttribute("href", encodedUri);
+        anchorEl.setAttribute("href", fileUrl);
         anchorEl.setAttribute("download", fileName);
-
         document.body.appendChild(anchorEl); // Required for FF
-
         anchorEl.click();
-
         resolve();
-      }).then(() => {
-        setIsDownloading(false);
       });
+      setIsDownloading(false);
     },
     []
   );

@@ -22,15 +22,15 @@ export function DocsStdTypeTag({
   marginRight,
 }: DocsStdTypeTagProps): JSX.Element {
   const {
-    helpers: { getTypeFromTypeId: getDocTypeFromTypeId },
+    helpers: { getDocumentTypeFromTypeId },
   } = useNa3StdDocs();
 
   const parsedType = useMemo((): Na3StdDocumentType => {
     if (typeof type === "string") {
-      return getDocTypeFromTypeId(type);
+      return getDocumentTypeFromTypeId(type);
     }
     return type;
-  }, [type, getDocTypeFromTypeId]);
+  }, [type, getDocumentTypeFromTypeId]);
 
   if (variant === "dot") {
     return (

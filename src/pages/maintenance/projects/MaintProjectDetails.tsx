@@ -207,7 +207,7 @@ export function MaintProjectDetails({
 
       {projectStatus !== "finished" && (
         <PageAlert
-          className={classes.TimeRemainingAlert}
+          marginBottom="small"
           type={projectStatus === "late" ? "error" : "info"}
         >
           <MaintProjectTimeRemaining eta={project.eta} />

@@ -69,33 +69,6 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
     <Page>
       <PageTitle>Entrar</PageTitle>
 
-      {/* <PageAlert title="Atenção!" type="info">
-        <Typography.Paragraph>
-          O sistema de login mudou. A partir de agora, você entrará com o{" "}
-          <strong>seu número de matrícula e senha.</strong>
-        </Typography.Paragraph>
-        <Typography.Paragraph>
-          Se esse for o seu primeiro acesso, por favor,{" "}
-          <strong>use a seguinte senha padrão:</strong>{" "}
-          <Typography.Text code={true}>novaa3-0000</Typography.Text>{" "}
-          <em>
-            (substituir os zeros pelo seu número de matrícula, com quatro
-            dígitos).
-          </em>
-        </Typography.Paragraph>
-        <Typography.Text>
-          <strong>Exemplo:</strong>
-          <ul>
-            <li>
-              Matrícula: <code>123</code>
-            </li>
-            <li>
-              Senha: <code>novaa3-0123</code>
-            </li>
-          </ul>
-        </Typography.Text>
-      </PageAlert> */}
-
       {currentUser && (
         <PageAlert type="warning">
           Você não possui acesso a esta área.

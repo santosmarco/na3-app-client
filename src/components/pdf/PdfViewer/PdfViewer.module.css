@@ -1,0 +1,13 @@
+.PdfViewerContainer {
+  flex: 1;
+  overflow-y: scroll;
+  margin-bottom: -18px;
+  padding-bottom: 24px;
+}
+
+.PdfViewer {
+  height: 100vh;
+  width: 100%;
+  border: none;
+  pointer-events: none;
+}

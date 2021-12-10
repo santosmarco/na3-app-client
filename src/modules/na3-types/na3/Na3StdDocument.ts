@@ -34,7 +34,7 @@ export type Na3StdDocumentEvent = {
     comment: string | null;
   };
   timestamp: string;
-  type: "approve" | "create" | "reject" | "update";
+  type: "acknowledge" | "approve" | "create" | "reject" | "update";
 };
 
 export type Na3StdDocumentVersion = {

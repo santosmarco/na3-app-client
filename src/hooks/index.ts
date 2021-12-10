@@ -1,6 +1,7 @@
 export { useBreadcrumb } from "./useBreadcrumb";
 export { useCursor } from "./useCursor";
 export { useDownload } from "./useDownload";
+export { useFileDownload } from "./useFileDownload";
 export type { UseFormReturn } from "./useForm";
 export { useForm } from "./useForm";
 export { useId } from "./useId";

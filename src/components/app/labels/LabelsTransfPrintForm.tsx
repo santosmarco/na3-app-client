@@ -249,7 +249,7 @@ export function LabelsTransfPrintForm({
             }}
             tooltip={{
               arrowPointAtCenter: true,
-              placement: "rightBottom",
+              placement: "topLeft",
               title: (
                 <>
                   Formato:{" "}
@@ -293,23 +293,27 @@ export function LabelsTransfPrintForm({
               */
             }}
             suffix={template.productUnitName.toLowerCase()}
-            tooltip={
-              <>
-                Unidade:{" "}
-                <strong>{template.productUnitName.toUpperCase()}</strong>
-                {template.productSnapshot && (
-                  <>
-                    <br />
-                    Máx./caixa:{" "}
-                    <strong>
-                      {template.productSnapshot.perCarton
-                        .toString()
-                        .replace(".", ",")}
-                    </strong>
-                  </>
-                )}
-              </>
-            }
+            tooltip={{
+              arrowPointAtCenter: true,
+              placement: "topLeft",
+              title: (
+                <>
+                  Unidade:{" "}
+                  <strong>{template.productUnitName.toUpperCase()}</strong>
+                  {template.productSnapshot && (
+                    <>
+                      <br />
+                      Máx./caixa:{" "}
+                      <strong>
+                        {template.productSnapshot.perCarton
+                          .toString()
+                          .replace(".", ",")}
+                      </strong>
+                    </>
+                  )}
+                </>
+              ),
+            }}
             type="number"
           />
         </Col>

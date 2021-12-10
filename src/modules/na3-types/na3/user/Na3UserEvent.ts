@@ -2,6 +2,10 @@ import type { Na3ServiceOrderPriority } from "../maintenance/Na3ServiceOrder";
 
 /* Map event types to their data and categories */
 type Na3UserEventMap = {
+  DOCS_STD_ACKNOWLEDGE: {
+    category: "docs_std_consumer";
+    data: { docId: string };
+  };
   DOCS_STD_CREATE: {
     category: "docs_std_manager";
     data: { docId: string };

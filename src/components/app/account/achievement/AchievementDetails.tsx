@@ -1,7 +1,6 @@
 import type { Na3UserAchievement } from "@modules/na3-types";
-import { formatNumber } from "@utils";
+import { formatNumber, timestampToStr } from "@utils";
 import { Steps, Typography } from "antd";
-import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import React from "react";
 
@@ -60,9 +59,7 @@ export function AchievementDetails({
           <Steps.Step
             description={
               achievement.achieved && achievement.achievedAt
-                ? `Conquistado em ${dayjs(achievement.achievedAt).format(
-                    "DD/MM/YY [às] HH:mm"
-                  )}`
+                ? `Conquistado em ${timestampToStr(achievement.achievedAt)}`
                 : achievement.levelDescriptor
             }
             status={achievement.achieved ? "finish" : "wait"}

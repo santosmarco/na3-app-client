@@ -11,12 +11,6 @@ type SpinnerProps = Omit<SpinProps, "tip"> & {
   text?: string | null;
 };
 
-const defaultProps: SpinnerProps = {
-  children: null,
-  color: undefined,
-  text: undefined,
-};
-
 export function Spinner({
   children,
   className,
@@ -54,5 +48,3 @@ export function Spinner({
     </Spin>
   );
 }
-
-Spinner.defaultProps = defaultProps;

@@ -3,6 +3,7 @@ export type Na3ErrorCode =
   | "na3/auth/sign-up/user-not-created"
   | "na3/auth/state-change/user-duplicate"
   | "na3/auth/state-change/user-not-found"
+  | "na3/firestore/generic/doc-not-found"
   | "na3/firestore/generic/user-not-found"
   | "na3/storage/docs-std/doc-not-found"
   | "na3/user/update-password/not-signed-in"
@@ -31,6 +32,8 @@ const errorDictionary: Record<Na3ErrorCode, Na3ErrorMessage> = {
     "Não foi encontrada nenhuma conta vinculada à sua matrícula. Sua conta pode ter sido removida ou desativada. Por favor, entre em contato com o administrador do sistema.",
   "na3/firestore/generic/user-not-found":
     "Você precisa entrar com a sua conta primeiro.",
+  "na3/firestore/generic/doc-not-found":
+    "A operação não pôde ser concluída, pois não foi possível localizar o documento no banco de dados.",
   "na3/storage/docs-std/doc-not-found": "Nenhum documento encontrado.",
 };
 

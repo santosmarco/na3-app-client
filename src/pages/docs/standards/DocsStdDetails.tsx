@@ -1,5 +1,8 @@
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   Divider,
+  PageActionButtons,
+  PageAlert,
   PageDescription,
   PageTitle,
   PdfViewer,
@@ -7,9 +10,19 @@ import {
   Result,
   Result404,
 } from "@components";
-import { useBreadcrumb } from "@hooks";
+import { useBreadcrumb, useFileDownload } from "@hooks";
 import { useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
-import { Button, notification } from "antd";
+import { createErrorNotifier, timestampToStr } from "@utils";
+import {
+  Button,
+  Col,
+  Grid,
+  message,
+  Modal,
+  notification,
+  Row,
+  Tooltip,
+} from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -20,38 +33,135 @@ type DocsStdDetailsPageProps = {
 export function DocsStdDetailsPage({
   docId,
 }: DocsStdDetailsPageProps): JSX.Element {
-  const history = useHistory();
-
   const [pdfDownloadUrl, setPdfDownloadUrl] = useState<string>();
+  const [userIsAcknowledging, setUserIsAcknowledging] = useState(false);
+
+  const history = useHistory();
+  const breakpoint = Grid.useBreakpoint();
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
+  const { download, error: fileDownloadError } = useFileDownload();
 
   const { loading: userLoading, currentUser } = useNa3Auth();
   const {
     loading: docLoading,
     helpers: {
       getDocumentById,
+      getDocumentLatestVersion,
       getUserPermissionsForDocument,
+      getUserAcknowledgment,
       getDocumentDownloadUrl,
+      getDocumentStatus,
+      registerAcknowledgment,
     },
   } = useNa3StdDocs();
 
   const doc = useMemo(() => getDocumentById(docId), [getDocumentById, docId]);
 
+  const docStatus = useMemo(
+    () => (doc ? getDocumentStatus(doc) : undefined),
+    [getDocumentStatus, doc]
+  );
+
   const userPermissions = useMemo(
     () =>
-      currentUser && doc
-        ? getUserPermissionsForDocument(currentUser, doc)
+      doc && currentUser
+        ? getUserPermissionsForDocument(doc, currentUser)
         : undefined,
-    [getUserPermissionsForDocument, currentUser, doc]
+    [getUserPermissionsForDocument, doc, currentUser]
+  );
+
+  const userAcknowledgment = useMemo(
+    () =>
+      doc && currentUser ? getUserAcknowledgment(doc, currentUser) : undefined,
+    [getUserAcknowledgment, doc, currentUser]
   );
 
   const handleNavigateBack = useCallback(() => {
     history.replace("/docs/normas");
   }, [history]);
 
+  const handleAcknowledgment = useCallback(async () => {
+    if (doc && currentUser && !userAcknowledgment) {
+      setUserIsAcknowledging(true);
+      const ackRes = await registerAcknowledgment(doc.id);
+      if (ackRes.error) {
+        notification.error({
+          message: "Erro ao registrar leitura",
+          description: ackRes.error.message,
+        });
+      } else {
+        notification.success({
+          message: "Leitura registrada",
+          description: (
+            <>
+              Sua leitura do documento <strong>{doc.title}</strong>{" "}
+              <em>(v.{getDocumentLatestVersion(doc)?.number || "—"})</em> foi
+              registrada com sucesso!
+              <br />
+              <small>
+                <em>
+                  (em{" "}
+                  {timestampToStr(ackRes.data.timestamp, {
+                    includeSeconds: true,
+                  })}
+                  )
+                </em>
+              </small>
+            </>
+          ),
+        });
+      }
+      setUserIsAcknowledging(false);
+    }
+  }, [
+    doc,
+    currentUser,
+    userAcknowledgment,
+    registerAcknowledgment,
+    getDocumentLatestVersion,
+  ]);
+
+  const handleDownloadPdf = useCallback(() => {
+    const confirmModal = Modal.confirm({
+      title: "Atenção",
+      content:
+        "Por motivos de segurança, baixe este documento apenas se for realmente necessário.",
+      okText: "Baixar documento",
+      onOk: async () => {
+        const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
+
+        confirmModal.update({ okText: "Baixando..." });
+
+        if (!doc || !pdfDownloadUrl) {
+          notifyError(
+            "Não foi possivel obter o documento. Tente novamente mais tarde."
+          );
+          return;
+        }
+
+        try {
+          await download(pdfDownloadUrl, `${doc.title}.pdf`);
+          void message.success("Download concluído");
+        } catch (err) {
+          if (fileDownloadError) {
+            notifyError(fileDownloadError.message);
+          } else {
+            notifyError(
+              "Um erro desconhecido ocorreu. Por favor, entre em contato com o administrador do sistema."
+            );
+          }
+        }
+      },
+    });
+  }, [doc, pdfDownloadUrl, fileDownloadError, download]);
+
+  const handleDocApprove = useCallback(() => {
+    return;
+  }, []);
+
   useEffect(() => {
-    if (doc && currentUser && userPermissions?.read && !pdfDownloadUrl) {
+    if (doc && userPermissions?.read && !pdfDownloadUrl) {
       void (async (): Promise<void> => {
         const downloadUrlRes = await getDocumentDownloadUrl(doc);
         if (downloadUrlRes.error) {
@@ -65,13 +175,7 @@ export function DocsStdDetailsPage({
         setPdfDownloadUrl(downloadUrlRes.data);
       })();
     }
-  }, [
-    doc,
-    currentUser,
-    userPermissions?.read,
-    pdfDownloadUrl,
-    getDocumentDownloadUrl,
-  ]);
+  }, [doc, userPermissions?.read, pdfDownloadUrl, getDocumentDownloadUrl]);
 
   useEffect(() => {
     setBreadcrumbExtra(doc?.title);
@@ -81,11 +185,77 @@ export function DocsStdDetailsPage({
     userPermissions?.read ? (
       <PrintPrevent disabled={userPermissions?.print}>
         <PageTitle>{doc.title}</PageTitle>
+
+        {!userAcknowledgment && (
+          <PageAlert marginBottom="small" title="Leitura pendente" type="info">
+            <strong>Atenção!</strong> Você ainda não marcou esta versão do
+            documento como lida — role até o final da página e comunique sua
+            leitura.
+          </PageAlert>
+        )}
+
         <PageDescription>{doc.description}</PageDescription>
 
-        <Divider />
+        {userPermissions?.approve && docStatus === "pending" && (
+          <PageActionButtons>
+            <Button
+              icon={<CheckOutlined />}
+              onClick={handleDocApprove}
+              type="primary"
+            >
+              Aprovar documento
+            </Button>
+            <Button danger={true} icon={<CloseOutlined />} type="text">
+              Rejeitar{breakpoint.lg && " documento"}
+            </Button>
+          </PageActionButtons>
+        )}
 
-        {pdfDownloadUrl && <PdfViewer url={pdfDownloadUrl} />}
+        <Divider marginBottom={0} />
+
+        <PdfViewer
+          actions={
+            <Row gutter={[8, 8]}>
+              <Col span={24}>
+                <Tooltip
+                  title={
+                    userAcknowledgment
+                      ? `Lido em ${timestampToStr(
+                          userAcknowledgment.timestamp,
+                          { includeSeconds: true }
+                        )}`
+                      : undefined
+                  }
+                  visible={userAcknowledgment ? undefined : false}
+                >
+                  <Button
+                    block={true}
+                    disabled={!!userAcknowledgment}
+                    icon={userAcknowledgment && <CheckOutlined />}
+                    loading={userIsAcknowledging}
+                    onClick={handleAcknowledgment}
+                    type="primary"
+                  >
+                    {userIsAcknowledging
+                      ? "Enviando registro de leitura..."
+                      : userAcknowledgment
+                      ? "Você já leu este documento!"
+                      : "Marcar como lido"}
+                  </Button>
+                </Tooltip>
+              </Col>
+
+              {userPermissions?.download && (
+                <Col span={24}>
+                  <Button block={true} onClick={handleDownloadPdf}>
+                    Baixar documento
+                  </Button>
+                </Col>
+              )}
+            </Row>
+          }
+          url={pdfDownloadUrl}
+        />
       </PrintPrevent>
     ) : (
       <Result

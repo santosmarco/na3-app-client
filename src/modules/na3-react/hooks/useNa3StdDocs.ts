@@ -10,12 +10,13 @@ import type {
   Na3StdDocumentVersion,
 } from "@modules/na3-types";
 import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
-import { addDoc } from "firebase/firestore";
+import { addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
 import type { AppUser, FirebaseOperationResult, StdDocsState } from "../types";
 import type { StdDocBuilderData } from "../utils";
+import { buildStdDocumentEvents } from "../utils";
 import {
   buildNa3Error,
   buildStdDocument,
@@ -42,11 +43,21 @@ type UseNa3StdDocsResult = StdDocsState & {
       doc: Na3StdDocument
     ) => Na3StdDocumentVersion | undefined;
     getDocumentStatus: (doc: Na3StdDocument) => Na3StdDocumentStatus;
-    getTypeFromTypeId: (typeId: Na3StdDocumentTypeId) => Na3StdDocumentType;
-    getUserPermissionsForDocument: (
+    getDocumentTypeFromTypeId: (
+      typeId: Na3StdDocumentTypeId
+    ) => Na3StdDocumentType;
+    getUserAcknowledgment: (
+      doc: Na3StdDocument,
       user: AppUser,
-      doc: Na3StdDocument
+      versionId?: string
+    ) => Na3StdDocumentEvent | undefined;
+    getUserPermissionsForDocument: (
+      doc: Na3StdDocument,
+      user: AppUser
     ) => Record<keyof Na3StdDocumentPermissions, boolean>;
+    registerAcknowledgment: (
+      docId: string
+    ) => Promise<FirebaseOperationResult<Na3StdDocumentEvent>>;
     userCanApproveDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
     userCanDownloadDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
     userCanPrintDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
@@ -70,7 +81,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [stdDocs.data]
   );
 
-  const getTypeFromTypeId = useCallback(
+  const getDocumentTypeFromTypeId = useCallback(
     (typeId: Na3StdDocumentTypeId): Na3StdDocumentType => {
       return NA3_STD_DOCUMENT_TYPES[typeId];
     },
@@ -86,7 +97,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
   const getDocumentLastEvent = useCallback(
     (doc: Na3StdDocument): Na3StdDocumentEvent | undefined => {
-      return getDocumentEvents(doc).pop();
+      return [...getDocumentEvents(doc)].pop();
     },
     [getDocumentEvents]
   );
@@ -100,20 +111,37 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
   const getDocumentStatus = useCallback(
     (doc: Na3StdDocument): Na3StdDocumentStatus => {
-      const lastEvent = getDocumentLastEvent(doc);
-      switch (lastEvent?.type) {
-        case "approve":
-          return "approved";
-        case "reject":
-          return "rejected";
-        case "update":
-        case "create":
-          return "pending";
-        default:
-          return "draft";
+      const latestVersion = getDocumentLatestVersion(doc);
+      if (!latestVersion) {
+        return "draft";
       }
+      const approvals = latestVersion.events.filter(
+        (ev) => ev.type === "approve"
+      );
+      const rejections = latestVersion.events.filter(
+        (ev) => ev.type === "reject"
+      );
+      if (approvals.length >= 1) {
+        return "approved";
+      }
+      if (rejections.length >= 1) {
+        return "rejected";
+      }
+      return "pending";
     },
-    [getDocumentLastEvent]
+    [getDocumentLatestVersion]
+  );
+
+  const getUserAcknowledgment = useCallback(
+    (doc: Na3StdDocument, user: AppUser, versionId?: string) => {
+      const version = versionId
+        ? doc.versions.find((v) => v.id === versionId)
+        : getDocumentLatestVersion(doc);
+      return version?.events.find(
+        (ev) => ev.type === "acknowledge" && ev.origin.uid === user.uid
+      );
+    },
+    [getDocumentLatestVersion]
   );
 
   const getDocumentDownloadUrl = useCallback(
@@ -197,7 +225,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   );
 
   const getUserPermissionsForDocument = useCallback(
-    (user: AppUser, doc: Na3StdDocument) => {
+    (doc: Na3StdDocument, user: AppUser) => {
       return {
         read: userCanReadDocument(user, doc),
         print: userCanPrintDocument(user, doc),
@@ -252,22 +280,79 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [user, device]
   );
 
+  const registerAcknowledgment = useCallback(
+    async (
+      docId: string
+    ): Promise<FirebaseOperationResult<Na3StdDocumentEvent>> => {
+      if (!user) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
+      const docRef = doc(fbCollectionRef.current, docId);
+
+      try {
+        const docSnap = await getDoc(docRef);
+        const docData = docSnap.data();
+
+        if (!docData) {
+          return {
+            data: null,
+            error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+          };
+        }
+
+        const ack = buildStdDocumentEvents(
+          {
+            type: "acknowledge",
+            payload: { comment: null },
+          },
+          { device, user }
+        );
+        const lastVersion = docData.versions.slice(-1)[0];
+
+        await updateDoc(docRef, {
+          versions: [
+            ...docData.versions.slice(0, -1),
+            { ...lastVersion, events: [...lastVersion.events, ack] },
+          ],
+        });
+
+        void user.registerEvents({
+          DOCS_STD_ACKNOWLEDGE: { docId: docRef.id },
+        });
+
+        return { data: ack, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
+      }
+    },
+    [user, device]
+  );
+
   return {
     ...stdDocs,
     helpers: {
       createDocument,
       getDocumentById,
-      getTypeFromTypeId,
+      getDocumentTypeFromTypeId,
       getDocumentEvents,
       getDocumentLastEvent,
       getDocumentLatestVersion,
       getDocumentStatus,
+      getUserAcknowledgment,
       getDocumentDownloadUrl,
       userCanReadDocument,
       userCanPrintDocument,
       userCanDownloadDocument,
       userCanApproveDocument,
       getUserPermissionsForDocument,
+      registerAcknowledgment,
     },
   };
 }

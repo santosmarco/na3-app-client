@@ -250,6 +250,8 @@ export function MaintCreateServiceOrderForm({
               pré-definidos
             </>
           ),
+          arrowPointAtCenter: true,
+          placement: "topLeft",
         }}
         type="autoComplete"
       />
