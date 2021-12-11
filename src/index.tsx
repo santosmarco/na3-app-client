@@ -20,6 +20,7 @@ import { Router } from "react-router-dom";
 import { App } from "./App";
 import {
   APP_VERSION,
+  FIREBASE_APP_CHECK_SITE_KEY,
   FIREBASE_CONFIG,
   FIREBASE_MESSAGING_VAPID_KEY,
   SENTRY_DSN,
@@ -43,13 +44,14 @@ dayjs.locale("pt-br");
 
 const routerHistory = createBrowserHistory();
 
-initSentry({
-  appVersion: APP_VERSION,
-  dsn: SENTRY_DSN,
-  routerHistory,
-});
+if (process.env.NODE_ENV === "production") {
+  initSentry({ appVersion: APP_VERSION, dsn: SENTRY_DSN, routerHistory });
+}
 
-const firebase = initFirebaseCore(FIREBASE_CONFIG);
+const firebase = initFirebaseCore({
+  ...FIREBASE_CONFIG,
+  appCheckSiteKey: FIREBASE_APP_CHECK_SITE_KEY,
+});
 
 function Root(): JSX.Element {
   return (

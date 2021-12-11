@@ -1,6 +1,7 @@
 import { initializeAnalytics } from "firebase/analytics";
 import type { FirebaseApp, FirebaseOptions } from "firebase/app";
 import { getApp, getApps, initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import type { Firestore } from "firebase/firestore";
 import {
   enableIndexedDbPersistence,
@@ -22,12 +23,22 @@ function setupFirestore(firestore: Firestore): void {
   void enableNetwork(firestore);
 }
 
-export function initFirebaseCore(config: FirebaseOptions): FirebaseApp {
-  // Init and retrieve Firebase
+export function initFirebaseCore(
+  config: FirebaseOptions & { appCheckSiteKey: string }
+): FirebaseApp {
+  const { appCheckSiteKey, ...firebaseCoreConfig } = config;
+
+  // Init Firebase
   if (getApps().length === 0) {
-    initializeApp(config);
+    initializeApp(firebaseCoreConfig);
   }
+  // Retrieve default app
   const firebase = getApp();
+  // Init Firebase's AppCheck
+  initializeAppCheck(firebase, {
+    provider: new ReCaptchaV3Provider(appCheckSiteKey),
+    isTokenAutoRefreshEnabled: true,
+  });
   // Configure Firestore
   setupFirestore(getFirestore(firebase));
   // Init Firebase's Performance service
