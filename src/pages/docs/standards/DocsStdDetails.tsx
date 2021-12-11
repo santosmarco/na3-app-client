@@ -124,9 +124,9 @@ export function DocsStdDetailsPage({
 
   const handleDownloadPdf = useCallback(() => {
     const confirmModal = Modal.confirm({
-      title: "Atenção",
+      title: "Atenção!",
       content:
-        "Por motivos de segurança, baixe este documento apenas se for realmente necessário.",
+        "Por motivos de segurança, baixe este documento apenas quando realmente necessário.",
       okText: "Baixar documento",
       onOk: async () => {
         const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
