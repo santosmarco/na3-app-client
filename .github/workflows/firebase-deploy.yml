@@ -18,20 +18,33 @@ jobs:
         with:
           node-version: 14
 
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.23.6
+
       - name: Install dependencies
-        run: yarn
+        run: pnpm install
       - name: Install client scripts' dependencies
-        run: cd scripts && yarn
+        run: cd scripts && pnpm install
       - name: Run ESLint
-        run: yarn eslint --fix src/ --ext .ts,.tsx
+        run: pnpm eslint --fix src/ --ext .ts,.tsx
       - name: Format code
-        run: yarn prettier --write src/
+        run: pnpm prettier --write src/
       - name: Build client scripts
-        run: cd scripts && yarn tsc
+        run: cd scripts && pnpm tsc
       - name: Update version's timestamp
-        run: cd scripts && yarn node build/meta-version-timestamp-update.js
+        run: cd scripts && pnpm node build/meta-version-timestamp-update.js
       - name: Build app
-        run: yarn craco build
+        run: pnpm craco build
 
       - name: Deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -42,7 +55,7 @@ jobs:
           projectId: nova-a3-ind
 
       - name: Update version
-        run: cd scripts && yarn node build/meta-version-increment.js
+        run: cd scripts && pnpm node build/meta-version-increment.js
 
       - name: Auto commit
         uses: EndBug/add-and-commit@v7
