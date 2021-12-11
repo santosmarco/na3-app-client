@@ -4,15 +4,17 @@ import React from "react";
 import classes from "./PdfViewer.module.css";
 
 type PdfViewerProps = {
+  url: string | undefined;
+  title: string;
   actions?: React.ReactNode;
   className?: string;
-  url: string | undefined;
 };
 
 export function PdfViewer({
   url,
-  className,
+  title,
   actions,
+  className,
 }: PdfViewerProps): JSX.Element {
   return (
     <Spinner
@@ -24,7 +26,11 @@ export function PdfViewer({
     >
       {url && (
         <>
-          <iframe className={classes.PdfViewer} src={`${url}#toolbar=0`} />
+          <iframe
+            title={title}
+            className={classes.PdfViewer}
+            src={`${url}#toolbar=0`}
+          />
 
           {actions && (
             <>

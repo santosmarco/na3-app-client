@@ -29,7 +29,7 @@ export function Breadcrumb(): JSX.Element {
         .map((_, index): BreadcrumbItem | undefined => {
           const chunkPath = `/${pathChunks.slice(1, index + 1).join("/")}`;
 
-          if (!isAppRoutePath(chunkPath)) return;
+          if (!isAppRoutePath(chunkPath)) return undefined;
           const chunkRoute: AppRoute | undefined = ROUTES[chunkPath];
           return {
             content: chunkRoute.title,

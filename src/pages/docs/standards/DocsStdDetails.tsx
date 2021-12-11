@@ -214,6 +214,8 @@ export function DocsStdDetailsPage({
         <Divider marginBottom={0} />
 
         <PdfViewer
+          url={pdfDownloadUrl}
+          title={doc.title}
           actions={
             <Row gutter={[8, 8]}>
               <Col span={24}>
@@ -254,7 +256,6 @@ export function DocsStdDetailsPage({
               )}
             </Row>
           }
-          url={pdfDownloadUrl}
         />
       </PrintPrevent>
     ) : (
