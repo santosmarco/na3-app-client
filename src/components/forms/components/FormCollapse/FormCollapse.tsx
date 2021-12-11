@@ -1,5 +1,6 @@
 import { FormItem } from "@components";
 import { Collapse } from "antd";
+import { nanoid } from "nanoid";
 import React from "react";
 
 import classes from "./FormCollapse.module.css";
@@ -9,10 +10,6 @@ export type FormCollapseProps = {
   title: string;
 };
 
-const defaultProps: Omit<FormCollapseProps, "title"> = {
-  children: null,
-};
-
 export function FormCollapse({
   title,
   children,
@@ -20,16 +17,10 @@ export function FormCollapse({
   return (
     <FormItem>
       <Collapse ghost={true}>
-        <Collapse.Panel
-          className={classes.Panel}
-          header={title}
-          key="form-collapse"
-        >
+        <Collapse.Panel className={classes.Panel} header={title} key={nanoid()}>
           {children}
         </Collapse.Panel>
       </Collapse>
     </FormItem>
   );
 }
-
-FormCollapse.defaultProps = defaultProps;
