@@ -32,13 +32,25 @@
       "last 1 safari version"
     ]
   },
+  "eslintConfig": {
+    "plugins": [
+      "simple-import-sort"
+    ],
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "simple-import-sort/exports": "warn",
+      "simple-import-sort/imports": "warn"
+    }
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@ryuuji3/react-mask-hook": "^1.0.1",
     "@sentry/browser": "^6.16.1",
     "@sentry/integrations": "^6.16.1",
     "@sentry/react": "^6.16.1",
-    "@sentry/rrweb": "^0.3.1",
     "@sentry/tracing": "^6.16.1",
     "animate.css": "^4.1.1",
     "antd": "^4.17.3",
@@ -51,7 +63,7 @@
     "jspdf": "^2.4.0",
     "lodash": "^4.17.21",
     "nanoid": "^3.1.30",
-    "qrcode": "^1.4.4",
+    "qrcode": "^1.5.0",
     "react": "^17.0.2",
     "react-css-theme-switcher": "^0.3.0",
     "react-div-100vh": "^0.7.0",
@@ -84,13 +96,7 @@
     "@types/react-helmet": "^6.1.4",
     "@types/react-router-dom": "^5.3.2",
     "@types/validator": "^13.7.0",
-    "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
-    "eslint": "^7.11.0",
-    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "eslint-plugin-sort-keys-fix": "^1.1.2",
-    "eslint-plugin-typescript-sort-keys": "^2.1.0",
     "prettier": "^2.5.1",
     "pwa-asset-generator": "^6.0.5",
     "react-app-rewire-alias": "^1.1.5",
