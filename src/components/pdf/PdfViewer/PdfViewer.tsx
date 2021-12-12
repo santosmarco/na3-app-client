@@ -1,5 +1,5 @@
 import { Divider, Spinner } from "@components";
-import React from "react";
+import React, { useMemo } from "react";
 
 import classes from "./PdfViewer.module.css";
 
@@ -8,6 +8,7 @@ type PdfViewerProps = {
   title: string;
   actions?: React.ReactNode;
   className?: string;
+  disabled?: React.ReactNode;
 };
 
 export function PdfViewer({
@@ -15,31 +16,41 @@ export function PdfViewer({
   title,
   actions,
   className,
+  disabled,
 }: PdfViewerProps): JSX.Element {
+  const isLoading = useMemo(() => !disabled && !url, [disabled, url]);
+
   return (
     <Spinner
-      spinning={!url}
+      spinning={isLoading}
       text="Carregando documento..."
-      wrapperClassName={`${classes.PdfViewerContainer} ${
-        className || ""
-      }`.trim()}
+      wrapperClassName={[classes.PdfViewerContainer, className]
+        .filter(
+          (className): className is NonNullable<typeof className> => !!className
+        )
+        .join(" ")}
     >
-      {url && (
-        <>
-          <iframe
-            title={title}
-            className={classes.PdfViewer}
-            src={`${url}#toolbar=0`}
-          />
+      {/* Needed for spinner positioning */}
+      <div />
 
-          {actions && (
+      {disabled
+        ? disabled
+        : url && (
             <>
-              <Divider />
-              {actions}
+              <iframe
+                title={title}
+                className={classes.PdfViewer}
+                src={`${url}#toolbar=0`}
+              />
+
+              {actions && (
+                <>
+                  <Divider />
+                  {actions}
+                </>
+              )}
             </>
           )}
-        </>
-      )}
     </Spinner>
   );
 }

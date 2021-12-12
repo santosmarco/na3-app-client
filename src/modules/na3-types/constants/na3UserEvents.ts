@@ -12,4 +12,7 @@ export const NA3_USER_EVENT_CATEGORY_MAP: Record<
   USER_SET_BIO: "user_profile",
   DOCS_STD_CREATE: "docs_std_manager",
   DOCS_STD_ACKNOWLEDGE: "docs_std_consumer",
+  DOCS_STD_DOWNLOAD: "docs_std_consumer",
+  DOCS_STD_APPROVE: "docs_std_approver",
+  DOCS_STD_REJECT: "docs_std_approver",
 };

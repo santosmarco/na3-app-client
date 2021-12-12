@@ -2,6 +2,7 @@ export { Na3Provider } from "./components";
 export {
   useAppReady,
   useCurrentUser,
+  useDevice,
   useNa3,
   useNa3Auth,
   useNa3Departments,

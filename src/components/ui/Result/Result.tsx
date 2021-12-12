@@ -1,6 +1,6 @@
 import type { ResultProps as AntdResultProps } from "antd";
 import { Result as AntdResult } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
 
 import classes from "./Result.module.css";
 
@@ -16,11 +16,9 @@ type ResultProps = Omit<
 > &
   ResultPropsRequired & {
     children?: React.ReactNode;
+    paddingTop?: number;
+    paddingBottom?: number;
   };
-
-const defaultProps: Omit<ResultProps, keyof ResultPropsRequired> = {
-  children: null,
-};
 
 export function Result({
   status,
@@ -31,8 +29,19 @@ export function Result({
   className,
   icon,
   prefixCls,
-  style,
+  style: styleProp,
+  paddingTop,
+  paddingBottom,
 }: ResultProps): JSX.Element {
+  const style = useMemo(
+    () => ({
+      ...styleProp,
+      paddingTop: paddingTop ?? styleProp?.paddingTop,
+      paddingBottom: paddingBottom ?? styleProp?.paddingBottom,
+    }),
+    [styleProp, paddingTop, paddingBottom]
+  );
+
   return (
     <div className={classes.Container}>
       <AntdResult
@@ -50,5 +59,3 @@ export function Result({
     </div>
   );
 }
-
-Result.defaultProps = defaultProps;

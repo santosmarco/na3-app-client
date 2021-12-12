@@ -1,11 +1,11 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export function timestamp(): string {
   return dayjs().format();
 }
 
 export function timestampToStr(
-  timestamp: string,
+  timestamp: string | Dayjs,
   options?: { includeSeconds?: boolean }
 ): string {
   return dayjs(timestamp).format(

@@ -6,6 +6,18 @@ type Na3UserEventMap = {
     category: "docs_std_consumer";
     data: { docId: string };
   };
+  DOCS_STD_DOWNLOAD: {
+    category: "docs_std_consumer";
+    data: { docId: string };
+  };
+  DOCS_STD_APPROVE: {
+    category: "docs_std_approver";
+    data: { docId: string };
+  };
+  DOCS_STD_REJECT: {
+    category: "docs_std_approver";
+    data: { docId: string; comment: string };
+  };
   DOCS_STD_CREATE: {
     category: "docs_std_manager";
     data: { docId: string };

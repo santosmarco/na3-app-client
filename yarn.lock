@@ -2408,6 +2408,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
 
+"@types/extenso@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/extenso/-/extenso-2.0.1.tgz#0ea8369b43848c36f55c52e536cb36f2df243191"
+  integrity sha512-SlP/k5rn7SAcSb4PQCWNI5uPs6i8BnVlhYQV5RN+HMt0mTvDJ/qBXl9I4wNaoL/+w790Dvd0AyBFwFfDCb4h0Q==
+
 "@types/glob@^7.1.1":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.2.0.tgz#bc1b5bf3aa92f25bd5dd39f35c57361bdce5b2eb"
@@ -5987,6 +5992,11 @@ extend-shallow@^3.0.0, extend-shallow@^3.0.2:
   dependencies:
     assign-symbols "^1.0.0"
     is-extendable "^1.0.1"
+
+extenso@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/extenso/-/extenso-2.0.1.tgz#85411f40d7b8758279a18f84fadf5b0e4042717c"
+  integrity sha512-EXaNgWmE9UHqXCa65Fgj4bNArSxBsJh80QWJPscViClk3ch/WlNfB3otKwIid2gfXdEqJ1Hfyl5/+aKSH/Y1Pw==
 
 extglob@^2.0.4:
   version "2.0.4"

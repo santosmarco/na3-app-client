@@ -34,19 +34,19 @@ export function RejectSolutionModal({
       destroyOnClose={true}
       footer={null}
       onCancel={onClose}
-      title="Recusar solução"
+      title="Rejeitar solução"
       visible={isVisible}
     >
       <Form form={form} onSubmit={handleSubmit}>
         <FormField
           label="Motivo"
           name="reason"
-          rules={{ required: "Descreva o motivo para a recusa" }}
+          rules={{ required: "Descreva o motivo para a recusa da solução" }}
           type="textArea"
         />
 
         <SubmitButton
-          label="Recusar solução"
+          label="Rejeitar solução"
           labelWhenLoading="Aguardando confirmação..."
         />
       </Form>

@@ -34,12 +34,10 @@ export type Na3StdDocumentEvent = {
     comment: string | null;
   };
   timestamp: string;
-  type: "acknowledge" | "approve" | "create" | "reject" | "update";
+  type: "acknowledge" | "approve" | "create" | "reject" | "update" | "download";
 };
 
 export type Na3StdDocumentVersion = {
-  approvedAt: string | null;
-  approvedByUid: string | null;
   createdAt: string;
   events: Na3StdDocumentEvent[];
   id: string;

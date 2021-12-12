@@ -32,8 +32,6 @@ export function buildStdDocument(
     type: data.type,
     versions: [
       {
-        approvedAt: null,
-        approvedByUid: null,
         createdAt: timestamp(),
         id: nanoid(),
         number: data.currentVersionNumber,
@@ -52,27 +50,27 @@ export function buildStdDocumentUrl(
   return `${doc.id}_v${version.id}`;
 }
 
-type EventBuildConfig<T extends Na3StdDocumentEvent> = Omit<
-  T,
+export type EventBuildConfig = Omit<
+  Na3StdDocumentEvent,
   "id" | "origin" | "timestamp"
 >;
 
-export function buildStdDocumentEvents<T extends Na3StdDocumentEvent>(
-  event: EventBuildConfig<T>,
+export function buildStdDocumentEvents(
+  event: EventBuildConfig,
   origin: { device: Na3AppDevice; user: AppUser }
 ): Na3StdDocumentEvent;
-export function buildStdDocumentEvents<T extends Na3StdDocumentEvent>(
-  events: EventBuildConfig<T>[],
+export function buildStdDocumentEvents(
+  events: EventBuildConfig[],
   origin: { device: Na3AppDevice; user: AppUser }
 ): Na3StdDocumentEvent[];
-export function buildStdDocumentEvents<T extends Na3StdDocumentEvent>(
-  eventOrEvents: MaybeArray<EventBuildConfig<T>>,
+export function buildStdDocumentEvents(
+  eventOrEvents: MaybeArray<EventBuildConfig>,
   origin: { device: Na3AppDevice; user: AppUser }
 ): MaybeArray<Na3StdDocumentEvent> | undefined {
   const now = timestamp();
 
   function buildOneEvent(
-    config: EventBuildConfig<T>
+    config: EventBuildConfig
   ): Na3StdDocumentEvent | undefined {
     return {
       type: config.type,

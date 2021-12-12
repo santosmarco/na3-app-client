@@ -1,25 +1,35 @@
 import { Typography } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
+
+type EllipsisConfig = Exclude<
+  React.ComponentProps<typeof Typography["Paragraph"]>["ellipsis"],
+  boolean | undefined
+>;
 
 type PageDescriptionProps = {
   children?: React.ReactNode;
   className?: string;
-};
-
-const defaultProps: PageDescriptionProps = {
-  children: null,
-  className: undefined,
+  ellipsis?: EllipsisConfig | null;
 };
 
 export function PageDescription({
   children,
   className,
+  ellipsis,
 }: PageDescriptionProps): JSX.Element {
+  const ellipsisConfig = useMemo(
+    () => (ellipsis ? ellipsis : { rows: 1, expandable: true, symbol: "mais" }),
+    [ellipsis]
+  );
+
   return (
-    <Typography.Paragraph className={className} italic={true} type="secondary">
+    <Typography.Paragraph
+      ellipsis={ellipsisConfig}
+      className={className}
+      italic={true}
+      type="secondary"
+    >
       {children}
     </Typography.Paragraph>
   );
 }
-
-PageDescription.defaultProps = defaultProps;

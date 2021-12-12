@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import {
   AccountAchievements,
+  AccountLastSeen,
   AccountRegistrationId,
   AchievementScoreTag,
   DataItem,
@@ -90,6 +91,11 @@ export function UserProfilePage({
           type="initials"
           user={user}
           wrapperClassName={classes.Avatar}
+          tooltip={{
+            content: <AccountLastSeen at={user.lastSeenAt} />,
+            placement: "bottomLeft",
+            small: true,
+          }}
         />
 
         <div className={classes.HeaderContent}>

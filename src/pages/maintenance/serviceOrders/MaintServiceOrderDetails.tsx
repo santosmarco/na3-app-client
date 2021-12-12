@@ -102,34 +102,6 @@ export function MaintServiceOrderDetailsPage({
     setTimelineIsVisible(false);
   }, []);
 
-  const handleOpenRejectSolutionModal = useCallback(() => {
-    setRejectSolutionModalIsVisible(true);
-  }, []);
-
-  const handleCloseRejectSolutionModal = useCallback(() => {
-    setRejectSolutionModalIsVisible(false);
-  }, []);
-
-  const handleOpenAcceptOrderModal = useCallback(() => {
-    setAcceptOrderModalIsVisible(true);
-  }, []);
-
-  const handleCloseAcceptOrderModal = useCallback(() => {
-    setAcceptOrderModalIsVisible(false);
-  }, []);
-
-  const handleSolutionActionModalStatusOpen = useCallback(() => {
-    setSolutionActionModalType("status");
-  }, []);
-
-  const handleSolutionActionModalDeliverOpen = useCallback(() => {
-    setSolutionActionModalType("deliver");
-  }, []);
-
-  const handleSolutionActionModalClose = useCallback(() => {
-    setSolutionActionModalType(undefined);
-  }, []);
-
   const handleOrderSolutionAccept = useCallback(() => {
     if (!serviceOrder) return;
 
@@ -380,54 +352,55 @@ export function MaintServiceOrderDetailsPage({
       <PageTitle>OS #{serviceOrder.id}</PageTitle>
       <PageDescription>{serviceOrder.description}</PageDescription>
 
-      {user?.hasPrivileges([
+      {((user?.hasPrivileges([
         "service_orders_write_shop_floor",
         "service_orders_write_maintenance",
       ]) &&
-        orderRequiresAction(serviceOrder) && (
-          <PageActionButtons>
-            {serviceOrder.status === "solved" ? (
-              <>
-                <Button
-                  icon={<CheckOutlined />}
-                  onClick={handleOrderSolutionAccept}
-                  type="primary"
-                >
-                  Aceitar solução
-                </Button>
-                <Button
-                  danger={true}
-                  icon={<CloseOutlined />}
-                  onClick={handleOpenRejectSolutionModal}
-                  type="text"
-                >
-                  Rejeitar{breakpoint.lg && " solução"}
-                </Button>
-              </>
-            ) : serviceOrder.status === "pending" ? (
+        orderRequiresAction(serviceOrder)) ||
+        user?.isSuper) && (
+        <PageActionButtons>
+          {serviceOrder.status === "pending" ? (
+            <Button
+              icon={<CheckOutlined />}
+              onClick={() => setAcceptOrderModalIsVisible(true)}
+              type="primary"
+            >
+              Aceitar OS
+            </Button>
+          ) : serviceOrder.status === "solving" ? (
+            <>
+              <Button onClick={() => setSolutionActionModalType("status")}>
+                Informar status
+              </Button>
               <Button
                 icon={<CheckOutlined />}
-                onClick={handleOpenAcceptOrderModal}
+                onClick={() => setSolutionActionModalType("deliver")}
                 type="primary"
               >
-                Aceitar OS
+                Transmitir solução
               </Button>
-            ) : (
-              <>
-                <Button onClick={handleSolutionActionModalStatusOpen}>
-                  Informar status
-                </Button>
-                <Button
-                  icon={<CheckOutlined />}
-                  onClick={handleSolutionActionModalDeliverOpen}
-                  type="primary"
-                >
-                  Transmitir solução
-                </Button>
-              </>
-            )}
-          </PageActionButtons>
-        )}
+            </>
+          ) : serviceOrder.status === "solved" ? (
+            <>
+              <Button
+                icon={<CheckOutlined />}
+                onClick={handleOrderSolutionAccept}
+                type="primary"
+              >
+                Aceitar solução
+              </Button>
+              <Button
+                danger={true}
+                icon={<CloseOutlined />}
+                onClick={() => setRejectSolutionModalIsVisible(true)}
+                type="text"
+              >
+                Rejeitar{breakpoint.lg && " solução"}
+              </Button>
+            </>
+          ) : null}
+        </PageActionButtons>
+      )}
 
       <Divider />
 
@@ -575,21 +548,21 @@ export function MaintServiceOrderDetailsPage({
 
       <RejectSolutionModal
         isVisible={rejectSolutionModalIsVisible}
-        onClose={handleCloseRejectSolutionModal}
+        onClose={() => setRejectSolutionModalIsVisible(false)}
         onSubmit={handleOrderSolutionReject}
         serviceOrder={serviceOrder}
       />
 
       <ConfirmServiceOrderModal
         isVisible={acceptOrderModalIsVisible}
-        onClose={handleCloseAcceptOrderModal}
+        onClose={() => setAcceptOrderModalIsVisible(false)}
         onSubmit={handleOrderConfirm}
         serviceOrder={serviceOrder}
       />
 
       <ServiceOrderSolutionActionsModal
         isVisible={!!solutionActionModalType}
-        onClose={handleSolutionActionModalClose}
+        onClose={() => setSolutionActionModalType(undefined)}
         onSubmit={
           solutionActionModalType === "status"
             ? handleOrderSolutionShareStatus

@@ -76,20 +76,8 @@ export function MaintProjectDetails({
     [getProjectStatus, project]
   );
 
-  const handleActionModalStatusOpen = useCallback(() => {
-    setActionModalType("status");
-  }, []);
-
-  const handleActionModalDeliverOpen = useCallback(() => {
-    setActionModalType("deliver");
-  }, []);
-
   const handleEditModalOpen = useCallback(() => {
     setEditModalIsOpen(true);
-  }, []);
-
-  const handleActionModalClose = useCallback(() => {
-    setActionModalType(undefined);
   }, []);
 
   const handleEditModalClose = useCallback(() => {
@@ -221,12 +209,12 @@ export function MaintProjectDetails({
           <PageActionButtons
             left={
               <>
-                <Button onClick={handleActionModalStatusOpen}>
+                <Button onClick={() => setActionModalType("status")}>
                   Informar status
                 </Button>
                 <Button
                   icon={<CheckOutlined />}
-                  onClick={handleActionModalDeliverOpen}
+                  onClick={() => setActionModalType("deliver")}
                   type="primary"
                 >
                   Entregar
@@ -323,7 +311,7 @@ export function MaintProjectDetails({
 
       <MaintProjectActionModal
         isVisible={!!actionModalType}
-        onClose={handleActionModalClose}
+        onClose={() => setActionModalType(undefined)}
         onSubmit={
           actionModalType === "status"
             ? handleProjectShareStatus

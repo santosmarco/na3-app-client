@@ -35,6 +35,10 @@ export function initFirebaseCore(
   // Retrieve default app
   const firebase = getApp();
   // Init Firebase's AppCheck
+  if (process.env.NODE_ENV !== "production") {
+    // @ts-ignore
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
   initializeAppCheck(firebase, {
     provider: new ReCaptchaV3Provider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,

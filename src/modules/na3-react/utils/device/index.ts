@@ -8,7 +8,6 @@ type GetDeviceConfig = {
 
 export function getDevice(config: GetDeviceConfig | null): Na3AppDevice {
   const browser = detectBrowser();
-
   return {
     model: browser?.name || "Nova A3 App",
     name: "Nova A3 App",

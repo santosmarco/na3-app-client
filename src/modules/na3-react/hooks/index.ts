@@ -1,5 +1,6 @@
 export * from "./useAppReady";
 export * from "./useCurrentUser";
+export * from "./useDevice";
 export * from "./useNa3/useNa3";
 export * from "./useNa3/useNa3People";
 export * from "./useNa3/useNa3Product";
