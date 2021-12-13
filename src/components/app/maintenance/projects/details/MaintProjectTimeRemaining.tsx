@@ -1,3 +1,4 @@
+import { humanizeDuration } from "@utils";
 import dayjs from "dayjs";
 import type { Timestamp } from "firebase/firestore";
 import React, { useMemo } from "react";
@@ -17,7 +18,7 @@ export function MaintProjectTimeRemaining({
     return (
       <>
         <strong>Atenção!</strong> O prazo deste projeto venceu{" "}
-        <strong>{dayjs.duration(remainingMs, "ms").humanize(true)}</strong> (em{" "}
+        <strong>{humanizeDuration(remainingMs, "ms")}</strong> (em{" "}
         {parsedEta.format("DD/MM/YY")}). Entregue-o o quanto antes.
       </>
     );
@@ -25,8 +26,8 @@ export function MaintProjectTimeRemaining({
   return (
     <>
       Você tem mais{" "}
-      <strong>{dayjs.duration(remainingMs, "ms").humanize()}</strong> para
-      entregar este projeto no prazo ({parsedEta.format("DD/MM/YY")}).
+      <strong>{humanizeDuration(remainingMs, "ms", { noSuffix: true })}</strong>{" "}
+      para entregar este projeto no prazo ({parsedEta.format("DD/MM/YY")}).
     </>
   );
 }
