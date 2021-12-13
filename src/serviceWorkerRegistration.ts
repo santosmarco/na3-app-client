@@ -1,7 +1,11 @@
+import type { ReadonlyDeep } from "type-fest";
+
 type RegistryConfig = {
-  onSuccess?: (registration: ServiceWorkerRegistration) => void;
-  onUpdate?: (registration: ServiceWorkerRegistration) => void;
+  onSuccess?: (registration: ReadonlyDeep<ServiceWorkerRegistration>) => void;
+  onUpdate?: (registration: ReadonlyDeep<ServiceWorkerRegistration>) => void;
 };
+
+const STATUS_CODE_404 = 404;
 
 const isLocalhost = !!(
   window.location.hostname === "localhost" ||
@@ -48,7 +52,7 @@ export function register(config?: RegistryConfig): void {
 function registerValidSW(swUrl: string, config?: RegistryConfig): void {
   navigator.serviceWorker
     .register(swUrl)
-    .then((registration) => {
+    .then((registration: ServiceWorkerRegistration) => {
       registration.onupdatefound = (): void => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {
@@ -89,19 +93,21 @@ function checkValidServiceWorker(swUrl: string, config?: RegistryConfig): void {
   fetch(swUrl, {
     headers: { "Service-Worker": "script" },
   })
-    .then((response) => {
+    .then((response: ReadonlyDeep<Response>) => {
       // Ensure service worker exists, and that we really are getting a JS file.
       const contentType = response.headers.get("content-type");
       if (
-        response.status === 404 ||
-        (contentType != null && contentType.indexOf("javascript") === -1)
+        response.status === STATUS_CODE_404 ||
+        (contentType != null && !contentType.includes("javascript"))
       ) {
         // No service worker found. Probably a different app. Reload the page.
-        void navigator.serviceWorker.ready.then((registration) => {
-          void registration.unregister().then(() => {
-            window.location.reload();
-          });
-        });
+        void navigator.serviceWorker.ready.then(
+          (registration: ReadonlyDeep<ServiceWorkerRegistration>) => {
+            void registration.unregister().then(() => {
+              window.location.reload();
+            });
+          }
+        );
       } else {
         // Service worker found. Proceed as normal.
         registerValidSW(swUrl, config);
@@ -117,7 +123,7 @@ function checkValidServiceWorker(swUrl: string, config?: RegistryConfig): void {
 export function unregister(): void {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready
-      .then((registration) => {
+      .then((registration: ReadonlyDeep<ServiceWorkerRegistration>) => {
         void registration.unregister();
       })
       .catch((error) => {

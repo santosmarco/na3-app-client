@@ -24,8 +24,8 @@ export function PageDescription({
 
   return (
     <Typography.Paragraph
-      ellipsis={ellipsisConfig}
       className={className}
+      ellipsis={ellipsisConfig}
       italic={true}
       type="secondary"
     >

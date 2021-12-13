@@ -8,7 +8,7 @@ export function formatNumber(number: number): string {
 
 export function numberToWords(
   number: number,
-  options?: { gender?: "m" | "f" }
+  options?: { gender?: "f" | "m" }
 ): string {
   return extenso(number, { number: { gender: options?.gender } });
 }

@@ -1,6 +1,5 @@
 import type { FormItemProps as AntdFormItemProps } from "antd";
-import { Typography } from "antd";
-import { Form } from "antd";
+import { Form, Typography } from "antd";
 import React from "react";
 
 type FormItemProps = {
@@ -35,12 +34,10 @@ export function FormItem({
       hidden={hidden}
       label={label}
       labelAlign="left"
-      labelCol={labelCol || (labelSpan && { span: labelSpan }) || { span: 24 }}
+      labelCol={labelCol || { span: labelSpan || 24 }}
       required={required ?? true}
       tooltip={tooltip}
-      wrapperCol={
-        wrapperCol || (labelSpan && { span: 24 - labelSpan }) || { span: 24 }
-      }
+      wrapperCol={wrapperCol || { span: 24 - (labelSpan || 0) }}
     >
       {description ? (
         <Typography.Text type="secondary">{description}</Typography.Text>

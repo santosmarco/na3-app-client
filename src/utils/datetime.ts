@@ -62,7 +62,7 @@ export function humanizeDuration(
   options?: HumanizeDurationOptions
 ): string;
 export function humanizeDuration(
-  timeOrFrom: number | DayjsInput,
+  timeOrFrom: DayjsInput | number,
   unitOrTo?: DayjsDurationUnit | DayjsInput,
   options?: HumanizeDurationOptions
 ): string {

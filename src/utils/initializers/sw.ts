@@ -27,7 +27,7 @@ async function registerUpdateSync(
     // Request permission
     const status = await navigator.permissions.query({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       name: "periodic-background-sync",
     });
     if (status.state === "granted") {

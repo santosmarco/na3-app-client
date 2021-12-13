@@ -22,13 +22,6 @@ export type TagProps = {
   textColor?: string;
 };
 
-const defaultProps = {
-  color: undefined,
-  textColor: undefined,
-  icon: undefined,
-  marginRight: undefined,
-};
-
 export function Tag({
   color,
   textColor,
@@ -72,5 +65,3 @@ function getTagIcon(status: TagProps["color"]): React.ReactNode {
       return;
   }
 }
-
-Tag.defaultProps = defaultProps;

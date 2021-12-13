@@ -3,8 +3,6 @@ import type {
   Na3UserAchievementId,
 } from "../na3";
 
-const DEVELOPMENT_ENABLED = true;
-
 export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
   Na3UserAchievementId,
   Na3UserAchievementDefinition
@@ -21,9 +19,7 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
       { goal: 100, score: 10000 },
     ],
     targetDepartments:
-      DEVELOPMENT_ENABLED && process.env.NODE_ENV !== "production"
-        ? "all"
-        : ["shop-floor"],
+      process.env.NODE_ENV === "production" ? ["shop-floor"] : "all",
     levelDescriptor: ({ currentLevel, levels, totalProgress }, lvlIdx) => {
       const remainingToLevel = levels[lvlIdx].goal - totalProgress;
       return currentLevel.idx > lvlIdx
@@ -48,9 +44,7 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
       { goal: 500, score: 25000 },
     ],
     targetDepartments:
-      DEVELOPMENT_ENABLED && process.env.NODE_ENV !== "production"
-        ? "all"
-        : ["manutencao"],
+      process.env.NODE_ENV === "production" ? ["manutencao"] : "all",
     levelDescriptor: ({ currentLevel, levels, totalProgress }, lvlIdx) => {
       const remainingToLevel = levels[lvlIdx].goal - totalProgress;
       return currentLevel.idx > lvlIdx
@@ -68,10 +62,7 @@ export const NA3_USER_ACHIEVEMENT_DEFINITIONS: Record<
     description: "Defina uma bio para o seu perfil",
     icon: "heart",
     id: "user_set_bio",
-    targetDepartments:
-      DEVELOPMENT_ENABLED && process.env.NODE_ENV !== "production"
-        ? "all"
-        : "all",
+    targetDepartments: "all",
     levelDescriptor:
       'Defina sua bio na aba "Minha Conta" para desbloquear essa conquista',
     validator: (ev) => ev.type === "USER_SET_BIO",

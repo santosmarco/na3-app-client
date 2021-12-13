@@ -1,6 +1,5 @@
 import type { SelectProps as AntdSelectProps, TagProps } from "antd";
-import { Tag } from "antd";
-import { Select as AntdSelect } from "antd";
+import { Select as AntdSelect, Tag } from "antd";
 import { isArray } from "lodash";
 import { nanoid } from "nanoid";
 import React, { useCallback, useMemo } from "react";
@@ -17,7 +16,7 @@ export type SelectOptionBase<OptionValue extends string = string> = {
 
 export type SelectOptionGroup<OptionValue extends string = string> = {
   label: React.ReactNode;
-  options: SelectOptionBase<OptionValue>[];
+  options: Array<SelectOptionBase<OptionValue>>;
 };
 
 type SelectOption<OptionValue extends string> =
@@ -45,7 +44,7 @@ export type SelectAsFieldProps<Value extends SelectValue> = Partial<
 > & {
   multiple?: boolean;
   onTagProps?: ((value: string) => SelectTagProps) | null;
-  options: SelectOption<Value extends Array<string> ? Value[number] : Value>[];
+  options: Array<SelectOption<Value extends string[] ? Value[number] : Value>>;
 };
 
 type SelectProps<Value extends SelectValue> = Required<

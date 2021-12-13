@@ -18,7 +18,7 @@ export function removeSpecialChars(str: string): string {
     .join("");
 }
 
-export function prepareCsvData(data: Readonly<Readonly<string[]>[]>): string {
+export function prepareCsvData(data: Readonly<Array<Readonly<string[]>>>): string {
   return data
     .map((row) =>
       row

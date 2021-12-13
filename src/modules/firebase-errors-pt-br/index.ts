@@ -6,13 +6,15 @@ export function translateFirebaseErrorMessage(
   code: string,
   fallbackMessage?: string
 ): string {
-  return dictionary[code] || fallbackMessage || defaultFallbackMessage;
+  return code in dictionary
+    ? dictionary[code]
+    : fallbackMessage || defaultFallbackMessage;
 }
 
 export function translateFirebaseError(error: FirebaseError): FirebaseError {
   return {
     ...error,
-    message: dictionary[error.code] || error.message,
+    message: error.code in dictionary ? dictionary[error.code] : error.message,
   };
 }
 

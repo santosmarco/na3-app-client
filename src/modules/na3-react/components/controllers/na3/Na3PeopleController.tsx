@@ -54,10 +54,7 @@ export function Na3PeopleController(): null {
 
       dispatch(
         setNa3PeopleData(
-          na3PeopleSnapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-          })) || null
+          na3PeopleSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
         )
       );
     }

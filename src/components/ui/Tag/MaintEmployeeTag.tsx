@@ -24,7 +24,7 @@ export function MaintEmployeeTag({
   }, [maintainer, getUserByUid]);
 
   return (
-    <Tag color={tagColor || (isLeader && "blue") || undefined}>
+    <Tag color={tagColor || (isLeader ? "blue" : undefined)}>
       {getMaintPersonDisplayName(maintainer)}
     </Tag>
   );

@@ -33,7 +33,7 @@ export function LabelsTransfList({
           template.productCode.toLowerCase().includes(formattedQuery) ||
           template.customerName.toLowerCase().includes(formattedQuery)
         );
-      }) || [],
+      }),
     [data]
   );
 

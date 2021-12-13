@@ -9,6 +9,7 @@ import {
   Collapse,
   DataItem,
   Divider,
+  DocsStdAvatarGroup,
   DocsStdRejectButton,
   DocsStdStatusBadge,
   DocsStdTypeTag,
@@ -20,7 +21,6 @@ import {
   PrintPrevent,
   Result,
   Result404,
-  UserAvatarGroup,
 } from "@components";
 import { useBreadcrumb, useFileDownload } from "@hooks";
 import { useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
@@ -163,7 +163,18 @@ export function DocsStdDetailsPage({
   }, [doc, currentUser, userAcknowledgment, registerAcknowledgment]);
 
   const handlePdfDownload = useCallback(() => {
-    if (!doc || !currentUser) return;
+    const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
+
+    if (!doc) {
+      notifyError(
+        "Não foi possivel obter o documento. Tente novamente mais tarde."
+      );
+      return;
+    }
+    if (!currentUser) {
+      notifyError("Você precisa entrar com a sua conta primeiro.");
+      return;
+    }
 
     const userDownloadCount = getUserDownloads(doc, currentUser).length;
 
@@ -187,16 +198,7 @@ export function DocsStdDetailsPage({
       ),
       okText: "Baixar mesmo assim",
       onOk: async () => {
-        const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
-
         confirmModal.update({ okText: "Baixando..." });
-
-        if (!doc) {
-          notifyError(
-            "Não foi possivel obter o documento. Tente novamente mais tarde."
-          );
-          return;
-        }
 
         try {
           const registerRes = await registerDownload(doc.id);
@@ -281,25 +283,21 @@ export function DocsStdDetailsPage({
 
   const handleDocReject = useCallback(
     ({ reason }: { reason: string }) => {
-      if (!doc || !docVersion) return;
+      const notifyError = createErrorNotifier("Erro ao rejeitar o documento");
+
+      if (!doc || !docVersion) {
+        notifyError(
+          "Não foi possivel vincular um documento à solicitação de recusa. Tente novamente mais tarde."
+        );
+        return;
+      }
 
       const confirmModal = Modal.confirm({
         title: "Rejeitar documento?",
         content: `Confirma o rejeite desta versão (v.${docVersion.number}) do documento "${doc.title}"?`,
         okText: "Rejeitar",
         onOk: async () => {
-          const notifyError = createErrorNotifier(
-            "Erro ao rejeitar o documento"
-          );
-
           confirmModal.update({ okText: "Enviando recusa..." });
-
-          if (!doc) {
-            notifyError(
-              "Não foi possivel vincular um documento à solicitação de recusa. Tente novamente mais tarde."
-            );
-            return;
-          }
 
           const rejectionRes = await rejectDocumentVersion(doc.id, {
             comment: reason,
@@ -339,7 +337,7 @@ export function DocsStdDetailsPage({
 
   return doc && currentUser ? (
     userPermissions?.read ? (
-      <PrintPrevent disabled={userPermissions?.print}>
+      <PrintPrevent disabled={userPermissions.print}>
         <PageTitle>{doc.title}</PageTitle>
 
         {!userAcknowledgment && (
@@ -352,7 +350,7 @@ export function DocsStdDetailsPage({
 
         <PageDescription>{doc.description}</PageDescription>
 
-        {userPermissions?.approve && docStatus === "pending" && (
+        {userPermissions.approve && docStatus === "pending" && (
           <PageActionButtons>
             <Button
               icon={<CheckOutlined />}
@@ -381,31 +379,31 @@ export function DocsStdDetailsPage({
               headerIcon: <InfoCircleOutlined />,
               content: (
                 <Row>
-                  <Col xs={8} lg={3}>
+                  <Col lg={3} xs={8}>
                     <DataItem
                       label="Tipo"
-                      marginBottom={!breakpoint.lg}
                       labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                      marginBottom={!breakpoint.lg}
                     >
                       {docType ? (
-                        <DocsStdTypeTag type={docType} short={true} />
+                        <DocsStdTypeTag short={true} type={docType} />
                       ) : (
                         <em>Indeterminado</em>
                       )}
                     </DataItem>
                   </Col>
 
-                  <Col xs={8} lg={3}>
+                  <Col lg={3} xs={8}>
                     <DataItem
                       label="Código"
-                      marginBottom={!breakpoint.lg}
                       labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                      marginBottom={!breakpoint.lg}
                     >
                       {doc.code}
                     </DataItem>
                   </Col>
 
-                  <Col xs={8} lg={3}>
+                  <Col lg={3} xs={8}>
                     <DataItem
                       label="Versão"
                       labelMarginBottom={breakpoint.lg ? 3 : undefined}
@@ -418,11 +416,11 @@ export function DocsStdDetailsPage({
                     </DataItem>
                   </Col>
 
-                  <Col xs={12} lg={3}>
+                  <Col lg={3} xs={12}>
                     <DataItem
                       label="Status"
-                      marginBottom={!breakpoint.lg}
                       labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                      marginBottom={!breakpoint.lg}
                     >
                       {docStatus ? (
                         <DocsStdStatusBadge status={docStatus} variant="tag" />
@@ -432,7 +430,7 @@ export function DocsStdDetailsPage({
                     </DataItem>
                   </Col>
 
-                  <Col xs={12} lg={4}>
+                  <Col lg={4} xs={12}>
                     <DataItem
                       label="Próx. revisão"
                       labelMarginBottom={breakpoint.lg ? 3 : undefined}
@@ -444,55 +442,17 @@ export function DocsStdDetailsPage({
                     </DataItem>
                   </Col>
 
-                  <Col xs={12} lg={4}>
-                    <DataItem label="Lido por" icon={<ReadOutlined />}>
-                      <UserAvatarGroup
+                  <Col lg={4} xs={12}>
+                    <DataItem icon={<ReadOutlined />} label="Lido por">
+                      <DocsStdAvatarGroup
                         data={getDocumentAcknowledgedUsers(doc)}
-                        type="initials"
-                        onTooltipProps={(data) => ({
-                          content: (
-                            <>
-                              <div>
-                                <Typography.Text strong={true}>
-                                  {data.user.compactDisplayName}
-                                </Typography.Text>
-                              </div>
-                              <Typography.Text italic={true}>
-                                em {timestampToStr(data.event.timestamp)}
-                              </Typography.Text>
-                            </>
-                          ),
-                          placement: "topLeft",
-                          arrowPointAtCenter: true,
-                        })}
-                        maxCount={5}
                       />
                     </DataItem>
                   </Col>
 
-                  <Col xs={12} lg={4}>
-                    <DataItem label="Downloads" icon={<DownloadOutlined />}>
-                      <UserAvatarGroup
-                        data={getDocumentDownloads(doc)}
-                        type="initials"
-                        onTooltipProps={(data) => ({
-                          content: (
-                            <>
-                              <div>
-                                <Typography.Text strong={true}>
-                                  {data.user.compactDisplayName}
-                                </Typography.Text>
-                              </div>
-                              <Typography.Text italic={true}>
-                                em {timestampToStr(data.event.timestamp)}
-                              </Typography.Text>
-                            </>
-                          ),
-                          placement: "topLeft",
-                          arrowPointAtCenter: true,
-                        })}
-                        maxCount={5}
-                      />
+                  <Col lg={4} xs={12}>
+                    <DataItem icon={<DownloadOutlined />} label="Downloads">
+                      <DocsStdAvatarGroup data={getDocumentDownloads(doc)} />
                     </DataItem>
                   </Col>
                 </Row>
@@ -502,12 +462,13 @@ export function DocsStdDetailsPage({
         />
 
         <PdfViewer
-          url={handleGetPdfUrl}
-          disabledActions={[
-            !userPermissions?.download ? "download" : undefined,
-            !userPermissions?.print ? "print" : undefined,
-          ]}
           actionHandlers={{ download: handlePdfDownload }}
+          disabledActions={[
+            !userPermissions.download ? "download" : undefined,
+            !userPermissions.print ? "print" : undefined,
+          ]}
+          onReadProgressComplete={handleAcknowledgment}
+          readProgressForceComplete={!!userAcknowledgment}
           readProgressTooltip="Progresso da leitura"
           readProgressTooltipWhenComplete={
             <>
@@ -519,8 +480,7 @@ export function DocsStdDetailsPage({
               )}
             </>
           }
-          onReadProgressComplete={handleAcknowledgment}
-          readProgressForceComplete={!!userAcknowledgment}
+          url={handleGetPdfUrl}
         />
       </PrintPrevent>
     ) : (

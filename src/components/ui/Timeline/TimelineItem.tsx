@@ -52,7 +52,7 @@ export function TimelineItem({
   return (
     <Timeline.Item
       className={`${isLast ? "ant-timeline-item-pending" : ""} ${className}`}
-      color={color || undefined}
+      color={color}
     >
       <div>
         <Space size={breakpoint.lg ? "large" : "middle"}>

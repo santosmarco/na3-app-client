@@ -31,7 +31,7 @@ export function MaintReportsHomePage(): JSX.Element {
   );
 
   const handleCompleteReportDownload = useCallback(
-    () => handleReportDownload(getCompleteReport()),
+    async () => handleReportDownload(getCompleteReport()),
     [getCompleteReport, handleReportDownload]
   );
 

@@ -6,14 +6,16 @@ import type {
   Na3MaintenanceProjectStatus,
 } from "@modules/na3-types";
 import dayjs from "dayjs";
-import { arrayUnion } from "firebase/firestore";
-import { addDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseDocOperationResult } from "../types";
 import type { MaintProjectBuilderData } from "../utils";
-import { getCollection } from "../utils";
-import { buildMaintProject, buildMaintProjectEvents } from "../utils";
+import {
+  buildMaintProject,
+  buildMaintProjectEvents,
+  getCollection,
+} from "../utils";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3MaintProjectsResult = {

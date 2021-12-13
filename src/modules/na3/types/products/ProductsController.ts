@@ -6,7 +6,7 @@ type ControllerUtils = {
   readonly fixQuery: (query: string) => string;
 };
 
-export interface ProductsController {
+export type ProductsController = {
   readonly getByCode: (code: string) => Promise<ControllerResult<Product>>;
   readonly getById: (id: string) => Promise<ControllerResult<Product>>;
   readonly isApiProduct: (testProduct: unknown) => testProduct is Na3ApiProduct;

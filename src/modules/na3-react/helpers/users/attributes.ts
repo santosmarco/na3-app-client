@@ -52,7 +52,7 @@ function getUserFormattedDisplayName({
   return `${
     firstNames.length > 1
       ? `${firstNames[0]} ${removeNullables(
-          firstNames.slice(1).map((name) => name[0]?.toUpperCase() || undefined)
+          firstNames.slice(1).map((name) => name[0].toUpperCase())
         ).join(" ")}`
       : firstNames[0]
   } ${lastName}`.trim();

@@ -61,7 +61,7 @@ export type BimerDocument = {
   IdentificadorPessoa: string;
   Itens: BimerDocItem[];
   Liberado: boolean;
-  Mensagens?: (BimerBase | null)[];
+  Mensagens?: Array<BimerBase | null>;
   NomeEntidadeOrigem?: string;
   Numero: string;
   Observacao: string;

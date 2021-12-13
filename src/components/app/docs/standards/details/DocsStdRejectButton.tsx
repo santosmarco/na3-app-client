@@ -30,7 +30,7 @@ export function DocsStdRejectButton({
 
   return (
     <>
-      <Button danger={true} icon={icon} type="text" onClick={handleModalOpen}>
+      <Button danger={true} icon={icon} onClick={handleModalOpen} type="text">
         {children}
       </Button>
 
@@ -43,10 +43,10 @@ export function DocsStdRejectButton({
       >
         <Form form={form} onSubmit={onRejectSubmit}>
           <FormField
-            type="textArea"
-            name={form.fieldNames.reason}
             label="Comentários"
+            name={form.fieldNames.reason}
             rules={{ required: "Explique o motivo para a recusa do documento" }}
+            type="textArea"
           />
 
           <SubmitButton

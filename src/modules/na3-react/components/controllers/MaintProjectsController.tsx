@@ -57,7 +57,7 @@ export function Na3MaintenanceProjectsController(): null {
           maintProjectsSnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
-          })) || null
+          }))
         )
       );
     }

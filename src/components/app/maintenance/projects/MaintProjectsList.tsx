@@ -25,13 +25,13 @@ export function MaintProjectsList({
 
   const handleFilterItemOnSearch = useCallback(
     (query: string): Na3MaintenanceProject[] =>
-      data?.filter((project) => {
+      data.filter((project) => {
         const formattedQuery = query.trim().toLowerCase();
         return (
           project.title.toLowerCase().includes(formattedQuery) ||
           project.description.toLowerCase().includes(formattedQuery)
         );
-      }) || [],
+      }),
     [data]
   );
 

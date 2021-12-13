@@ -23,7 +23,7 @@ type Na3MaintenanceProjectBase = {
   priority: "high" | "low" | "medium";
   team: {
     manager: Na3MaintenancePerson | /* Legacy: */ string;
-    others: (Na3MaintenancePerson | string)[] | /* Legacy: */ string;
+    others: Array<Na3MaintenancePerson | string> | /* Legacy: */ string;
   };
   title: string;
 };

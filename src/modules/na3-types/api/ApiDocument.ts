@@ -59,7 +59,7 @@ export type Na3ApiDocument = {
   inventoryBatchId: string;
   issuedAt: string;
   items: DocItem[];
-  messages: { code: string; description: string; id: string }[];
+  messages: Array<{ code: string; description: string; id: string }>;
   nfStatus: "A" | "C" | "D" | "E" | "I" | "N" | "R" | "S" | "X";
   note: string;
   number: string;
@@ -75,6 +75,6 @@ export type Na3ApiDocument = {
 
 export type Na3ApiDocumentExpanded = Omit<Na3ApiDocument, "items"> & {
   customer: Na3ApiPerson | null;
-  items: (DocItem & { product: Na3ApiProduct | null })[];
+  items: Array<DocItem & { product: Na3ApiProduct | null }>;
   sellerCompany: Na3ApiCompany | null;
 };

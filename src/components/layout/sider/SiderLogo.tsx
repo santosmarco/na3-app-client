@@ -1,6 +1,6 @@
 import logo from "@assets/novaa3Logo.svg";
 import logoIcon from "@assets/novaa3LogoIcon.svg";
-import { ANIMATION_FADE_IN, ANIMATION_FADE_OUT } from "@constants";
+import { ANIMATION_FADE_IN } from "@constants";
 import React from "react";
 
 import classes from "./SiderLogo.module.css";
@@ -24,7 +24,7 @@ export function SiderLogo({
       {!isCollapsed && (
         <img
           alt="Logotipo Nova A3"
-          className={isCollapsed ? ANIMATION_FADE_OUT : ANIMATION_FADE_IN}
+          className={ANIMATION_FADE_IN}
           height={32}
           src={logo}
           width={140}
@@ -34,7 +34,7 @@ export function SiderLogo({
       {isCollapsed && (
         <img
           alt="Logotipo Nova A3"
-          className={isCollapsed ? ANIMATION_FADE_IN : ANIMATION_FADE_OUT}
+          className={ANIMATION_FADE_IN}
           height={32}
           src={logoIcon}
           width={140}

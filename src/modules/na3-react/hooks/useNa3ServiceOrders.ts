@@ -54,7 +54,7 @@ export type UseNa3ServiceOrdersResult = {
     ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
     getById: (id: string) => Na3ServiceOrder | undefined;
     getByStatus: (
-      status: Na3ServiceOrder["status"] | Na3ServiceOrder["status"][],
+      status: Array<Na3ServiceOrder["status"]> | Na3ServiceOrder["status"],
       data?: Na3ServiceOrder[]
     ) => Na3ServiceOrder[];
     getNextId: () => string | undefined;
@@ -76,7 +76,7 @@ export type UseNa3ServiceOrdersResult = {
     sortById: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
     sortByPriority: (data?: Na3ServiceOrder[]) => Na3ServiceOrder[];
     sortByStatus: (
-      sortingOrder: Na3ServiceOrder["status"][],
+      sortingOrder: Array<Na3ServiceOrder["status"]>,
       data?: Na3ServiceOrder[]
     ) => Na3ServiceOrder[];
   };
@@ -128,7 +128,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
 
   const getByStatus = useCallback(
     (
-      status: Na3ServiceOrder["status"] | Na3ServiceOrder["status"][],
+      status: Array<Na3ServiceOrder["status"]> | Na3ServiceOrder["status"],
       data?: Na3ServiceOrder[]
     ): Na3ServiceOrder[] => {
       const statusArr = typeof status === "string" ? [status] : status;
@@ -174,7 +174,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
 
   const sortByStatus = useCallback(
     (
-      sortingOrder: Na3ServiceOrder["status"][],
+      sortingOrder: Array<Na3ServiceOrder["status"]>,
       data?: Na3ServiceOrder[]
     ): Na3ServiceOrder[] => {
       const statusMap = mapByStatus(data);
@@ -562,9 +562,7 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
           void user.registerEvents({
             SERVICE_ORDER_DELIVER: {
               id,
-              msFromCreation: createEvent
-                ? dayjs().diff(dayjs(createEvent.timestamp))
-                : null,
+              msFromCreation: dayjs().diff(dayjs(createEvent.timestamp)),
             },
           });
         });

@@ -106,7 +106,7 @@ registerRoute(
     }
     // If this looks like a URL for a resource, because it contains
     // a file extension, skip.
-    if (url.pathname.match(fileExtensionRegex)) {
+    if (fileExtensionRegex.exec(url.pathname)) {
       return false;
     }
     // Return true to signal that we want to use the handler.
@@ -169,8 +169,8 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     self.caches
       .open(OFFLINE_FALLBACKS_CACHE)
-      .then((cache) => cache.addAll(files))
-      .then(() => self.skipWaiting())
+      .then(async (cache) => cache.addAll(files))
+      .then(async () => self.skipWaiting())
   );
 });
 
@@ -182,7 +182,7 @@ self.addEventListener("message", (event: { data?: { type?: string } }) => {
 
 self.addEventListener("periodicsync", (event: PeriodicSyncEvent) => {
   if (event.tag === "update") {
-    event.waitUntil?.(() => self.registration.update());
+    event.waitUntil?.(async () => self.registration.update());
   }
 });
 

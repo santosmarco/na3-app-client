@@ -1,4 +1,4 @@
-import { Na3AppDevice } from "@modules/na3-types";
+import type { Na3AppDevice } from "@modules/na3-types";
 
 import { useStateSlice } from "./useStateSlice";
 

@@ -1,6 +1,5 @@
 import type { TimelineItemProps } from "@components";
-import { UserTag } from "@components";
-import { Timeline } from "@components";
+import { Timeline, UserTag } from "@components";
 import type { Na3ServiceOrderEvent } from "@modules/na3-types";
 import { getMaintPersonDisplayName, parseStringId } from "@utils";
 import { Grid, Modal, Space } from "antd";

@@ -18,8 +18,7 @@ import {
   UserPositionTag,
 } from "@components";
 import { useBreadcrumb } from "@hooks";
-import { useCurrentUser } from "@modules/na3-react";
-import { useNa3Users } from "@modules/na3-react";
+import { useCurrentUser, useNa3Users } from "@modules/na3-react";
 import { isTouchDevice } from "@utils";
 import { Button, Grid, notification, Typography } from "antd";
 import React, { useCallback, useEffect, useMemo } from "react";
@@ -88,14 +87,14 @@ export function UserProfilePage({
       <div className={classes.ProfileHeader}>
         <UserAvatar
           size="large"
-          type="initials"
-          user={user}
-          wrapperClassName={classes.Avatar}
           tooltip={{
             content: <AccountLastSeen at={user.lastSeenAt} />,
             placement: "bottomLeft",
             small: true,
           }}
+          type="initials"
+          user={user}
+          wrapperClassName={classes.Avatar}
         />
 
         <div className={classes.HeaderContent}>

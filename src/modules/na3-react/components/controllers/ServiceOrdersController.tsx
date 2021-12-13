@@ -57,7 +57,7 @@ export function Na3ServiceOrdersController(): null {
           serviceOrdersSnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
-          })) || null
+          }))
         )
       );
     }

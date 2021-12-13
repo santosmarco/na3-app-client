@@ -15,15 +15,16 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
 import type { AppUser, FirebaseOperationResult, StdDocsState } from "../types";
+import type {
+  EventBuildConfig,
+  StdDocBuilderData} from "../utils";
 import {
   buildNa3Error,
   buildStdDocument,
   buildStdDocumentEvents,
   buildStdDocumentUrl,
-  EventBuildConfig,
   getCollection,
-  removeNullables,
-  StdDocBuilderData,
+  removeNullables
 } from "../utils";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
@@ -50,7 +51,7 @@ type UseNa3StdDocsResult = StdDocsState & {
     ) => Na3StdDocumentType;
     getDocumentAcknowledgedUsers: (
       doc: Na3StdDocument
-    ) => { user: AppUser; event: Na3StdDocumentEvent }[];
+    ) => Array<{ user: AppUser; event: Na3StdDocumentEvent }>;
     getUserAcknowledgment: (
       doc: Na3StdDocument,
       user: AppUser,
@@ -59,7 +60,7 @@ type UseNa3StdDocsResult = StdDocsState & {
     getDocumentDownloads: (
       doc: Na3StdDocument,
       versionId?: string
-    ) => { user: AppUser; event: Na3StdDocumentEvent }[];
+    ) => Array<{ user: AppUser; event: Na3StdDocumentEvent }>;
     getUserDownloads: (
       doc: Na3StdDocument,
       user: AppUser,
@@ -179,7 +180,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     (
       doc: Na3StdDocument,
       versionId?: string
-    ): { user: AppUser; event: Na3StdDocumentEvent }[] => {
+    ): Array<{ user: AppUser; event: Na3StdDocumentEvent }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);
@@ -214,7 +215,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     (
       doc: Na3StdDocument,
       versionId?: string
-    ): { user: AppUser; event: Na3StdDocumentEvent }[] => {
+    ): Array<{ user: AppUser; event: Na3StdDocumentEvent }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);

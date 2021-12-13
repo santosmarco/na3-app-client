@@ -24,7 +24,7 @@ export function useFileDownload(): UseFileDownloadReturn {
   }, []);
 
   const download = useCallback(
-    (fileUrl: string, fileName: `${string}.${string}`): Promise<void> => {
+    async (fileUrl: string, fileName: `${string}.${string}`): Promise<void> => {
       return new Promise<void>((resolve, reject) => {
         if (status === "downloading") {
           return;

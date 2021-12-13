@@ -5,13 +5,13 @@ import React from "react";
 import classes from "./Collapse.module.css";
 
 export type CollapseProps = {
-  panels: {
+  panels: Array<{
     header: React.ReactNode;
     content: React.ReactNode;
     headerIcon?: React.ReactNode;
     withMarginLeft?: boolean;
     withMarginRight?: boolean;
-  }[];
+  }>;
   ghost?: boolean;
 };
 
@@ -21,13 +21,12 @@ export function Collapse({ panels, ghost }: CollapseProps): JSX.Element {
       {panels.map(
         ({ header, content, headerIcon, withMarginLeft, withMarginRight }) => (
           <AntdCollapse.Panel
-            key={nanoid()}
             header={
               <>
                 {headerIcon && (
                   <Typography.Text
-                    type="secondary"
                     className={classes.PanelHeaderIcon}
+                    type="secondary"
                   >
                     {headerIcon}
                   </Typography.Text>
@@ -35,6 +34,7 @@ export function Collapse({ panels, ghost }: CollapseProps): JSX.Element {
                 {header}
               </>
             }
+            key={nanoid()}
             style={{
               marginLeft: withMarginLeft ? undefined : -16,
               marginRight: withMarginRight ? undefined : -16,

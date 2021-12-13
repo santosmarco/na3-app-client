@@ -44,7 +44,7 @@ function createRegisterEventsMethod(
             fromUid: uid,
             timestamp: now,
             type: type,
-            category: NA3_USER_EVENT_CATEGORY_MAP[type] || "uncategorized",
+            category: NA3_USER_EVENT_CATEGORY_MAP[type],
           };
         }
       );

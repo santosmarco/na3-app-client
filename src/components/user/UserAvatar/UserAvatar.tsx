@@ -1,8 +1,8 @@
 import { UserOutlined } from "@ant-design/icons";
 import { ANIMATION_FADE_IN, ANIMATION_FASTER, TOOLTIP_SMALL } from "@constants";
 import type { AppUser } from "@modules/na3-react";
-import { AvatarProps, Tooltip, TooltipProps } from "antd";
-import { Avatar, Typography } from "antd";
+import type { AvatarProps, TooltipProps } from "antd";
+import { Avatar, Tooltip, Typography } from "antd";
 import React, { useMemo } from "react";
 
 import classes from "./UserAvatar.module.css";
@@ -43,11 +43,11 @@ export function UserAvatar({
 
   return (
     <Tooltip
-      title={tooltip?.content}
-      placement={tooltip?.placement}
-      visible={tooltip ? undefined : false}
-      overlayInnerStyle={tooltip?.small ? TOOLTIP_SMALL : undefined}
       arrowPointAtCenter={tooltip?.arrowPointAtCenter}
+      overlayInnerStyle={tooltip?.small ? TOOLTIP_SMALL : undefined}
+      placement={tooltip?.placement}
+      title={tooltip?.content}
+      visible={tooltip ? undefined : false}
     >
       <Avatar
         className={`${ANIMATION_FADE_IN} ${ANIMATION_FASTER} ${
@@ -66,7 +66,7 @@ export function UserAvatar({
               </Typography.Text>
             ) : (
               <Typography.Title
-                className={plain ? undefined : classes.AvatarInitials}
+                className={classes.AvatarInitials}
                 level={4}
                 style={initialsStyle}
               >

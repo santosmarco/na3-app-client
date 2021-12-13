@@ -209,12 +209,18 @@ export function MaintProjectDetails({
           <PageActionButtons
             left={
               <>
-                <Button onClick={() => setActionModalType("status")}>
+                <Button
+                  onClick={(): void => {
+                    setActionModalType("status");
+                  }}
+                >
                   Informar status
                 </Button>
                 <Button
                   icon={<CheckOutlined />}
-                  onClick={() => setActionModalType("deliver")}
+                  onClick={(): void => {
+                    setActionModalType("deliver");
+                  }}
                   type="primary"
                 >
                   Entregar
@@ -311,7 +317,9 @@ export function MaintProjectDetails({
 
       <MaintProjectActionModal
         isVisible={!!actionModalType}
-        onClose={() => setActionModalType(undefined)}
+        onClose={(): void => {
+          setActionModalType(undefined);
+        }}
         onSubmit={
           actionModalType === "status"
             ? handleProjectShareStatus

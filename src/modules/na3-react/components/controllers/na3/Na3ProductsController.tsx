@@ -54,10 +54,7 @@ export function Na3ProductsController(): null {
 
       dispatch(
         setNa3ProductsData(
-          na3ProductsSnapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-          })) || null
+          na3ProductsSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
         )
       );
     }

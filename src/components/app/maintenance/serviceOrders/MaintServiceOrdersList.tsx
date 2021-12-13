@@ -16,11 +16,6 @@ type MaintServiceOrdersListProps = {
   onSelectOrder: ((serviceOrder: Na3ServiceOrder) => void) | null;
 };
 
-const defaultProps = {
-  cardRenderOptions: undefined,
-  isSearchDisabled: false,
-};
-
 export function MaintServiceOrdersList({
   data,
   onSelectOrder,
@@ -61,14 +56,14 @@ export function MaintServiceOrdersList({
 
   const handleFilterItemOnSearch = useCallback(
     (query: string): Na3ServiceOrder[] =>
-      data?.filter((order) => {
+      data.filter((order) => {
         const formattedQuery = query.trim().toLowerCase();
         return (
           order.description.toLowerCase().includes(formattedQuery) ||
           order.dpt.toLowerCase().includes(formattedQuery) ||
           parseInt(order.id) === parseInt(query)
         );
-      }) || [],
+      }),
     [data]
   );
 
@@ -83,5 +78,3 @@ export function MaintServiceOrdersList({
     />
   );
 }
-
-MaintServiceOrdersList.defaultProps = defaultProps;

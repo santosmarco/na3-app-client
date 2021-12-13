@@ -94,7 +94,7 @@ export function useNa3MaintReports(): UseNa3MaintReportsResult {
   }, [getAllMonthlyReports]);
 
   const generateServiceOrdersCsvReport = useCallback(
-    (data: Na3ServiceOrder[]) => {
+    async (data: Na3ServiceOrder[]) => {
       return new Promise<string>((resolve) => {
         const header: ServiceOrdersCsvRow = [
           "Nº",
@@ -184,7 +184,7 @@ export function useNa3MaintReports(): UseNa3MaintReportsResult {
       projects?: Na3MaintenanceProject[];
       serviceOrders?: Na3ServiceOrder[];
     }): Promise<string> => {
-      const serviceOrdersReport = config?.serviceOrders
+      const serviceOrdersReport = config.serviceOrders
         ? await generateServiceOrdersCsvReport(config.serviceOrders)
         : "";
 

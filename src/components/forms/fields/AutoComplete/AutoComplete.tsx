@@ -11,7 +11,7 @@ export type AutoCompleteOptionBase<Value extends string = string> = {
 
 type AutoCompleteOptionGroup<Value extends string = string> = {
   label: React.ReactNode;
-  options: AutoCompleteOptionBase<Value>[];
+  options: Array<AutoCompleteOptionBase<Value>>;
 };
 
 type AutoCompleteOption<Value extends string> =
@@ -24,7 +24,7 @@ export type AutoCompleteAsFieldProps<Value extends string> = Partial<
     "allowClear" | "autoFocus" | "defaultActiveFirstOption" | "disabled"
   >
 > & {
-  options: AutoCompleteOption<Value>[];
+  options: Array<AutoCompleteOption<Value>>;
 };
 
 type AutoCompleteProps<Value extends string> = Required<

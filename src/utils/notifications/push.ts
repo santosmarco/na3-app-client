@@ -8,7 +8,7 @@ export function storeMessagingToken(token: string): void {
   } else {
     localStorage.setItem(
       FB_MSG_TOKENS_STORAGE_KEY,
-      JSON.stringify([...(JSON.parse(storedTokensStr) as Array<string>), token])
+      JSON.stringify([...(JSON.parse(storedTokensStr) as string[]), token])
     );
   }
 }
@@ -19,5 +19,5 @@ export function getStoredMessagingTokens(): string[] {
   if (!storedTokensStr) {
     return [];
   }
-  return JSON.parse(storedTokensStr) as Array<string>;
+  return JSON.parse(storedTokensStr) as string[];
 }

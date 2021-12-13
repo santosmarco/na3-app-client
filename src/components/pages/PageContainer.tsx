@@ -61,7 +61,7 @@ export function PageContainer({
   if (
     !hasAccess &&
     isArray(requiredPrivileges) &&
-    requiredPrivileges?.includes("_super")
+    requiredPrivileges.includes("_super")
   ) {
     return <Redirect to="/" />;
   }

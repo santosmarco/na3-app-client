@@ -1,13 +1,14 @@
 import { Result } from "@components";
 import { Button } from "antd";
-import { useCallback } from "react";
-import React from "react";
+import React, { useCallback } from "react";
 import { useHistory } from "react-router";
 
 export function NotImplementedPage(): JSX.Element {
   const history = useHistory();
 
-  const handleBackToHome = useCallback(() => history.push("/"), [history]);
+  const handleBackToHome = useCallback(() => {
+    history.push("/");
+  }, [history]);
 
   return (
     <Result

@@ -48,7 +48,7 @@ export function Sider(): JSX.Element {
   }, [handleMenuNavigation]);
 
   const siderItems = useMemo(
-    (): (SiderItem | null)[] =>
+    (): Array<SiderItem | null> =>
       Object.entries(ROUTES).map(
         ([
           path,
@@ -65,7 +65,7 @@ export function Sider(): JSX.Element {
               title: itemTitle,
               section:
                 isArray(requiredPrivileges) &&
-                requiredPrivileges?.includes("_super")
+                requiredPrivileges.includes("_super")
                   ? "admin"
                   : siderConfig.section || 1,
               isPublic: isPublic || false,

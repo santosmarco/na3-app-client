@@ -151,13 +151,6 @@ export function useNa3Auth(): UseNa3AuthResult {
           `novaa3-${formattedRegId}`
         );
 
-        if (!credentials.user) {
-          return {
-            error: buildNa3Error("na3/auth/sign-up/user-not-created"),
-            user: null,
-          };
-        }
-
         await setDoc(
           doc(usersCollectionRef.current, credentials.user.uid),
           user

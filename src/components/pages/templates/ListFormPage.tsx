@@ -14,13 +14,13 @@ import classes from "./ListFormPage.module.css";
 
 type ListFormPageProps = {
   actions:
-    | {
+    | Array<{
         disabled?: boolean;
         icon?: React.ReactNode;
         label: React.ReactNode;
         onClick: () => void;
         type?: ButtonProps["type"];
-      }[]
+      }>
     | Falsy;
   description?: React.ReactNode;
   form: React.ReactNode;

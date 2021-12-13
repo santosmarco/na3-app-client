@@ -9,7 +9,7 @@ import { Na3MaintenanceProjectsController } from "./controllers/MaintProjectsCon
 import { Na3PeopleController } from "./controllers/na3/Na3PeopleController";
 import { Na3ProductsController } from "./controllers/na3/Na3ProductsController";
 import { Na3ServiceOrdersController } from "./controllers/ServiceOrdersController";
-import { Na3StdDocsController } from "./controllers/StdDocs";
+import { Na3StdDocsController } from "./controllers/StdDocsController";
 import { Na3TransfLabelTemplatesController } from "./controllers/TransfLabelTemplatesController";
 import { Na3UsersController } from "./controllers/UsersController";
 

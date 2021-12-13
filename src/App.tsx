@@ -7,11 +7,9 @@ import {
   RouteHandler,
   Sider,
   Spinner,
-  ThemeLoadHandler,
 } from "@components";
-import { THEME_STORAGE_KEY } from "@config";
 import { useAppReady } from "@modules/na3-react";
-import { Layout, message, notification } from "antd";
+import { Layout, message } from "antd";
 import {
   disableNetwork,
   enableNetwork,
@@ -19,20 +17,11 @@ import {
   waitForPendingWrites,
 } from "firebase/firestore";
 import React, { useEffect, useRef } from "react";
-import { ThemeSwitcherProvider } from "react-css-theme-switcher";
 import Div100vh from "react-div-100vh";
-import useLocalStorage from "react-use-localstorage";
 
 import classes from "./App.module.css";
 
-const themes = {
-  dark: `${process.env.PUBLIC_URL}/themes/dark.theme.css`,
-  light: `${process.env.PUBLIC_URL}/themes/light.theme.css`,
-};
-
-notification.config({ duration: 6 });
-
-function Main(): JSX.Element {
+export function App(): JSX.Element {
   const appIsReady = useAppReady();
 
   const connectionStatus = useRef<"offline" | "online">("online");
@@ -109,20 +98,5 @@ function Main(): JSX.Element {
         <ChangePwdModal />
       </Spinner>
     </>
-  );
-}
-
-export function App(): JSX.Element {
-  const [storedTheme] = useLocalStorage(THEME_STORAGE_KEY, "light");
-
-  return (
-    <ThemeSwitcherProvider
-      defaultTheme={storedTheme}
-      insertionPoint={document.getElementById("themes-insertion-point")}
-      themeMap={themes}
-    >
-      <Main />
-      <ThemeLoadHandler />
-    </ThemeSwitcherProvider>
   );
 }

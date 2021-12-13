@@ -6,11 +6,12 @@ import {
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import type { History } from "history";
+import type { ReadonlyDeep } from "type-fest";
 
 type InitSentryConfig = {
-  appVersion: string;
-  dsn: string;
-  routerHistory: History<unknown>;
+  readonly appVersion: string;
+  readonly dsn: string;
+  readonly routerHistory: ReadonlyDeep<History<unknown>>;
 };
 
 export function initSentry({

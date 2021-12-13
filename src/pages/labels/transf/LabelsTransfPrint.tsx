@@ -15,7 +15,7 @@ export function LabelsTransfPrintPage(): JSX.Element {
     helpers: { getUserTemplates },
   } = useNa3TransfLabelTemplates();
 
-  const listData = useMemo(() => getUserTemplates() || [], [getUserTemplates]);
+  const listData = useMemo(() => getUserTemplates(), [getUserTemplates]);
 
   const handleSelectTemplate = useCallback(
     (template: Na3TransfLabelTemplate) => {

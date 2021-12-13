@@ -33,12 +33,6 @@ type LabelTemplateFormProps = {
   onSubmit?: () => void;
 };
 
-const defaultProps = {
-  editingTemplate: undefined,
-  onDelete: undefined,
-  onSubmit: undefined,
-};
-
 type FormValues = {
   batchIdFormat: "brazil" | "commercial" | "mexico";
   customerName: string;
@@ -168,11 +162,13 @@ export function LabelsTransfTemplateForm({
       );
 
       if (departmentId === "") {
-        return notifyError("Você precisa atribuir um setor ao modelo.");
+        notifyError("Você precisa atribuir um setor ao modelo.");
+        return;
       }
 
       if (!productData || productData.name !== productName) {
-        return notifyError("Não foi possível vincular um produto ao modelo.");
+        notifyError("Não foi possível vincular um produto ao modelo.");
+        return;
       }
 
       const customer = customersData?.find(
@@ -347,47 +343,43 @@ export function LabelsTransfTemplateForm({
         type="select"
       />
 
+      <FormCollapse title="Avançado">
+        <FormField
+          hidden={!productData || !customersData}
+          label="Formato de numeração dos lotes"
+          name="batchIdFormat"
+          options={Object.entries(batchIdFormats).map(([formatId, format]) => ({
+            label: (
+              <>
+                {format.name} <em>({format.example})</em>
+              </>
+            ),
+            value: formatId,
+          }))}
+          rules={{
+            required: "Selecione um formato para a numeração dos lotes",
+          }}
+          type="select"
+        />
+
+        {editingTemplate && onDelete && (
+          <div className={classes.DeleteBtnContainer}>
+            <Button
+              danger={true}
+              icon={<DeleteOutlined />}
+              onClick={handleDelete}
+            >
+              Excluir modelo
+            </Button>
+          </div>
+        )}
+      </FormCollapse>
+
       {productData && customersData && (
-        <>
-          <FormCollapse title="Avançado">
-            <FormField
-              hidden={!productData || !customersData}
-              label="Formato de numeração dos lotes"
-              name="batchIdFormat"
-              options={Object.entries(batchIdFormats).map(
-                ([formatId, format]) => ({
-                  label: (
-                    <>
-                      {format.name} <em>({format.example})</em>
-                    </>
-                  ),
-                  value: formatId,
-                })
-              )}
-              rules={{
-                required: "Selecione um formato para a numeração dos lotes",
-              }}
-              type="select"
-            />
-
-            {editingTemplate && onDelete && (
-              <div className={classes.DeleteBtnContainer}>
-                <Button
-                  danger={true}
-                  icon={<DeleteOutlined />}
-                  onClick={handleDelete}
-                >
-                  Excluir modelo
-                </Button>
-              </div>
-            )}
-          </FormCollapse>
-
-          <SubmitButton
-            label={editingTemplate ? "Salvar alterações" : "Criar modelo"}
-            labelWhenLoading={editingTemplate ? "Salvando..." : "Enviando..."}
-          />
-        </>
+        <SubmitButton
+          label={editingTemplate ? "Salvar alterações" : "Criar modelo"}
+          labelWhenLoading={editingTemplate ? "Salvando..." : "Enviando..."}
+        />
       )}
     </Form>
   );
@@ -404,5 +396,3 @@ const batchIdFormats: Record<
   },
   mexico: { example: "KA-CI-123... A", name: "México" },
 };
-
-LabelsTransfTemplateForm.defaultProps = defaultProps;

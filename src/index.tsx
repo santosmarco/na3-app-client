@@ -29,6 +29,7 @@ import {
   SENTRY_DSN,
 } from "./config";
 import { BreadcrumbProvider } from "./contexts";
+import { Main } from "./Main";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { handleSwRegistration, initFirebaseCore, initSentry } from "./utils";
 
@@ -53,8 +54,7 @@ const firebase = initFirebaseCore({
 
 function Root(): JSX.Element {
   return (
-    <>
-      <PdfViewerWorker workerUrl={PDF_VIEWER_WORKER_URL} />
+    <PdfViewerWorker workerUrl={PDF_VIEWER_WORKER_URL}>
       <AntdConfigProvider input={{ autoComplete: "off" }} locale={ptBR}>
         <Na3Provider
           appVersion={APP_VERSION}
@@ -62,12 +62,14 @@ function Root(): JSX.Element {
         >
           <Router history={routerHistory}>
             <BreadcrumbProvider>
-              <App />
+              <Main>
+                <App />
+              </Main>
             </BreadcrumbProvider>
           </Router>
         </Na3Provider>
       </AntdConfigProvider>
-    </>
+    </PdfViewerWorker>
   );
 }
 
@@ -80,12 +82,14 @@ ReactDOM.render(
 
 // https://cra.link/PWA
 serviceWorkerRegistration.register({
-  onSuccess: (swRegistration) =>
+  onSuccess: (swRegistration) => {
     handleSwRegistration(firebase, swRegistration, {
       firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
-    }),
-  onUpdate: (swRegistration) =>
+    });
+  },
+  onUpdate: (swRegistration) => {
     handleSwRegistration(firebase, swRegistration, {
       firebaseMessagingVapidKey: FIREBASE_MESSAGING_VAPID_KEY,
-    }),
+    });
+  },
 });

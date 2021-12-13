@@ -16,21 +16,21 @@ import { PdfViewerToolbarButton } from "../PdfViewerToolbarButton/PdfViewerToolb
 import classes from "./PdfViewerToolbar.module.css";
 
 export type PdfViewerToolbarActionId =
-  | "search"
-  | "prevPage"
+  | "download"
+  | "fullscreen"
+  | "info"
   | "navigate"
   | "nextPage"
-  | "zoomOut"
+  | "prevPage"
+  | "print"
+  | "search"
   | "zoom"
   | "zoomIn"
-  | "fullscreen"
-  | "download"
-  | "print"
-  | "info";
+  | "zoomOut";
 
 export type PdfViewerToolbarProps = {
   slots: ToolbarSlot;
-  disabledActions?: (PdfViewerToolbarActionId | undefined)[];
+  disabledActions?: Array<PdfViewerToolbarActionId | undefined>;
   actionHandlers?: Partial<
     Record<PdfViewerToolbarActionId, (onClick: () => void) => void>
   >;
@@ -65,10 +65,12 @@ export function PdfViewerToolbar({
   const registerActionClickHandler = useCallback(
     (actionId: PdfViewerToolbarActionId, action: { onClick: () => void }) => {
       const originalHandler = action.onClick;
-      const userDefinedHandler = actionHandlers && actionHandlers[actionId];
+      const userDefinedHandler = actionHandlers?.[actionId];
 
       return userDefinedHandler
-        ? () => userDefinedHandler(originalHandler)
+        ? (): void => {
+            userDefinedHandler(originalHandler);
+          }
         : originalHandler;
     },
     [actionHandlers]
@@ -79,12 +81,12 @@ export function PdfViewerToolbar({
       <div className={classes.ToolbarActions}>
         {checkActionIsEnabled("search") && (
           <ShowSearchPopover>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Buscar"
                 icon={<SearchOutlined />}
-                onClick={registerActionClickHandler("search", action)}
+                label="Buscar"
                 labelPlacement="left"
+                onClick={registerActionClickHandler("search", action)}
               />
             )}
           </ShowSearchPopover>
@@ -92,13 +94,13 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("prevPage") && (
           <GoToPreviousPage>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Página anterior"
-                icon={<UpOutlined />}
-                onClick={registerActionClickHandler("prevPage", action)}
-                labelPlacement="left"
                 disabled={action.isDisabled}
+                icon={<UpOutlined />}
+                label="Página anterior"
+                labelPlacement="left"
+                onClick={registerActionClickHandler("prevPage", action)}
               />
             )}
           </GoToPreviousPage>
@@ -108,12 +110,12 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("nextPage") && (
           <GoToNextPage>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Próxima página"
-                icon={<DownOutlined />}
-                onClick={registerActionClickHandler("nextPage", action)}
                 disabled={action.isDisabled}
+                icon={<DownOutlined />}
+                label="Próxima página"
+                onClick={registerActionClickHandler("nextPage", action)}
               />
             )}
           </GoToNextPage>
@@ -123,10 +125,10 @@ export function PdfViewerToolbar({
       <div className={classes.ToolbarActions}>
         {checkActionIsEnabled("zoomOut") && (
           <ZoomOut>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Menos zoom"
                 icon={<ZoomOutOutlined />}
+                label="Menos zoom"
                 onClick={registerActionClickHandler("zoomOut", action)}
               />
             )}
@@ -137,10 +139,10 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("zoomIn") && (
           <ZoomIn>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Mais zoom"
                 icon={<ZoomInOutlined />}
+                label="Mais zoom"
                 onClick={registerActionClickHandler("zoomIn", action)}
               />
             )}
@@ -151,10 +153,10 @@ export function PdfViewerToolbar({
       <div className={classes.ToolbarActions}>
         {checkActionIsEnabled("fullscreen") && (
           <EnterFullScreen>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Tela cheia"
                 icon={<FullscreenOutlined />}
+                label="Tela cheia"
                 onClick={registerActionClickHandler("fullscreen", action)}
               />
             )}
@@ -163,10 +165,10 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("download") && (
           <Download>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Baixar"
                 icon={<DownloadOutlined />}
+                label="Baixar"
                 onClick={registerActionClickHandler("download", action)}
               />
             )}
@@ -175,10 +177,10 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("print") && (
           <Print>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Imprimir"
                 icon={<PrinterOutlined />}
+                label="Imprimir"
                 onClick={registerActionClickHandler("print", action)}
               />
             )}
@@ -187,12 +189,12 @@ export function PdfViewerToolbar({
 
         {checkActionIsEnabled("info") && (
           <ShowProperties>
-            {(action) => (
+            {(action): JSX.Element => (
               <PdfViewerToolbarButton
-                label="Informações"
                 icon={<InfoCircleOutlined />}
-                onClick={registerActionClickHandler("info", action)}
+                label="Informações"
                 labelPlacement="right"
+                onClick={registerActionClickHandler("info", action)}
               />
             )}
           </ShowProperties>

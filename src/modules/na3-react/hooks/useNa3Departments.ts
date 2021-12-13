@@ -30,7 +30,7 @@ export type UseNa3DepartmentsResult = {
     ) => Na3Department[];
     getByType: <T extends Na3DepartmentType>(
       type: T
-    ) => Na3Department<T>[] | undefined;
+    ) => Array<Na3Department<T>> | undefined;
     getDepartmentMachineById: (
       dptId: LiteralUnion<Na3DepartmentId<"shop-floor">, string>,
       machineId: string
@@ -72,7 +72,7 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
   );
 
   const getByType = useCallback(
-    <T extends Na3DepartmentType>(type: T): Na3Department<T>[] | undefined =>
+    <T extends Na3DepartmentType>(type: T): Array<Na3Department<T>> | undefined =>
       departments.data?.filter(
         (dpt): dpt is Na3Department<T> => dpt.type === type
       ),
@@ -113,7 +113,7 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     ): Na3Machine | undefined => {
       const dpt = getById(dptId);
       return dpt?.machines
-        ? Object.entries(dpt?.machines).find(([id]) => id === machineId)?.[1]
+        ? Object.entries(dpt.machines).find(([id]) => id === machineId)?.[1]
         : undefined;
     },
     [getById]

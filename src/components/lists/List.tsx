@@ -1,11 +1,10 @@
+import { Empty, Spinner } from "@components";
+import { useId } from "@hooks";
 import { Input } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { useId } from "../../hooks";
-import { Empty } from "../ui/Empty/Empty";
-import { Spinner } from "../ui/Spinner/Spinner";
 import { ListEnd } from "./components/ListEnd";
 import { ListError } from "./components/ListError";
 import { ListLoader } from "./components/ListLoader";
@@ -41,14 +40,10 @@ export function List<Item extends Record<string, unknown>>({
 
   const handleLoadMore = useCallback(() => {
     if (data) {
-      setLoadedData((currLoaded) =>
-        currLoaded
-          ? [
-              ...currLoaded,
-              ...data.slice(currLoaded.length, currLoaded.length + 15),
-            ]
-          : currLoaded
-      );
+      setLoadedData((currLoaded) => [
+        ...currLoaded,
+        ...data.slice(currLoaded.length, currLoaded.length + 15),
+      ]);
     }
   }, [data]);
 

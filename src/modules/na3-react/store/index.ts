@@ -8,9 +8,10 @@ import { rootReducer } from "./reducers";
 
 const sentryReduxEnhancer = Sentry.createReduxEnhancer({
   configureScopeWithState: (scope, state: RootState) => {
-    scope.setUser(
-      { ...state.auth.user, email: state.auth.user?.email || undefined } || null
-    );
+    scope.setUser({
+      ...state.auth.user,
+      email: state.auth.user?.email || undefined,
+    });
   },
 }) as StoreEnhancer;
 

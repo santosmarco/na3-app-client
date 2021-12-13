@@ -15,7 +15,7 @@ export type MaintProjectBuilderData = Required<
     eta: Dayjs;
     team: {
       manager: Na3MaintenancePerson;
-      members: (Na3MaintenancePerson | string)[];
+      members: Array<Na3MaintenancePerson | string>;
     };
   }
 >;
@@ -91,11 +91,11 @@ export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
 ): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T;
 export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
   events: T[]
-): (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T)[];
+): Array<Pick<Na3MaintenanceProjectEvent, "timestamp"> & T>;
 export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
   events: T | T[]
 ):
-  | (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T)[]
+  | Array<Pick<Na3MaintenanceProjectEvent, "timestamp"> & T>
   | (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T) {
   function buildOneEvent(
     config: T

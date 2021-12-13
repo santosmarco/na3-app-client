@@ -16,7 +16,7 @@ export type InputMaskProps = Required<
     | "suffix"
   >
 > & {
-  mask: (RegExp | string)[];
+  mask: Array<RegExp | string>;
   maskPlaceholder: string;
   onBlur: () => void;
   onChange: (value: string) => void;

@@ -21,7 +21,7 @@ export function PageActionButtons({
     <Row
       align={align || "middle"}
       className={classes.Container}
-      justify={justify || (left && right && "space-between") || "end"}
+      justify={justify || (left && right ? "space-between" : "end")}
     >
       {left && right && (
         <>

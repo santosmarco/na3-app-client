@@ -5,8 +5,8 @@ import React from "react";
 import type { UserAvatarProps } from "./UserAvatar";
 import { UserAvatar } from "./UserAvatar";
 
-type UserAvatarGroupProps<
-  T extends ({ user: AppUser } & Record<PropertyKey, unknown>) | AppUser
+export type UserAvatarGroupProps<
+  T extends AppUser | (Record<PropertyKey, unknown> & { user: AppUser })
 > = Pick<UserAvatarProps, "size" | "type" | "wrapperClassName"> & {
   data: T[];
   onTooltipProps?: ((data: T) => UserAvatarProps["tooltip"]) | null;
@@ -14,7 +14,7 @@ type UserAvatarGroupProps<
 };
 
 export function UserAvatarGroup<
-  T extends ({ user: AppUser } & Record<PropertyKey, unknown>) | AppUser
+  T extends AppUser | (Record<PropertyKey, unknown> & { user: AppUser })
 >({
   data,
   size,
@@ -27,12 +27,13 @@ export function UserAvatarGroup<
     <Avatar.Group maxCount={maxCount}>
       {data.map((d) => (
         <UserAvatar
-          user={"user" in d ? d.user : d}
-          size={size}
-          type={type}
-          wrapperClassName={wrapperClassName}
+          key={"user" in d ? d.user.uid : d.uid}
           plain={true}
+          size={size}
           tooltip={onTooltipProps?.(d)}
+          type={type}
+          user={"user" in d ? d.user : d}
+          wrapperClassName={wrapperClassName}
         />
       ))}
     </Avatar.Group>

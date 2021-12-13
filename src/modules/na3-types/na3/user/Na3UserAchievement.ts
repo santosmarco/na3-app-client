@@ -32,7 +32,7 @@ export type Na3UserAchievementDefinition = {
   description: string;
   icon: Na3UserAchievementIconId;
   id: Na3UserAchievementId;
-  targetDepartments: (Na3DepartmentId | Na3DepartmentType)[] | "all";
+  targetDepartments: Array<Na3DepartmentId | Na3DepartmentType> | "all";
   title: string;
   validator: (ev: Na3UserEvent) => boolean;
 } & (

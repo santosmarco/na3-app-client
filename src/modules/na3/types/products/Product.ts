@@ -4,7 +4,7 @@ import type {
   Na3ApiResponseArray,
 } from "../../../na3-types";
 
-export interface Product {
+export type Product = {
   get: () => Na3ApiProduct;
   getCustomers: ((options?: {
     ignoreErrors?: false;

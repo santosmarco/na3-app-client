@@ -10,33 +10,36 @@ import {
 } from "firebase/firestore";
 import { getMessaging, getToken } from "firebase/messaging";
 import { initializePerformance } from "firebase/performance";
+import type { ReadonlyDeep } from "type-fest";
 
 import { storeMessagingToken } from "../notifications/push";
 
 type InitFirebaseMessagingConfig = {
-  swRegistration: ServiceWorkerRegistration;
-  vapidKey: string;
+  readonly swRegistration: ReadonlyDeep<ServiceWorkerRegistration>;
+  readonly vapidKey: string;
 };
 
-function setupFirestore(firestore: Firestore): void {
+const ZERO_INITIALIZED_APPS = 0;
+
+function setupFirestore(firestore: ReadonlyDeep<Firestore>): void {
   void enableIndexedDbPersistence(firestore);
   void enableNetwork(firestore);
 }
 
 export function initFirebaseCore(
-  config: FirebaseOptions & { appCheckSiteKey: string }
+  config: Readonly<FirebaseOptions & { appCheckSiteKey: string }>
 ): FirebaseApp {
   const { appCheckSiteKey, ...firebaseCoreConfig } = config;
 
   // Init Firebase
-  if (getApps().length === 0) {
+  if (getApps().length === ZERO_INITIALIZED_APPS) {
     initializeApp(firebaseCoreConfig);
   }
   // Retrieve default app
   const firebase = getApp();
   // Init Firebase's AppCheck
   if (process.env.NODE_ENV !== "production") {
-    // @ts-ignore
+    // @ts-expect-error Firebase's AppCheck debug token
     window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
   }
   initializeAppCheck(firebase, {
@@ -54,7 +57,7 @@ export function initFirebaseCore(
 }
 
 export async function initFirebaseMessaging(
-  firebase: FirebaseApp,
+  firebase: ReadonlyDeep<FirebaseApp>,
   { swRegistration, vapidKey }: InitFirebaseMessagingConfig
 ): Promise<void> {
   // Init and retrieve Firebase's Messaging service

@@ -9,11 +9,9 @@ import {
 import { Result, Spinner } from "@components";
 import { PAGE_CONTAINER_PADDING } from "@constants";
 import { useTheme } from "@hooks";
-import {
-  LocalizationMap,
-  SpecialZoomLevel,
-  Viewer,
-} from "@react-pdf-viewer/core";
+import type { LocalizationMap } from "@react-pdf-viewer/core";
+import { SpecialZoomLevel, Viewer } from "@react-pdf-viewer/core";
+import type { SidebarTab } from "@react-pdf-viewer/default-layout";
 import { defaultLayoutPlugin as createDefaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import pt_PT from "@react-pdf-viewer/locales/lib/pt_PT.json";
 import { SelectionMode } from "@react-pdf-viewer/selection-mode";
@@ -22,16 +20,19 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { PdfViewerToolbarProps } from "../PdfViewerToolbar/PdfViewerToolbar";
 import { PdfViewerToolbar } from "../PdfViewerToolbar/PdfViewerToolbar";
-import { createReadProgressIndicatorPlugin } from "../plugins/ReadProgressIndicatorPlugin";
+import { createReadProgressIndicatorPlugin } from "../plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
 import classes from "./PdfViewer.module.css";
 
-type PdfViewerProps = {
-  url: string | Promise<string> | (() => Promise<string>);
+type PdfViewerProps = Pick<
+  PdfViewerToolbarProps,
+  "actionHandlers" | "disabledActions"
+> & {
+  url: Promise<string> | string | (() => Promise<string>);
   readProgressTooltip?: React.ReactNode;
   readProgressTooltipWhenComplete?: React.ReactNode;
   onReadProgressComplete?: () => void;
   readProgressForceComplete?: boolean;
-} & Pick<PdfViewerToolbarProps, "disabledActions" | "actionHandlers">;
+};
 
 export function PdfViewer({
   url: urlProp,
@@ -67,6 +68,15 @@ export function PdfViewer({
     }
   }, []);
 
+  const handleViewerSidebarTabs = useCallback(
+    (defaultTabs: SidebarTab[]) => [
+      { ...defaultTabs[0], icon: <AppstoreOutlined />, title: "Miniaturas" },
+      { ...defaultTabs[1], icon: <BookOutlined />, title: "Marcadores" },
+      { ...defaultTabs[2], icon: <FileOutlined />, title: "Anexos" },
+    ],
+    []
+  );
+
   useEffect(() => {
     if (urlProp instanceof Promise || typeof urlProp === "function") {
       setLoading(true);
@@ -74,7 +84,9 @@ export function PdfViewer({
       urlFetchPromise
         .then(setUrl)
         .catch(handleUrlFetchError)
-        .finally(() => setLoading(false));
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       setUrl(urlProp);
     }
@@ -86,11 +98,11 @@ export function PdfViewer({
       return (
         <>
           <Toolbar>
-            {(slots) => (
+            {(slots): JSX.Element => (
               <PdfViewerToolbar
-                slots={slots}
-                disabledActions={disabledActions}
                 actionHandlers={actionHandlers}
+                disabledActions={disabledActions}
+                slots={slots}
               />
             )}
           </Toolbar>
@@ -101,11 +113,7 @@ export function PdfViewer({
     toolbarPlugin: {
       selectionModePlugin: { selectionMode: SelectionMode.Hand },
     },
-    sidebarTabs: (defaultTabs) => [
-      { ...defaultTabs[0], icon: <AppstoreOutlined />, title: "Miniaturas" },
-      { ...defaultTabs[1], icon: <BookOutlined />, title: "Marcadores" },
-      { ...defaultTabs[2], icon: <FileOutlined />, title: "Anexos" },
-    ],
+    sidebarTabs: handleViewerSidebarTabs,
   });
 
   const readProgressIndicatorPlugin = createReadProgressIndicatorPlugin({
@@ -124,29 +132,29 @@ export function PdfViewer({
       ) : (
         url && (
           <Viewer
-            localization={pt_PT as unknown as LocalizationMap}
-            fileUrl={url}
-            theme={theme}
             defaultScale={SpecialZoomLevel.PageFit}
-            renderLoader={(percentage) => (
-              <Progress
-                type="circle"
-                percent={Math.round(percentage)}
-                width={80}
-              />
-            )}
-            renderError={(loadError) => (
+            fileUrl={url}
+            localization={pt_PT as unknown as LocalizationMap}
+            plugins={[defaultLayoutPlugin, readProgressIndicatorPlugin]}
+            renderError={(loadError): JSX.Element => (
               <Result
-                status="error"
-                title="Algo deu errado"
                 description={
                   error?.message ||
                   loadError.message ||
                   "Não foi possível carregar o documento."
                 }
+                status="error"
+                title="Algo deu errado"
               />
             )}
-            plugins={[defaultLayoutPlugin, readProgressIndicatorPlugin]}
+            renderLoader={(percentage): JSX.Element => (
+              <Progress
+                percent={Math.round(percentage)}
+                type="circle"
+                width={80}
+              />
+            )}
+            theme={theme}
           />
         )
       )}

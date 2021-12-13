@@ -18,15 +18,6 @@ type DataCardProps<T> = {
   title: string;
 };
 
-const defaultProps = {
-  bodyStyle: undefined,
-  className: undefined,
-  header: undefined,
-  onClick: undefined,
-  preTitle: undefined,
-  children: undefined,
-};
-
 export function DataCard<T>({
   data,
   bodyStyle,
@@ -94,5 +85,3 @@ export function DataCard<T>({
     </Card>
   );
 }
-
-DataCard.defaultProps = defaultProps;

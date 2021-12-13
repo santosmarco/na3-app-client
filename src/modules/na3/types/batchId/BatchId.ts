@@ -1,6 +1,6 @@
 export type BatchIdType = "brazil" | "commercial" | "invalid" | "mexico";
 
-export interface BatchId {
+export type BatchId = {
   readonly hasBeenFixed: boolean;
   readonly isBrazilian: boolean;
   readonly isCommercial: boolean;

@@ -56,7 +56,7 @@ export function usePdf(options?: {
         const words = text.split(" ");
         while (
           pdf.getTextDimensions(words.join(" "), options).h >
-          (options?.lineHeight || 11.641666666666666 / 3) * options.maxLines
+          (options.lineHeight || 11.641666666666666 / 3) * options.maxLines
         )
           words.pop();
         text = words.join(" ");

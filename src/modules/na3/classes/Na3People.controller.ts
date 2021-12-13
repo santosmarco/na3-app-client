@@ -7,7 +7,7 @@ export class Na3PeopleController
   extends Na3BaseController
   implements PeopleController
 {
-  getById(id: string): Promise<Na3ApiResponse<Na3ApiPerson>> {
+  async getById(id: string): Promise<Na3ApiResponse<Na3ApiPerson>> {
     return this.getApi<Na3ApiPerson>(`/people/${formatQueryInput(id)}`);
   }
 }

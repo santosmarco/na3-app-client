@@ -1,47 +1,31 @@
-import type {
-  Plugin,
-  PluginFunctions,
-  Store as PluginStore,
-} from "@react-pdf-viewer/core";
-import { createStore as createPluginStore } from "@react-pdf-viewer/core";
+import type { Store as PluginStore } from "@react-pdf-viewer/core";
 import { Progress, Tooltip } from "antd";
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from "react";
 
-import classes from "./ReadProgressIndicator.module.css";
+import classes from "./ReadProgressIndicatorComponent.module.css";
 
-type ReadProgressIndicatorInternalProps = {
-  store: PluginStore<ReadProgressIndicatorPluginStore>;
+export type ReadProgressIndicatorCompInternalProps = {
+  store: PluginStore<{
+    getPagesContainer?: () => HTMLElement | null;
+  }>;
   tooltip: React.ReactNode;
   tooltipWhenComplete: React.ReactNode;
   onComplete: (() => void) | undefined;
   forceComplete: boolean;
 };
 
-type ReadProgressIndicatorPlugin = Plugin & {
-  ReadProgressIndicator: () => JSX.Element;
-};
-
-type ReadProgressIndicatorPluginStore = {
-  getPagesContainer?: () => HTMLElement | null;
-};
-
-type ReadProgressIndicatorPluginOptions = Partial<
-  Omit<ReadProgressIndicatorInternalProps, "store">
->;
-
-function ReadProgressIndicator({
+export function ReadProgressIndicatorComponent({
   store,
   tooltip,
   tooltipWhenComplete,
   onComplete,
   forceComplete,
-}: ReadProgressIndicatorInternalProps): JSX.Element {
+}: ReadProgressIndicatorCompInternalProps): JSX.Element {
   const [progressPercent, setProgressPercent] = useState(0);
   const [isComplete, setIsComplete] = useState<boolean>(forceComplete);
 
@@ -67,7 +51,7 @@ function ReadProgressIndicator({
   useLayoutEffect(() => {
     store.subscribe("getPagesContainer", handlePagesContainer);
 
-    return () => {
+    return (): void => {
       store.unsubscribe("getPagesContainer", handlePagesContainer);
     };
   }, [store, handlePagesContainer]);
@@ -81,8 +65,8 @@ function ReadProgressIndicator({
 
   return (
     <Tooltip
-      title={isComplete ? tooltipWhenComplete : tooltip}
       placement="bottomLeft"
+      title={isComplete ? tooltipWhenComplete : tooltip}
     >
       <div
         className={`${classes.IndicatorContainer} ${
@@ -91,41 +75,11 @@ function ReadProgressIndicator({
       >
         <Progress
           percent={isComplete ? 100 : progressPercent}
-          size="small"
           showInfo={isComplete}
+          size="small"
           status={isComplete ? "success" : "active"}
         />
       </div>
     </Tooltip>
   );
-}
-
-export function createReadProgressIndicatorPlugin({
-  tooltip,
-  tooltipWhenComplete,
-  onComplete,
-  forceComplete,
-}: ReadProgressIndicatorPluginOptions = {}): ReadProgressIndicatorPlugin {
-  // Here we can disable ESLint because the PdfViewer's Plugin API follows a
-  // different pattern than React.
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const store = useMemo(
-    () => createPluginStore<ReadProgressIndicatorPluginStore>({}),
-    []
-  );
-
-  return {
-    install: (pluginFns: PluginFunctions) => {
-      store.update("getPagesContainer", pluginFns.getPagesContainer);
-    },
-    ReadProgressIndicator: () => (
-      <ReadProgressIndicator
-        store={store}
-        tooltip={tooltip}
-        tooltipWhenComplete={tooltipWhenComplete}
-        onComplete={onComplete}
-        forceComplete={forceComplete || false}
-      />
-    ),
-  };
 }

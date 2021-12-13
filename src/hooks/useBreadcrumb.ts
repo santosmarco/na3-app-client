@@ -6,7 +6,7 @@ export function useBreadcrumb(): BreadcrumbContext {
   const { extra, setExtra } = useContext(BreadcrumbCtx);
 
   useEffect((): (() => void) => {
-    return (): void => setExtra([]);
+    return (): void => { setExtra([]); };
   }, [setExtra]);
 
   return { extra, setExtra };

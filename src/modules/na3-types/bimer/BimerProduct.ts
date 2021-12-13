@@ -3,11 +3,11 @@ import type { BimerBase } from "./BimerBase";
 export type BimerProduct = {
   Ativo?: boolean;
   AtivoCompra?: boolean;
-  CaracteristicasProduto: {
+  CaracteristicasProduto: Array<{
     Caracteristica: string;
     Codigo: string;
     Identificador: string;
-  }[];
+  }>;
   ClassificacaoFiscal?: BimerBase & {
     AliquotaTotalTributosPrecedentes: number;
     Classificacao: string;
@@ -27,7 +27,7 @@ export type BimerProduct = {
   Identificador: string;
   IdentificadorProdutoMaster?: string;
   IdentificadorProdutoOrigem?: string;
-  MarcasProduto: { Codigo: string; Identificador: string; NomeMarca: string }[];
+  MarcasProduto: Array<{ Codigo: string; Identificador: string; NomeMarca: string }>;
   Nome: string;
   PesoBruto: number;
   PesoLiquido: number;

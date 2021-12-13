@@ -1,5 +1,5 @@
 import { UserAvatar, UserDisplayName } from "@components";
-import { ANIMATION_FADE_IN, ANIMATION_FADE_OUT } from "@constants";
+import { ANIMATION_FADE_IN } from "@constants";
 import type { AppUser } from "@modules/na3-react";
 import { useNa3ServiceOrders } from "@modules/na3-react";
 import { Badge, Grid, Popover, Tooltip } from "antd";
@@ -80,11 +80,7 @@ export function UserInfo({ user }: UserInfoProps): JSX.Element | null {
         trigger="click"
         visible={popoverIsVisible}
       >
-        <div
-          className={`${classes.UserInfo} ${
-            user ? ANIMATION_FADE_IN : ANIMATION_FADE_OUT
-          }`}
-        >
+        <div className={`${classes.UserInfo} ${ANIMATION_FADE_IN}`}>
           <Badge count={messageCount} size="small">
             <UserAvatar size="small" type="icon" user={user} />
           </Badge>

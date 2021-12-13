@@ -56,8 +56,7 @@ export function Na3StdDocsController(): null {
 
       dispatch(
         setStdDocsData(
-          stdDocsSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) ||
-            null
+          stdDocsSnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
         )
       );
     }

@@ -4,7 +4,7 @@ import type { Na3ApiProductGrid } from "./ApiProductGrid";
 export type Na3ApiProduct = {
   active: boolean;
   application: string | null;
-  attributes: { code: string; id: string; name: string }[];
+  attributes: Array<{ code: string; id: string; name: string }>;
   classificationCode: string | null;
   code: string;
   conversionFactor: number;
@@ -39,6 +39,6 @@ export type Na3ApiProduct = {
     precedingTaxesRate: number;
   } | null;
   unit: { abbreviation: Uppercase<string>; name: string };
-  variants: { code: string; id: string; name: string }[];
+  variants: Array<{ code: string; id: string; name: string }>;
   weight: { gross: number; net: number };
 };

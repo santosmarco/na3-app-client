@@ -30,7 +30,7 @@ export function useNa3Product(query: string): UseNa3ProductResult {
         ? setProduct({
             ...fetchResult.data.get(),
             get: () => fetchResult.data.get(),
-            getCustomers: () =>
+            getCustomers: async () =>
               fetchResult.data.getCustomers({ ignoreErrors: true }),
           })
         : setError(fetchResult.error.message);

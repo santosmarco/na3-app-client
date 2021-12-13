@@ -62,9 +62,12 @@ export function Na3TransfLabelTemplatesController(): null {
 
       dispatch(
         setTransfLabelTemplatesData(
-          templatesSnapshot.docs
-            .map((doc) => ({ ...doc.data(), id: doc.id }))
-            .sort((a, b) => a.name.localeCompare(b.name)) || null
+          [
+            ...templatesSnapshot.docs.map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+            })),
+          ].sort((a, b) => a.name.localeCompare(b.name))
         )
       );
     }

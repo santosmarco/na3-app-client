@@ -1,3 +1,7 @@
+// Here we can disable ESLint because FormField's props depends heavily on its
+// type.
+/* eslint-disable react/destructuring-assignment */
+
 import type {
   FormItemProps,
   InputProps,
@@ -106,7 +110,7 @@ export type FormFieldProps<SelectValue extends string[] | string> = {
   rules: Exclude<UseControllerProps["rules"], undefined> | null;
 } & (
   | (AutoCompleteAsFieldProps<
-      SelectValue extends Array<string> ? SelectValue[number] : SelectValue
+      SelectValue extends string[] ? SelectValue[number] : SelectValue
     > &
       FormFieldBaseProps<"autoComplete", SelectValue>)
   | (FileUploadAsFieldProps & FormFieldBaseProps<"file", UploadFile[]>)
@@ -114,13 +118,13 @@ export type FormFieldProps<SelectValue extends string[] | string> = {
   | (FormFieldBaseProps<"input", string> & InputBaseOptionalProps)
   | (FormFieldBaseProps<"mask", string> &
       InputBaseOptionalProps & {
-        mask: (RegExp | string)[];
+        mask: Array<RegExp | string>;
         maskPlaceholder?: string | null;
       })
   | (FormFieldBaseProps<"number", string> & InputNumberOptionalProps)
   | (FormFieldBaseProps<"password", string> & InputBaseOptionalProps)
   | (FormFieldBaseProps<"radio", string> & {
-      options: { label: React.ReactNode; value: string }[];
+      options: Array<{ label: React.ReactNode; value: string }>;
     })
   | (FormFieldBaseProps<"select", SelectValue> &
       SelectAsFieldProps<SelectValue>)
@@ -300,7 +304,7 @@ export function FormField<SelectValue extends string = string>(
   }, [onFieldBlur, onBlur, value]);
 
   const handleFilterSelectOptions = useCallback(
-    (input: string, option?: { label?: unknown; value?: unknown }) => {
+    (input: string, option?: { label?: unknown; value?: unknown }): boolean => {
       const compareTo =
         option &&
         (typeof option.label === "string"
@@ -310,8 +314,8 @@ export function FormField<SelectValue extends string = string>(
           : undefined);
 
       return (
-        compareTo?.toUpperCase().trim().indexOf(input.toUpperCase().trim()) !==
-        -1
+        compareTo?.toUpperCase().trim().includes(input.toUpperCase().trim()) ||
+        false
       );
     },
     []
@@ -610,7 +614,7 @@ export function FormField<SelectValue extends string = string>(
       htmlFor={name}
       label={labelComponent}
       labelAlign="left"
-      labelCol={labelCol || (labelSpan && { span: labelSpan }) || { span: 24 }}
+      labelCol={labelCol || { span: labelSpan || 24 }}
       required={required}
       tooltip={tooltip}
       validateStatus={
@@ -622,9 +626,7 @@ export function FormField<SelectValue extends string = string>(
           ? "success"
           : undefined
       }
-      wrapperCol={
-        wrapperCol || (labelSpan && { span: 24 - labelSpan }) || { span: 24 }
-      }
+      wrapperCol={wrapperCol || { span: 24 - (labelSpan || 0) }}
     >
       {fieldComponent}
     </Form.Item>

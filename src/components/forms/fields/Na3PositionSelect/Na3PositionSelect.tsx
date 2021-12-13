@@ -160,7 +160,7 @@ export function Na3PositionSelect({
               label="Setor"
               name={`${field.name}-departmentId`}
               onValueChange={(value): void =>
-                handlePositionFieldChange(field.id, "departmentId", value)
+                { handlePositionFieldChange(field.id, "departmentId", value); }
               }
               options={selectableDepartmentOptions}
               required={idx === 0}
@@ -179,7 +179,7 @@ export function Na3PositionSelect({
               label="Função"
               name={`${field.name}-positionId`}
               onValueChange={(value): void =>
-                handlePositionFieldChange(field.id, "positionId", value)
+                { handlePositionFieldChange(field.id, "positionId", value); }
               }
               options={
                 field.departmentId
@@ -201,7 +201,7 @@ export function Na3PositionSelect({
                 block={true}
                 danger={true}
                 icon={<DeleteOutlined />}
-                onClick={(): void => handlePositionFieldRemove(field.id)}
+                onClick={(): void => { handlePositionFieldRemove(field.id); }}
                 type="dashed"
               />
             </Col>

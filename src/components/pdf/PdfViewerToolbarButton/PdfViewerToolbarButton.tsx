@@ -5,7 +5,7 @@ type PdfViewerToolbarButtonProps = {
   label: string;
   icon: React.ReactNode;
   onClick: () => void;
-  labelPlacement?: "left" | "center" | "right";
+  labelPlacement?: "center" | "left" | "right";
   disabled?: boolean;
 };
 
@@ -20,7 +20,6 @@ export function PdfViewerToolbarButton({
 
   return (
     <Tooltip
-      title={label}
       placement={
         labelPlacement === "left"
           ? "bottomLeft"
@@ -28,13 +27,14 @@ export function PdfViewerToolbarButton({
           ? "bottomRight"
           : "bottom"
       }
+      title={label}
     >
       <Button
-        type="text"
-        size={breakpoint.md ? "middle" : "small"}
+        disabled={disabled}
         icon={icon}
         onClick={onClick}
-        disabled={disabled}
+        size={breakpoint.md ? "middle" : "small"}
+        type="text"
       />
     </Tooltip>
   );

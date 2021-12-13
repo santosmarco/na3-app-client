@@ -29,8 +29,8 @@ export type Na3ApiResponse<Data extends Na3ApiData> =
   | Na3ApiResponseSuccess<Data>;
 
 export type Na3ApiResponseArray<Data extends Na3ApiData> = {
-  data: (Data | null)[];
-  errors: (Na3ApiError | null)[];
+  data: Array<Data | null>;
+  errors: Array<Na3ApiError | null>;
 };
 
 /*

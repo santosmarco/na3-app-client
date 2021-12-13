@@ -152,7 +152,9 @@ export function MaintServiceOrderDetailsPage({
             </>
           ),
           okText: "Confirmar recusa",
-          onCancel: () => resolve(),
+          onCancel: () => {
+            resolve();
+          },
           onOk: async () => {
             confirmModal.update({ okText: "Enviando recusa..." });
 
@@ -362,19 +364,27 @@ export function MaintServiceOrderDetailsPage({
           {serviceOrder.status === "pending" ? (
             <Button
               icon={<CheckOutlined />}
-              onClick={() => setAcceptOrderModalIsVisible(true)}
+              onClick={(): void => {
+                setAcceptOrderModalIsVisible(true);
+              }}
               type="primary"
             >
               Aceitar OS
             </Button>
           ) : serviceOrder.status === "solving" ? (
             <>
-              <Button onClick={() => setSolutionActionModalType("status")}>
+              <Button
+                onClick={(): void => {
+                  setSolutionActionModalType("status");
+                }}
+              >
                 Informar status
               </Button>
               <Button
                 icon={<CheckOutlined />}
-                onClick={() => setSolutionActionModalType("deliver")}
+                onClick={(): void => {
+                  setSolutionActionModalType("deliver");
+                }}
                 type="primary"
               >
                 Transmitir solução
@@ -392,7 +402,9 @@ export function MaintServiceOrderDetailsPage({
               <Button
                 danger={true}
                 icon={<CloseOutlined />}
-                onClick={() => setRejectSolutionModalIsVisible(true)}
+                onClick={(): void => {
+                  setRejectSolutionModalIsVisible(true);
+                }}
                 type="text"
               >
                 Rejeitar{breakpoint.lg && " solução"}
@@ -548,21 +560,27 @@ export function MaintServiceOrderDetailsPage({
 
       <RejectSolutionModal
         isVisible={rejectSolutionModalIsVisible}
-        onClose={() => setRejectSolutionModalIsVisible(false)}
+        onClose={(): void => {
+          setRejectSolutionModalIsVisible(false);
+        }}
         onSubmit={handleOrderSolutionReject}
         serviceOrder={serviceOrder}
       />
 
       <ConfirmServiceOrderModal
         isVisible={acceptOrderModalIsVisible}
-        onClose={() => setAcceptOrderModalIsVisible(false)}
+        onClose={(): void => {
+          setAcceptOrderModalIsVisible(false);
+        }}
         onSubmit={handleOrderConfirm}
         serviceOrder={serviceOrder}
       />
 
       <ServiceOrderSolutionActionsModal
         isVisible={!!solutionActionModalType}
-        onClose={() => setSolutionActionModalType(undefined)}
+        onClose={(): void => {
+          setSolutionActionModalType(undefined);
+        }}
         onSubmit={
           solutionActionModalType === "status"
             ? handleOrderSolutionShareStatus

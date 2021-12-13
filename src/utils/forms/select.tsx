@@ -3,9 +3,7 @@ import type {
   SelectOptionBase,
   SelectOptionGroup,
 } from "@components";
-import { DocsStdTypeTag } from "@components";
-import { PriorityTag } from "@components";
-import { Tag } from "@components";
+import { DocsStdTypeTag, PriorityTag, Tag } from "@components";
 import type { AppUser } from "@modules/na3-react";
 import type {
   Na3Department,
@@ -25,11 +23,11 @@ type OptionsGeneratorExtractor<Data, FnReturn> =
   | ((item: Data) => FnReturn);
 
 export function generateSelectOptions<T extends Record<string, unknown>>(
-  data: Array<T> | Falsy,
+  data: Falsy | T[],
   valueExtractor: OptionsGeneratorExtractor<T, string>,
   labelExtractor?: OptionsGeneratorExtractor<T, React.ReactNode>,
   labelWhenSelectedExtractor?: OptionsGeneratorExtractor<T, React.ReactNode>
-): (AutoCompleteOptionBase & SelectOptionBase)[] {
+): Array<AutoCompleteOptionBase & SelectOptionBase> {
   if (!data) return [];
 
   return data.map((item) => {
@@ -56,10 +54,12 @@ export function generateSelectOptions<T extends Record<string, unknown>>(
 
 export function getDepartmentSelectOptions(
   departments: Na3Department[]
-): SelectOptionGroup<Na3DepartmentId>[] {
-  const optionGroups: (Pick<SelectOptionGroup<Na3DepartmentId>, "options"> & {
-    label: "Fábrica" | "Filial" | "Setores";
-  })[] = [];
+): Array<SelectOptionGroup<Na3DepartmentId>> {
+  const optionGroups: Array<
+    Pick<SelectOptionGroup<Na3DepartmentId>, "options"> & {
+      label: "Fábrica" | "Filial" | "Setores";
+    }
+  > = [];
 
   departments.forEach((dpt) => {
     const dptTypeName =
@@ -85,7 +85,9 @@ export function getDepartmentSelectOptions(
   );
 }
 
-export function getPrioritySelectOptions(): SelectOptionBase<PriorityValue>[] {
+export function getPrioritySelectOptions(): Array<
+  SelectOptionBase<PriorityValue>
+> {
   return getPriorityValuesConfig({ sorted: true }).map((config) => ({
     label: <PriorityTag priority={config.value} type="dot" />,
     labelWhenSelected: <PriorityTag priority={config.value} />,
@@ -109,7 +111,9 @@ export function getMaintEmployeeSelectOptions(
     }));
 }
 
-export function getStdDocTypeSelectOptions(): SelectOptionBase<Na3StdDocumentTypeId>[] {
+export function getStdDocTypeSelectOptions(): Array<
+  SelectOptionBase<Na3StdDocumentTypeId>
+> {
   return Object.values(NA3_STD_DOCUMENT_TYPES)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((docType) => ({

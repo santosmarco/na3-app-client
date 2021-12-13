@@ -11,5 +11,5 @@ export function deviceToString({
   os,
 }: NullableDeep<Na3AppDevice>): string | undefined {
   if (!(name && model && os?.version)) return;
-  return `${name} – ${model} (v${os?.version})`;
+  return `${name} – ${model} (v${os.version})`;
 }

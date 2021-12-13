@@ -52,6 +52,7 @@ export type {
   Na3UserAchievementIconId,
   Na3UserAchievementId,
   Na3UserAchievementLevel,
+  Na3UserAchievementLevelDefinition,
 } from "./user/Na3UserAchievement";
 export type {
   Na3UserEvent,

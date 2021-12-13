@@ -43,16 +43,14 @@ export type AppUserAttributes = AppUserRaw & {
 export type AppUserMethods = {
   readonly getDepartmentsByType: <T extends Na3DepartmentType>(
     departmentType: T
-  ) => Na3Department<T>[];
+  ) => Array<Na3Department<T>>;
   readonly hasPrivileges: (
     privileges: Na3UserPrivilegeId | Na3UserPrivilegeId[],
     options?: { every?: boolean }
   ) => boolean;
   readonly includesDepartments: (
     query:
-      | Falsy
-      | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
-      | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>[]
+      Array<LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>> | Falsy | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
   ) => boolean;
 };
 

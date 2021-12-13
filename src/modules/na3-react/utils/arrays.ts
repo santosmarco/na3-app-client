@@ -5,7 +5,7 @@ export function removeDuplicates<T extends Primitive>(arr: T[]): T[] {
   return arr.filter((item, idx) => arr.indexOf(item) === idx);
 }
 
-export function removeNullables<T>(arr: T[]): NonNullable<T>[] {
+export function removeNullables<T>(arr: T[]): Array<NonNullable<T>> {
   return arr.filter((item): item is NonNullable<T> => !!item);
 }
 
@@ -17,10 +17,10 @@ export function sortStateData<
   T extends Record<string, unknown>,
   U extends null | undefined = null | undefined
 >(
-  data: Array<T> | U,
+  data: T[] | U,
   key: Extract<keyof ConditionalPick<T, number | string>, string>,
   options?: { reverse?: boolean; transformToNumber?: boolean }
-): Array<T> | U {
+): T[] | U {
   if (!data) return data;
 
   const dataCopy = [...data];
