@@ -131,7 +131,7 @@ export function DocsCreateStdForm({
             notification.success({
               description: (
                 <>
-                  Documento <em>({formValues.title.trim()})</em> criado com
+                  Documento <em>{formValues.title.trim()}</em> criado com
                   sucesso!
                 </>
               ),
