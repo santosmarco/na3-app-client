@@ -60,6 +60,9 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@react-pdf-viewer/core": "^2.11.0",
+    "@react-pdf-viewer/default-layout": "^2.11.0",
+    "@react-pdf-viewer/locales": "^1.0.0",
     "@ryuuji3/react-mask-hook": "^1.0.1",
     "@sentry/browser": "^6.16.1",
     "@sentry/integrations": "^6.16.1",
@@ -77,6 +80,7 @@
     "jspdf": "^2.4.0",
     "lodash": "^4.17.21",
     "nanoid": "^3.1.30",
+    "pdfjs-dist": "^2.10.377",
     "qrcode": "^1.5.0",
     "react": "^17.0.2",
     "react-css-theme-switcher": "^0.3.0",

@@ -2,9 +2,11 @@ import {
   CheckOutlined,
   CloseOutlined,
   DownloadOutlined,
+  InfoCircleOutlined,
   ReadOutlined,
 } from "@ant-design/icons";
 import {
+  Collapse,
   DataItem,
   Divider,
   DocsStdRejectButton,
@@ -18,12 +20,16 @@ import {
   PrintPrevent,
   Result,
   Result404,
-  Tag,
   UserAvatarGroup,
 } from "@components";
 import { useBreadcrumb, useFileDownload } from "@hooks";
-import { useDevice, useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
-import { createErrorNotifier, numberToWords, timestampToStr } from "@utils";
+import { useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
+import {
+  createErrorNotifier,
+  humanizeDuration,
+  numberToWords,
+  timestampToStr,
+} from "@utils";
 import {
   Button,
   Col,
@@ -32,10 +38,10 @@ import {
   Modal,
   notification,
   Row,
-  Tooltip,
   Typography,
 } from "antd";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 
 type DocsStdDetailsPageProps = {
@@ -45,16 +51,12 @@ type DocsStdDetailsPageProps = {
 export function DocsStdDetailsPage({
   docId,
 }: DocsStdDetailsPageProps): JSX.Element {
-  const [pdfDownloadUrl, setPdfDownloadUrl] = useState<string>();
-  const [userIsAcknowledging, setUserIsAcknowledging] = useState(false);
-
   const history = useHistory();
   const breakpoint = Grid.useBreakpoint();
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
-  const { download, error: fileDownloadError } = useFileDownload();
+  const { download } = useFileDownload();
 
-  const device = useDevice();
   const { loading: userLoading, currentUser } = useNa3Auth();
   const {
     loading: docLoading,
@@ -75,16 +77,6 @@ export function DocsStdDetailsPage({
       rejectDocumentVersion,
     },
   } = useNa3StdDocs();
-
-  const viewerDisabledReason = useMemo(
-    (): "breakpoint" | "browser" | undefined =>
-      !breakpoint.md
-        ? "breakpoint"
-        : !/(chrome)|(edge)/g.test(device.model)
-        ? "browser"
-        : undefined,
-    [breakpoint.md, device.model]
-  );
 
   const doc = useMemo(() => getDocumentById(docId), [getDocumentById, docId]);
 
@@ -117,46 +109,60 @@ export function DocsStdDetailsPage({
     [getUserAcknowledgment, doc, currentUser]
   );
 
-  const handleNavigateBack = useCallback(() => {
-    history.replace("/docs/normas");
-  }, [history]);
+  const handleGetPdfUrl = useCallback(async (): Promise<string> => {
+    if (!doc) {
+      throw new Error(
+        "Não foi encontrado nenhum documento válido para o ID requisitado."
+      );
+    }
+    const downloadUrlRes = await getDocumentDownloadUrl(doc);
+    if (downloadUrlRes.error) {
+      notification.error({
+        description: downloadUrlRes.error.message,
+        message: "Erro ao obter o documento",
+      });
+      throw new Error(downloadUrlRes.error.message);
+    }
+    return downloadUrlRes.data;
+  }, [doc, getDocumentDownloadUrl]);
 
   const handleAcknowledgment = useCallback(async () => {
-    if (doc && currentUser && !userAcknowledgment) {
-      setUserIsAcknowledging(true);
-      const ackRes = await registerAcknowledgment(doc.id);
-      if (ackRes.error) {
-        notification.error({
-          message: "Erro ao registrar leitura",
-          description: ackRes.error.message,
-        });
-      } else {
-        notification.success({
-          message: "Leitura registrada",
-          description: (
-            <>
-              Sua leitura do documento <strong>{doc.title}</strong>{" "}
-              <em>(v.{ackRes.data.version.number})</em> foi registrada com
-              sucesso!
-              <br />
-              <small>
-                <em>
-                  (em{" "}
-                  {timestampToStr(ackRes.data.timestamp, {
-                    includeSeconds: true,
-                  })}
-                  )
-                </em>
-              </small>
-            </>
-          ),
-        });
-      }
-      setUserIsAcknowledging(false);
+    if (!doc || !currentUser || userAcknowledgment) {
+      return;
+    }
+
+    const ackRes = await registerAcknowledgment(doc.id);
+
+    if (ackRes.error) {
+      notification.error({
+        message: "Erro ao registrar leitura",
+        description: ackRes.error.message,
+      });
+    } else {
+      notification.success({
+        message: "Leitura registrada",
+        description: (
+          <>
+            Sua leitura do documento <strong>{doc.title}</strong>{" "}
+            <em>(v.{ackRes.data.version.number})</em> foi registrada com
+            sucesso!
+            <br />
+            <small>
+              <em>
+                (em{" "}
+                {timestampToStr(ackRes.data.timestamp, {
+                  includeSeconds: true,
+                })}
+                )
+              </em>
+            </small>
+          </>
+        ),
+      });
     }
   }, [doc, currentUser, userAcknowledgment, registerAcknowledgment]);
 
-  const handleDownloadPdf = useCallback(() => {
+  const handlePdfDownload = useCallback(() => {
     if (!doc || !currentUser) return;
 
     const userDownloadCount = getUserDownloads(doc, currentUser).length;
@@ -185,7 +191,7 @@ export function DocsStdDetailsPage({
 
         confirmModal.update({ okText: "Baixando..." });
 
-        if (!doc || !pdfDownloadUrl) {
+        if (!doc) {
           notifyError(
             "Não foi possivel obter o documento. Tente novamente mais tarde."
           );
@@ -194,15 +200,23 @@ export function DocsStdDetailsPage({
 
         try {
           const registerRes = await registerDownload(doc.id);
+
           if (registerRes.error) {
             notifyError(registerRes.error.message);
             return;
           }
-          await download(pdfDownloadUrl, `${doc.title}.pdf`);
+
+          const pdfDownloadUrl = await handleGetPdfUrl();
+
+          await download(
+            pdfDownloadUrl,
+            `${doc.title}${docVersion ? `_v${docVersion.number}` : ""}.pdf`
+          );
+
           void message.success("Download concluído");
         } catch (err) {
-          if (fileDownloadError) {
-            notifyError(fileDownloadError.message);
+          if (err instanceof Error) {
+            notifyError(err.message);
           } else {
             notifyError(
               "Um erro desconhecido ocorreu. Por favor, entre em contato com o administrador do sistema."
@@ -213,10 +227,10 @@ export function DocsStdDetailsPage({
     });
   }, [
     doc,
+    docVersion,
     currentUser,
-    pdfDownloadUrl,
-    fileDownloadError,
     getUserDownloads,
+    handleGetPdfUrl,
     registerDownload,
     download,
   ]);
@@ -303,6 +317,7 @@ export function DocsStdDetailsPage({
                 </>
               ),
             });
+
             history.push("/docs/normas");
           }
         },
@@ -311,22 +326,9 @@ export function DocsStdDetailsPage({
     [doc, docVersion, history, rejectDocumentVersion]
   );
 
-  useEffect(() => {
-    if (doc && userPermissions?.read && !pdfDownloadUrl) {
-      void (async (): Promise<void> => {
-        const downloadUrlRes = await getDocumentDownloadUrl(doc);
-        if (downloadUrlRes.error) {
-          notification.error({
-            description: downloadUrlRes.error.message,
-            message: "Erro ao obter o documento",
-          });
-          setPdfDownloadUrl(undefined);
-          return;
-        }
-        setPdfDownloadUrl(downloadUrlRes.data);
-      })();
-    }
-  }, [doc, userPermissions?.read, pdfDownloadUrl, getDocumentDownloadUrl]);
+  const handleNavigateBack = useCallback(() => {
+    history.replace("/docs/normas");
+  }, [history]);
 
   useEffect(() => {
     setBreadcrumbExtra(
@@ -372,163 +374,153 @@ export function DocsStdDetailsPage({
 
         <Divider marginBottom={12} />
 
-        <Row>
-          <Col xs={8} lg={4}>
-            <DataItem
-              label="Tipo"
-              marginBottom={!breakpoint.lg}
-              labelMarginBottom={breakpoint.lg ? 3 : undefined}
-            >
-              {docType ? (
-                <DocsStdTypeTag type={docType} />
-              ) : (
-                <em>Indeterminado</em>
-              )}
-            </DataItem>
-          </Col>
+        <Collapse
+          panels={[
+            {
+              header: "Informações",
+              headerIcon: <InfoCircleOutlined />,
+              content: (
+                <Row>
+                  <Col xs={8} lg={3}>
+                    <DataItem
+                      label="Tipo"
+                      marginBottom={!breakpoint.lg}
+                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                    >
+                      {docType ? (
+                        <DocsStdTypeTag type={docType} short={true} />
+                      ) : (
+                        <em>Indeterminado</em>
+                      )}
+                    </DataItem>
+                  </Col>
 
-          <Col xs={8} lg={4}>
-            <DataItem
-              label="Versão"
-              labelMarginBottom={breakpoint.lg ? 3 : undefined}
-            >
-              {docVersion ? (
-                <Tag color="blue">v.{docVersion.number}</Tag>
-              ) : (
-                <em>Indeterminada</em>
-              )}
-            </DataItem>
-          </Col>
+                  <Col xs={8} lg={3}>
+                    <DataItem
+                      label="Código"
+                      marginBottom={!breakpoint.lg}
+                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                    >
+                      {doc.code}
+                    </DataItem>
+                  </Col>
 
-          <Col xs={8} lg={4}>
-            <DataItem
-              label="Status"
-              labelMarginBottom={breakpoint.lg ? 3 : undefined}
-            >
-              {docStatus ? (
-                <DocsStdStatusBadge status={docStatus} variant="tag" />
-              ) : (
-                <em>Indeterminado</em>
-              )}
-            </DataItem>
-          </Col>
+                  <Col xs={8} lg={3}>
+                    <DataItem
+                      label="Versão"
+                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                    >
+                      <em>
+                        {docVersion?.number
+                          ? `v.${docVersion.number}`
+                          : "Indeterminada"}
+                      </em>
+                    </DataItem>
+                  </Col>
 
-          <Col xs={12} lg={6}>
-            <DataItem label="Lido por" icon={<ReadOutlined />}>
-              <UserAvatarGroup
-                data={getDocumentAcknowledgedUsers(doc)}
-                type="initials"
-                onTooltipProps={(data) => ({
-                  content: (
-                    <>
-                      <div>
-                        <Typography.Text strong={true}>
-                          {data.user.compactDisplayName}
-                        </Typography.Text>
-                      </div>
-                      <Typography.Text italic={true}>
-                        em {timestampToStr(data.event.timestamp)}
-                      </Typography.Text>
-                    </>
-                  ),
-                  placement: "topLeft",
-                  arrowPointAtCenter: true,
-                })}
-                maxCount={5}
-              />
-            </DataItem>
-          </Col>
+                  <Col xs={12} lg={3}>
+                    <DataItem
+                      label="Status"
+                      marginBottom={!breakpoint.lg}
+                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                    >
+                      {docStatus ? (
+                        <DocsStdStatusBadge status={docStatus} variant="tag" />
+                      ) : (
+                        <em>Indeterminado</em>
+                      )}
+                    </DataItem>
+                  </Col>
 
-          <Col xs={12} lg={6}>
-            <DataItem label="Downloads" icon={<DownloadOutlined />}>
-              <UserAvatarGroup
-                data={getDocumentDownloads(doc)}
-                type="initials"
-                onTooltipProps={(data) => ({
-                  content: (
-                    <>
-                      <div>
-                        <Typography.Text strong={true}>
-                          {data.user.compactDisplayName}
-                        </Typography.Text>
-                      </div>
-                      <Typography.Text italic={true}>
-                        em {timestampToStr(data.event.timestamp)}
-                      </Typography.Text>
-                    </>
-                  ),
-                  placement: "topLeft",
-                  arrowPointAtCenter: true,
-                })}
-                maxCount={5}
-              />
-            </DataItem>
-          </Col>
-        </Row>
+                  <Col xs={12} lg={4}>
+                    <DataItem
+                      label="Próx. revisão"
+                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
+                    >
+                      {dayjs(doc.nextRevisionAt).format("DD/MM/YY")}{" "}
+                      <small>
+                        <em>({humanizeDuration(doc.nextRevisionAt)})</em>
+                      </small>
+                    </DataItem>
+                  </Col>
 
-        <Divider marginTop={12} marginBottom={0} />
+                  <Col xs={12} lg={4}>
+                    <DataItem label="Lido por" icon={<ReadOutlined />}>
+                      <UserAvatarGroup
+                        data={getDocumentAcknowledgedUsers(doc)}
+                        type="initials"
+                        onTooltipProps={(data) => ({
+                          content: (
+                            <>
+                              <div>
+                                <Typography.Text strong={true}>
+                                  {data.user.compactDisplayName}
+                                </Typography.Text>
+                              </div>
+                              <Typography.Text italic={true}>
+                                em {timestampToStr(data.event.timestamp)}
+                              </Typography.Text>
+                            </>
+                          ),
+                          placement: "topLeft",
+                          arrowPointAtCenter: true,
+                        })}
+                        maxCount={5}
+                      />
+                    </DataItem>
+                  </Col>
+
+                  <Col xs={12} lg={4}>
+                    <DataItem label="Downloads" icon={<DownloadOutlined />}>
+                      <UserAvatarGroup
+                        data={getDocumentDownloads(doc)}
+                        type="initials"
+                        onTooltipProps={(data) => ({
+                          content: (
+                            <>
+                              <div>
+                                <Typography.Text strong={true}>
+                                  {data.user.compactDisplayName}
+                                </Typography.Text>
+                              </div>
+                              <Typography.Text italic={true}>
+                                em {timestampToStr(data.event.timestamp)}
+                              </Typography.Text>
+                            </>
+                          ),
+                          placement: "topLeft",
+                          arrowPointAtCenter: true,
+                        })}
+                        maxCount={5}
+                      />
+                    </DataItem>
+                  </Col>
+                </Row>
+              ),
+            },
+          ]}
+        />
 
         <PdfViewer
-          url={pdfDownloadUrl}
-          title={doc.title}
-          actions={
-            <Row gutter={[8, 8]}>
-              <Col span={24}>
-                <Tooltip
-                  title={
-                    userAcknowledgment
-                      ? `Lido em ${timestampToStr(
-                          userAcknowledgment.timestamp,
-                          { includeSeconds: true }
-                        )}`
-                      : undefined
-                  }
-                  visible={userAcknowledgment ? undefined : false}
-                >
-                  <Button
-                    block={true}
-                    disabled={!!userAcknowledgment}
-                    icon={userAcknowledgment && <CheckOutlined />}
-                    loading={userIsAcknowledging}
-                    onClick={handleAcknowledgment}
-                    type="primary"
-                  >
-                    {userIsAcknowledging
-                      ? "Enviando registro de leitura..."
-                      : userAcknowledgment
-                      ? "Você já leu este documento!"
-                      : "Marcar como lido"}
-                  </Button>
-                </Tooltip>
-              </Col>
-
-              {userPermissions?.download && (
-                <Col span={24}>
-                  <Button block={true} onClick={handleDownloadPdf}>
-                    Baixar documento
-                  </Button>
-                </Col>
+          url={handleGetPdfUrl}
+          disabledActions={[
+            !userPermissions?.download ? "download" : undefined,
+            !userPermissions?.print ? "print" : undefined,
+          ]}
+          actionHandlers={{ download: handlePdfDownload }}
+          readProgressTooltip="Progresso da leitura"
+          readProgressTooltipWhenComplete={
+            <>
+              <div>
+                <strong>Você já leu este documento!</strong>
+              </div>
+              {userAcknowledgment && (
+                <em>em {timestampToStr(userAcknowledgment.timestamp)}</em>
               )}
-            </Row>
+            </>
           }
-          disabled={
-            viewerDisabledReason && (
-              <Result
-                status="warning"
-                title={`${
-                  viewerDisabledReason === "breakpoint"
-                    ? "Aparelho"
-                    : "Navegador"
-                } não suportado`}
-                description={
-                  viewerDisabledReason === "breakpoint"
-                    ? "Acesse em um computador para visualizar o documento"
-                    : "Por favor, utilize o Google Chrome ou o Microsoft Edge para visualizar o documento"
-                }
-                paddingTop={0}
-              />
-            )
-          }
+          onReadProgressComplete={handleAcknowledgment}
+          readProgressForceComplete={!!userAcknowledgment}
         />
       </PrintPrevent>
     ) : (

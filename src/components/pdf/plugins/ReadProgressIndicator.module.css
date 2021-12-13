@@ -1,0 +1,8 @@
+.IndicatorContainer {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.IndicatorContainerComplete {
+  margin-right: -8px;
+}

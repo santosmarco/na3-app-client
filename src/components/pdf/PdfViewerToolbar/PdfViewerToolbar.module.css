@@ -1,0 +1,10 @@
+.Toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ToolbarActions {
+  display: flex;
+  align-items: center;
+}

@@ -53,25 +53,27 @@ const firebase = initFirebaseCore({
 
 function Root(): JSX.Element {
   return (
-    <AntdConfigProvider input={{ autoComplete: "off" }} locale={ptBR}>
-      <Na3Provider
-        appVersion={APP_VERSION}
-        messagingTokensStorageKey={FB_MSG_TOKENS_STORAGE_KEY}
-      >
-        <Router history={routerHistory}>
-          <BreadcrumbProvider>
-            <App />
-          </BreadcrumbProvider>
-        </Router>
-      </Na3Provider>
-    </AntdConfigProvider>
+    <>
+      <PdfViewerWorker workerUrl={PDF_VIEWER_WORKER_URL} />
+      <AntdConfigProvider input={{ autoComplete: "off" }} locale={ptBR}>
+        <Na3Provider
+          appVersion={APP_VERSION}
+          messagingTokensStorageKey={FB_MSG_TOKENS_STORAGE_KEY}
+        >
+          <Router history={routerHistory}>
+            <BreadcrumbProvider>
+              <App />
+            </BreadcrumbProvider>
+          </Router>
+        </Na3Provider>
+      </AntdConfigProvider>
+    </>
   );
 }
 
 ReactDOM.render(
   <React.StrictMode>
     <Root />
-    <PdfViewerWorker workerUrl={PDF_VIEWER_WORKER_URL} />
   </React.StrictMode>,
   document.getElementById("root")
 );
