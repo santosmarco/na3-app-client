@@ -1,3 +1,4 @@
+import { THEME_STORAGE_KEY } from "@config";
 import { useCallback, useEffect } from "react";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import useLocalStorage from "react-use-localstorage";
@@ -8,7 +9,7 @@ type ToggleTheme = () => void;
 
 export function useTheme(): [ThemeMode, ToggleTheme] {
   const [storedTheme, setStoredTheme] = useLocalStorage(
-    "NA3_APP_PREFERRED_THEME",
+    THEME_STORAGE_KEY,
     "light"
   );
 

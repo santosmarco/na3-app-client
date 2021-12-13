@@ -9,6 +9,7 @@ import {
   Spinner,
   ThemeLoadHandler,
 } from "@components";
+import { THEME_STORAGE_KEY } from "@config";
 import { useAppReady } from "@modules/na3-react";
 import { Layout, message, notification } from "antd";
 import {
@@ -112,7 +113,7 @@ function Main(): JSX.Element {
 }
 
 export function App(): JSX.Element {
-  const [storedTheme] = useLocalStorage("NA3_APP_PREFERRED_THEME", "light");
+  const [storedTheme] = useLocalStorage(THEME_STORAGE_KEY, "light");
 
   return (
     <ThemeSwitcherProvider

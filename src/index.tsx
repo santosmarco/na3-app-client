@@ -4,6 +4,7 @@ import "dayjs/locale/pt-br";
 import "web-vitals";
 
 import { Na3Provider } from "@modules/na3-react";
+import { Worker as PdfViewerWorker } from "@react-pdf-viewer/core";
 import { ConfigProvider as AntdConfigProvider } from "antd";
 import ptBR from "antd/lib/locale/pt_BR";
 import dayjs from "dayjs";
@@ -20,19 +21,16 @@ import { Router } from "react-router-dom";
 import { App } from "./App";
 import {
   APP_VERSION,
+  FB_MSG_TOKENS_STORAGE_KEY,
   FIREBASE_APP_CHECK_SITE_KEY,
   FIREBASE_CONFIG,
   FIREBASE_MESSAGING_VAPID_KEY,
+  PDF_VIEWER_WORKER_URL,
   SENTRY_DSN,
 } from "./config";
 import { BreadcrumbProvider } from "./contexts";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import {
-  handleSwRegistration,
-  initFirebaseCore,
-  initSentry,
-  MSG_TOKENS_STORAGE_KEY,
-} from "./utils";
+import { handleSwRegistration, initFirebaseCore, initSentry } from "./utils";
 
 dayjs.extend(dayOfYear);
 dayjs.extend(duration);
@@ -58,7 +56,7 @@ function Root(): JSX.Element {
     <AntdConfigProvider input={{ autoComplete: "off" }} locale={ptBR}>
       <Na3Provider
         appVersion={APP_VERSION}
-        messagingTokensStorageKey={MSG_TOKENS_STORAGE_KEY}
+        messagingTokensStorageKey={FB_MSG_TOKENS_STORAGE_KEY}
       >
         <Router history={routerHistory}>
           <BreadcrumbProvider>
@@ -73,6 +71,7 @@ function Root(): JSX.Element {
 ReactDOM.render(
   <React.StrictMode>
     <Root />
+    <PdfViewerWorker workerUrl={PDF_VIEWER_WORKER_URL} />
   </React.StrictMode>,
   document.getElementById("root")
 );
