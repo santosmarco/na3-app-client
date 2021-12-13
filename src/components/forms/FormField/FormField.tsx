@@ -573,7 +573,7 @@ export function FormField<SelectValue extends string = string>(
         return (
           <FileUpload
             acceptOnly={props.acceptOnly || null}
-            disabled={disabled}
+            disabled={isSubmitting ? disabledProp || false : disabled}
             fileTransform={props.fileTransform || null}
             hint={props.hint || null}
             id={name}
@@ -595,7 +595,9 @@ export function FormField<SelectValue extends string = string>(
     handleFilterSelectOptions,
     autoFocus,
     disabled,
+    disabledProp,
     placeholder,
+    isSubmitting,
     props,
   ]);
 
