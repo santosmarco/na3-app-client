@@ -1,26 +1,26 @@
-import { FormItem } from "@components";
-import { Collapse } from "antd";
-import { nanoid } from "nanoid";
-import React from "react";
-
-import classes from "./FormCollapse.module.css";
+import { Collapse, FormItem } from "@components";
+import { Grid } from "antd";
+import React, { useMemo } from "react";
 
 export type FormCollapseProps = {
-  children?: React.ReactNode;
   title: string;
+  children?: React.ReactNode;
 };
 
 export function FormCollapse({
   title,
   children,
 }: FormCollapseProps): JSX.Element {
+  const breakpoint = Grid.useBreakpoint();
+
+  const collapsePanel = useMemo(
+    () => ({ header: title, content: children, withMarginLeft: breakpoint.md }),
+    [title, children, breakpoint.md]
+  );
+
   return (
     <FormItem>
-      <Collapse ghost={true}>
-        <Collapse.Panel className={classes.Panel} header={title} key={nanoid()}>
-          {children}
-        </Collapse.Panel>
-      </Collapse>
+      <Collapse panels={[collapsePanel]} />
     </FormItem>
   );
 }
