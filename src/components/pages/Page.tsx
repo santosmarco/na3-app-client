@@ -4,68 +4,55 @@ import React, { useMemo } from "react";
 import classes from "./Page.module.css";
 
 type PageProps = {
-  additionalPaddingBottom: number;
+  additionalPaddingBottom?: number;
   children?: React.ReactNode;
   preventScroll?: boolean;
   scrollTopOffset?: number;
   style?: React.CSSProperties;
-};
-
-const defaultProps: PageProps = {
-  additionalPaddingBottom: 0,
-  children: undefined,
-  scrollTopOffset: 0,
-  style: undefined,
+  forceNoPaddingBottom?: boolean;
+  marginBottom?: number;
 };
 
 export function Page({
   children,
   scrollTopOffset,
   additionalPaddingBottom,
-  style: styleProp,
   preventScroll,
+  forceNoPaddingBottom,
+  marginBottom,
+  style: styleProp,
 }: PageProps): JSX.Element {
   const style = useMemo(
-    () => ({
+    (): React.CSSProperties => ({
       ...styleProp,
 
-      marginTop: -(scrollTopOffset || 0),
-      marginBottom: 0,
+      marginTop: -(scrollTopOffset ?? 0),
+      marginBottom: marginBottom ?? 0,
       marginLeft: -PAGE_OFFSET,
       marginRight: -PAGE_OFFSET,
 
-      paddingTop: scrollTopOffset || 0,
-      paddingBottom: 32 + (additionalPaddingBottom || 0),
+      paddingTop: scrollTopOffset ?? 0,
+      paddingBottom: forceNoPaddingBottom
+        ? 0
+        : 28 + (additionalPaddingBottom ?? 0),
       paddingLeft: PAGE_OFFSET,
       paddingRight: PAGE_OFFSET,
 
       overflowY: preventScroll ? "hidden" : undefined,
     }),
-    [styleProp, scrollTopOffset, additionalPaddingBottom, preventScroll]
+    [
+      styleProp,
+      scrollTopOffset,
+      additionalPaddingBottom,
+      preventScroll,
+      forceNoPaddingBottom,
+      marginBottom,
+    ]
   );
 
   return (
-    <div
-      className={classes.Page}
-      style={{
-        ...style,
-
-        marginTop: -(scrollTopOffset || 0),
-        marginBottom: 0,
-        marginLeft: -PAGE_OFFSET,
-        marginRight: -PAGE_OFFSET,
-
-        paddingTop: scrollTopOffset || 0,
-        paddingBottom: 28 + (additionalPaddingBottom || 0),
-        paddingLeft: PAGE_OFFSET,
-        paddingRight: PAGE_OFFSET,
-
-        overflowY: preventScroll ? "hidden" : undefined,
-      }}
-    >
+    <div className={classes.Page} style={style}>
       {children}
     </div>
   );
 }
-
-Page.defaultProps = defaultProps;
