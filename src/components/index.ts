@@ -67,6 +67,7 @@ export { CreateFormPage } from "./pages/templates/CreateFormPage";
 export { ListFormPage } from "./pages/templates/ListFormPage";
 export { MenuPage } from "./pages/templates/MenuPage";
 export { PdfViewer } from "./pdf/PdfViewer/PdfViewer";
+export { Collapse } from "./ui/Collapse/Collapse";
 export { DataCard } from "./ui/DataCard/DataCard";
 export { DataItem } from "./ui/DataItem/DataItem";
 export { Divider } from "./ui/Divider/Divider";
