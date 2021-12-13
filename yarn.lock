@@ -2133,7 +2133,7 @@
   dependencies:
     "@react-pdf-viewer/core" "2.11.0"
 
-"@react-pdf-viewer/selection-mode@2.11.0", "@react-pdf-viewer/selection-mode@^2.11.0":
+"@react-pdf-viewer/selection-mode@2.11.0":
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@react-pdf-viewer/selection-mode/-/selection-mode-2.11.0.tgz#609f2561b04d6381ca9f97486d5a1192c706ef02"
   integrity sha512-ywx53jzh7nvyV5PMrd3veyzVDgdz7NnyPIIs/1jNaeCusoUZLzCC9Ttv/Tx79WEl/SJy9WWmUP15jX2stokuYw==
