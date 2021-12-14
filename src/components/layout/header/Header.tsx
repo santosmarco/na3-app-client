@@ -31,7 +31,7 @@ export function Header(): JSX.Element {
 
   return (
     <div className={classes.HeaderContainer}>
-      <div className={classes.Header}>
+      <div>
         {auth.currentUser ? (
           <UserInfo user={auth.currentUser} />
         ) : (

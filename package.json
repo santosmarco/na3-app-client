@@ -47,15 +47,19 @@
   },
   "eslintConfig": {
     "plugins": [
-      "simple-import-sort"
+      "simple-import-sort",
+      "css-modules"
     ],
     "extends": [
       "eslint:recommended",
       "plugin:react/recommended",
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:css-modules/recommended"
     ],
     "rules": {
+      "css-modules/no-undef-class": "error",
+      "css-modules/no-unused-class": "warn",
       "react/boolean-prop-naming": "warn",
       "react/destructuring-assignment": "warn",
       "react/function-component-definition": "warn",
@@ -212,6 +216,7 @@
     "@types/react-helmet": "^6.1.4",
     "@types/react-router-dom": "^5.3.2",
     "@types/validator": "^13.7.0",
+    "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "prettier": "^2.5.1",
     "pwa-asset-generator": "^6.0.5",

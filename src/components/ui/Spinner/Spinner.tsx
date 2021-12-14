@@ -26,7 +26,7 @@ export function Spinner({
 }: SpinnerProps): JSX.Element {
   return (
     <Spin
-      className={className || classes.Spin}
+      className={className}
       delay={delay}
       indicator={
         indicator || (
@@ -42,7 +42,7 @@ export function Spinner({
       spinning={spinning}
       style={style}
       tip={text === null ? undefined : text || "Carregando..."}
-      wrapperClassName={wrapperClassName || classes.Spin}
+      wrapperClassName={wrapperClassName}
     >
       {children}
     </Spin>
