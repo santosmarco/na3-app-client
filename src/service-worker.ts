@@ -61,8 +61,8 @@ const OFFLINE_FALLBACKS_CACHE = "na3-offline-fallbacks-cache";
 const BG_SYNC_QUEUE = "na3-bg-sync-queue";
 
 const PAGE_FALLBACK = "index.html";
-const IMAGE_FALLBACK = undefined;
-const FONT_FALLBACK = undefined;
+const IMAGE_FALLBACK = "offline.svg";
+const FONT_FALLBACK = "";
 
 clientsClaim();
 
@@ -158,13 +158,7 @@ registerRoute(
 );
 
 self.addEventListener("install", (event) => {
-  const files = [PAGE_FALLBACK];
-  if (IMAGE_FALLBACK) {
-    files.push(IMAGE_FALLBACK);
-  }
-  if (FONT_FALLBACK) {
-    files.push(FONT_FALLBACK);
-  }
+  const files = [PAGE_FALLBACK, IMAGE_FALLBACK, FONT_FALLBACK];
 
   event.waitUntil(
     self.caches
@@ -235,10 +229,10 @@ setCatchHandler(async ({ request }) => {
   if (dest === "document") {
     return (await cache.match(PAGE_FALLBACK)) || Response.error();
   }
-  if (dest === "image" && IMAGE_FALLBACK) {
+  if (dest === "image") {
     return (await cache.match(IMAGE_FALLBACK)) || Response.error();
   }
-  if (dest === "font" && FONT_FALLBACK) {
+  if (dest === "font") {
     return (await cache.match(FONT_FALLBACK)) || Response.error();
   }
 
