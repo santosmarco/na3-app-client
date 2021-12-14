@@ -6,7 +6,9 @@ import { useHistory } from "react-router";
 export function NoMatchPage(): JSX.Element {
   const history = useHistory();
 
-  const handleBackToHome = useCallback(() => { history.push("/"); }, [history]);
+  const handleBackToHome = useCallback(() => {
+    history.push("/");
+  }, [history]);
 
   return (
     <Result

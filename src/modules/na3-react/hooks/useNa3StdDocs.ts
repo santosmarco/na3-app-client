@@ -15,16 +15,14 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
 import type { AppUser, FirebaseOperationResult, StdDocsState } from "../types";
-import type {
-  EventBuildConfig,
-  StdDocBuilderData} from "../utils";
+import type { EventBuildConfig, StdDocBuilderData } from "../utils";
 import {
   buildNa3Error,
   buildStdDocument,
   buildStdDocumentEvents,
   buildStdDocumentUrl,
   getCollection,
-  removeNullables
+  removeNullables,
 } from "../utils";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";

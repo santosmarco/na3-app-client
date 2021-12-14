@@ -9,4 +9,4 @@ export type BatchId = {
   readonly originalValue: string;
   readonly type: BatchIdType;
   readonly value: string;
-}
+};

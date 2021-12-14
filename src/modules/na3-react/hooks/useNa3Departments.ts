@@ -72,7 +72,9 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
   );
 
   const getByType = useCallback(
-    <T extends Na3DepartmentType>(type: T): Array<Na3Department<T>> | undefined =>
+    <T extends Na3DepartmentType>(
+      type: T
+    ): Array<Na3Department<T>> | undefined =>
       departments.data?.filter(
         (dpt): dpt is Na3Department<T> => dpt.type === type
       ),

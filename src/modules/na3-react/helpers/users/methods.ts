@@ -45,7 +45,9 @@ function createIncludesDepartmentsMethod(
 ): AppUserMethods["includesDepartments"] {
   return (
     query:
-      Array<LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>> | Falsy | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
+      | Array<LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>>
+      | Falsy
+      | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
   ): boolean => {
     const queryArr = typeof query === "string" ? [query] : query;
 

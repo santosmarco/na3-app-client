@@ -21,7 +21,10 @@ export function BreadcrumbProvider({
 
   const handleSetExtra = useCallback(
     (updatedExtra: Falsy | MaybeArray<string>) => {
-      if (!updatedExtra) { setExtra([]); return; }
+      if (!updatedExtra) {
+        setExtra([]);
+        return;
+      }
       const extraArray =
         typeof updatedExtra === "string" ? [updatedExtra] : [...updatedExtra];
       setExtra(extraArray);

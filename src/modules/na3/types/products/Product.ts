@@ -10,4 +10,4 @@ export type Product = {
     ignoreErrors?: false;
   }) => Promise<Na3ApiResponseArray<Na3ApiPerson>>) &
     ((options?: { ignoreErrors: true }) => Promise<Na3ApiPerson[]>);
-}
+};

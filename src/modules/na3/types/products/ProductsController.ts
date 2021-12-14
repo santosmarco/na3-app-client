@@ -16,4 +16,4 @@ export type ProductsController = {
   ) => testCode is `${number}` | `S-${number}`;
   readonly isProductId: (testId: unknown) => testId is `00A000${number}`;
   readonly utils: ControllerUtils;
-}
+};

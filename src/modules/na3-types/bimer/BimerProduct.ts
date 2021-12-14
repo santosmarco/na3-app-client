@@ -27,7 +27,11 @@ export type BimerProduct = {
   Identificador: string;
   IdentificadorProdutoMaster?: string;
   IdentificadorProdutoOrigem?: string;
-  MarcasProduto: Array<{ Codigo: string; Identificador: string; NomeMarca: string }>;
+  MarcasProduto: Array<{
+    Codigo: string;
+    Identificador: string;
+    NomeMarca: string;
+  }>;
   Nome: string;
   PesoBruto: number;
   PesoLiquido: number;

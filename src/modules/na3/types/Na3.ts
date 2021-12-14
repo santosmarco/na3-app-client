@@ -6,4 +6,4 @@ export type Na3 = {
   readonly batchId: BatchIdController;
   readonly people: PeopleController;
   readonly products: ProductsController;
-}
+};

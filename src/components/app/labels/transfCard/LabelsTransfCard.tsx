@@ -15,7 +15,9 @@ export function LabelsTransfCard({
   data,
   onSelect,
 }: LabelsTransfCardProps): JSX.Element {
-  const handleSelect = useCallback(() => { onSelect(data); }, [data, onSelect]);
+  const handleSelect = useCallback(() => {
+    onSelect(data);
+  }, [data, onSelect]);
 
   return (
     <DataCard

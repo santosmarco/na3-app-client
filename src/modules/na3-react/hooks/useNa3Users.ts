@@ -99,7 +99,9 @@ export function useNa3Users(): UseNa3UsersResult {
       ...basicUser,
       ...buildAppUserAuthOnlyMethods(basicUser, {
         fbCollectionRef: usersCollectionRef,
-        onRedirect: () => { history.replace("/entrar"); },
+        onRedirect: () => {
+          history.replace("/entrar");
+        },
       }),
     };
   }, [data, _firebaseUser, usersCollectionRef, history]);

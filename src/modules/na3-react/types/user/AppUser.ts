@@ -50,7 +50,9 @@ export type AppUserMethods = {
   ) => boolean;
   readonly includesDepartments: (
     query:
-      Array<LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>> | Falsy | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
+      | Array<LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>>
+      | Falsy
+      | LiteralUnion<Na3DepartmentId | Na3DepartmentType, string>
   ) => boolean;
 };
 
