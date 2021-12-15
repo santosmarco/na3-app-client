@@ -13,13 +13,24 @@ export type CollapseProps = {
     withMarginRight?: boolean;
   }>;
   ghost?: boolean;
+  defaultOpen?: boolean;
 };
 
-export function Collapse({ panels, ghost }: CollapseProps): JSX.Element {
+export function Collapse({
+  panels,
+  ghost,
+  defaultOpen,
+}: CollapseProps): JSX.Element {
   return (
-    <AntdCollapse ghost={ghost === false ? false : true}>
+    <AntdCollapse
+      defaultActiveKey={defaultOpen ? "headPanel" : undefined}
+      ghost={ghost === false ? false : true}
+    >
       {panels.map(
-        ({ header, content, headerIcon, withMarginLeft, withMarginRight }) => (
+        (
+          { header, content, headerIcon, withMarginLeft, withMarginRight },
+          idx
+        ) => (
           <AntdCollapse.Panel
             header={
               <>
@@ -34,7 +45,7 @@ export function Collapse({ panels, ghost }: CollapseProps): JSX.Element {
                 {header}
               </>
             }
-            key={nanoid()}
+            key={idx === 0 ? "headPanel" : nanoid()}
             style={{
               marginLeft: withMarginLeft ? undefined : -16,
               marginRight: withMarginRight ? undefined : -16,
