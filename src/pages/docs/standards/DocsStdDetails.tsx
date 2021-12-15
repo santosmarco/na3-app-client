@@ -6,6 +6,7 @@ import {
   DocsStdReadPendingAlert,
   DocsStdRejectButton,
   DocsStdViewPdfButton,
+  Page,
   PageActionButtons,
   PageDescription,
   PageTitle,
@@ -79,8 +80,12 @@ export function DocsStdDetailsPage({
     [getUserAcknowledgment, doc, currentUser]
   );
 
-  const handleViewPdf = useCallback(() => {
+  const handlePdfViewerShow = useCallback(() => {
     setIsViewingPdf(true);
+  }, []);
+
+  const handlePdfViewerHide = useCallback(() => {
+    setIsViewingPdf(false);
   }, []);
 
   const handleGetPdfUrl = useCallback(async (): Promise<string> => {
@@ -319,6 +324,7 @@ export function DocsStdDetailsPage({
             !userPermissions.print ? "print" : undefined,
           ]}
           fullPage={true}
+          onNavigateBack={handlePdfViewerHide}
           onReadProgressComplete={handleAcknowledgment}
           readProgressForceComplete={!!userAcknowledgment}
           readProgressTooltip="Progresso da leitura"
@@ -366,11 +372,13 @@ export function DocsStdDetailsPage({
 
           <Divider marginBottom={12} />
 
-          <DocsStdInfo doc={doc} />
+          <Page scrollTopOffset={12}>
+            <DocsStdInfo defaultOpen={breakpoint.lg} doc={doc} />
 
-          <Divider marginTop={12} />
+            <Divider marginTop={12} />
 
-          <DocsStdViewPdfButton onClick={handleViewPdf} />
+            <DocsStdViewPdfButton onClick={handlePdfViewerShow} />
+          </Page>
         </PrintPrevent>
       )
     ) : (
