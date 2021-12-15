@@ -1,4 +1,4 @@
-import { PAGE_OFFSET } from "@constants";
+import { OVERFLOW_Y_SCROLL_MARGIN_BOTTOM, PAGE_OFFSET } from "@constants";
 import React, { useMemo } from "react";
 
 import classes from "./Page.module.css";
@@ -27,16 +27,18 @@ export function Page({
       ...styleProp,
 
       marginTop: -(scrollTopOffset ?? 0),
-      marginBottom: marginBottom ?? 0,
-      marginLeft: -PAGE_OFFSET,
       marginRight: -PAGE_OFFSET,
+      marginBottom:
+        (preventScroll ? 0 : OVERFLOW_Y_SCROLL_MARGIN_BOTTOM) +
+        (marginBottom ?? 0),
+      marginLeft: -PAGE_OFFSET,
 
       paddingTop: scrollTopOffset ?? 0,
+      paddingRight: PAGE_OFFSET,
       paddingBottom: forceNoPaddingBottom
         ? 0
         : 28 + (additionalPaddingBottom ?? 0),
       paddingLeft: PAGE_OFFSET,
-      paddingRight: PAGE_OFFSET,
 
       overflowY: preventScroll ? "hidden" : undefined,
     }),
