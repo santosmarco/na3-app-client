@@ -1,0 +1,1 @@
+export const OVERFLOW_Y_SCROLL_MARGIN_BOTTOM = -16;

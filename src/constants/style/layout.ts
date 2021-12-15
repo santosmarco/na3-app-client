@@ -1,3 +1,5 @@
+export const BREADCRUMB_MARGIN = { TOP: 16 };
+
 export const SIDER_COLLAPSED_WIDTH = {
   XS: 0,
   MD: 80,
