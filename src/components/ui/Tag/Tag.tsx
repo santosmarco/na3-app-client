@@ -33,16 +33,18 @@ export function Tag({
   const style = useMemo(() => ({ color: textColor }), [textColor]);
 
   return (
-    <AntdTag
-      className={marginRight === "default" ? undefined : classes.Tag}
-      color={color}
-      icon={icon || (!noStatusIcon && getTagIcon(color))}
-      style={style}
-    >
-      <small>
-        <strong>{children}</strong>
-      </small>
-    </AntdTag>
+    <span>
+      <AntdTag
+        className={marginRight === "default" ? undefined : classes.Tag}
+        color={color}
+        icon={icon || (!noStatusIcon && getTagIcon(color))}
+        style={style}
+      >
+        <small>
+          <strong>{children}</strong>
+        </small>
+      </AntdTag>
+    </span>
   );
 }
 
