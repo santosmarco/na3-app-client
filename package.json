@@ -217,6 +217,7 @@
     "@types/validator": "^13.7.0",
     "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "prettier": "^2.5.1",
     "pwa-asset-generator": "^6.0.5",
     "react-app-rewire-alias": "^1.1.5",
     "react-app-rewired": "^2.1.8",
