@@ -1,47 +1,23 @@
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import {
-  CheckOutlined,
-  CloseOutlined,
-  DownloadOutlined,
-  InfoCircleOutlined,
-  ReadOutlined,
-} from "@ant-design/icons";
-import {
-  Collapse,
-  DataItem,
   Divider,
-  DocsStdAvatarGroup,
+  DocsStdAccessDeniedResult,
+  DocsStdInfo,
+  DocsStdReadPendingAlert,
   DocsStdRejectButton,
-  DocsStdStatusBadge,
-  DocsStdTypeTag,
+  DocsStdViewPdfButton,
   PageActionButtons,
-  PageAlert,
   PageDescription,
   PageTitle,
   PdfViewer,
   PrintPrevent,
-  Result,
   Result404,
 } from "@components";
 import { useBreadcrumb, useFileDownload } from "@hooks";
 import { useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
-import {
-  createErrorNotifier,
-  humanizeDuration,
-  numberToWords,
-  timestampToStr,
-} from "@utils";
-import {
-  Button,
-  Col,
-  Grid,
-  message,
-  Modal,
-  notification,
-  Row,
-  Typography,
-} from "antd";
-import dayjs from "dayjs";
-import React, { useCallback, useEffect, useMemo } from "react";
+import { createErrorNotifier, numberToWords, timestampToStr } from "@utils";
+import { Button, Grid, message, Modal, notification, Typography } from "antd";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 type DocsStdDetailsPageProps = {
@@ -54,6 +30,8 @@ export function DocsStdDetailsPage({
   const history = useHistory();
   const breakpoint = Grid.useBreakpoint();
 
+  const [isViewingPdf, setIsViewingPdf] = useState(false);
+
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
   const { download } = useFileDownload();
 
@@ -62,12 +40,9 @@ export function DocsStdDetailsPage({
     loading: docLoading,
     helpers: {
       getDocumentById,
-      getDocumentTypeFromTypeId,
       getDocumentLatestVersion,
       getUserPermissionsForDocument,
       getUserAcknowledgment,
-      getDocumentAcknowledgedUsers,
-      getDocumentDownloads,
       getUserDownloads,
       getDocumentDownloadUrl,
       getDocumentStatus,
@@ -79,11 +54,6 @@ export function DocsStdDetailsPage({
   } = useNa3StdDocs();
 
   const doc = useMemo(() => getDocumentById(docId), [getDocumentById, docId]);
-
-  const docType = useMemo(
-    () => (doc ? getDocumentTypeFromTypeId(doc.type) : undefined),
-    [getDocumentTypeFromTypeId, doc]
-  );
 
   const docVersion = useMemo(
     () => (doc ? getDocumentLatestVersion(doc) : undefined),
@@ -108,6 +78,10 @@ export function DocsStdDetailsPage({
       doc && currentUser ? getUserAcknowledgment(doc, currentUser) : undefined,
     [getUserAcknowledgment, doc, currentUser]
   );
+
+  const handleViewPdf = useCallback(() => {
+    setIsViewingPdf(true);
+  }, []);
 
   const handleGetPdfUrl = useCallback(async (): Promise<string> => {
     if (!doc) {
@@ -337,136 +311,14 @@ export function DocsStdDetailsPage({
 
   return doc && currentUser ? (
     userPermissions?.read ? (
-      <PrintPrevent disabled={userPermissions.print}>
-        <PageTitle>{doc.title}</PageTitle>
-
-        {!userAcknowledgment && (
-          <PageAlert marginBottom="small" title="Leitura pendente" type="info">
-            <strong>Atenção!</strong> Você ainda não marcou esta versão do
-            documento como lida — role até o final da página e comunique sua
-            leitura.
-          </PageAlert>
-        )}
-
-        <PageDescription>{doc.description}</PageDescription>
-
-        {userPermissions.approve && docStatus === "pending" && (
-          <PageActionButtons>
-            <Button
-              icon={<CheckOutlined />}
-              onClick={handleDocApprove}
-              type="primary"
-            >
-              Aprovar documento
-            </Button>
-
-            <DocsStdRejectButton
-              icon={<CloseOutlined />}
-              modalTitle="Rejeitar documento"
-              onRejectSubmit={handleDocReject}
-            >
-              Rejeitar{breakpoint.lg && " documento"}
-            </DocsStdRejectButton>
-          </PageActionButtons>
-        )}
-
-        <Divider marginBottom={12} />
-
-        <Collapse
-          panels={[
-            {
-              header: "Informações",
-              headerIcon: <InfoCircleOutlined />,
-              content: (
-                <Row>
-                  <Col lg={3} xs={8}>
-                    <DataItem
-                      label="Tipo"
-                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
-                      marginBottom={!breakpoint.lg}
-                    >
-                      {docType ? (
-                        <DocsStdTypeTag short={true} type={docType} />
-                      ) : (
-                        <em>Indeterminado</em>
-                      )}
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={3} xs={8}>
-                    <DataItem
-                      label="Código"
-                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
-                      marginBottom={!breakpoint.lg}
-                    >
-                      {doc.code}
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={3} xs={8}>
-                    <DataItem
-                      label="Versão"
-                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
-                    >
-                      <em>
-                        {docVersion?.number
-                          ? `v.${docVersion.number}`
-                          : "Indeterminada"}
-                      </em>
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={3} xs={12}>
-                    <DataItem
-                      label="Status"
-                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
-                      marginBottom={!breakpoint.lg}
-                    >
-                      {docStatus ? (
-                        <DocsStdStatusBadge status={docStatus} variant="tag" />
-                      ) : (
-                        <em>Indeterminado</em>
-                      )}
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={4} xs={12}>
-                    <DataItem
-                      label="Próx. revisão"
-                      labelMarginBottom={breakpoint.lg ? 3 : undefined}
-                    >
-                      {dayjs(doc.nextRevisionAt).format("DD/MM/YY")}{" "}
-                      <small>
-                        <em>({humanizeDuration(doc.nextRevisionAt)})</em>
-                      </small>
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={4} xs={12}>
-                    <DataItem icon={<ReadOutlined />} label="Lido por">
-                      <DocsStdAvatarGroup
-                        data={getDocumentAcknowledgedUsers(doc)}
-                      />
-                    </DataItem>
-                  </Col>
-
-                  <Col lg={4} xs={12}>
-                    <DataItem icon={<DownloadOutlined />} label="Downloads">
-                      <DocsStdAvatarGroup data={getDocumentDownloads(doc)} />
-                    </DataItem>
-                  </Col>
-                </Row>
-              ),
-            },
-          ]}
-        />
-
+      isViewingPdf ? (
         <PdfViewer
           actionHandlers={{ download: handlePdfDownload }}
           disabledActions={[
             !userPermissions.download ? "download" : undefined,
             !userPermissions.print ? "print" : undefined,
           ]}
+          fullPage={true}
           onReadProgressComplete={handleAcknowledgment}
           readProgressForceComplete={!!userAcknowledgment}
           readProgressTooltip="Progresso da leitura"
@@ -480,20 +332,49 @@ export function DocsStdDetailsPage({
               )}
             </>
           }
+          title={doc.title}
           url={handleGetPdfUrl}
+          version={docVersion?.number}
         />
-      </PrintPrevent>
+      ) : (
+        <PrintPrevent disabled={userPermissions.print}>
+          <PageTitle>{doc.title}</PageTitle>
+
+          {!userAcknowledgment && <DocsStdReadPendingAlert />}
+
+          <PageDescription>{doc.description}</PageDescription>
+
+          {userPermissions.approve && docStatus === "pending" && (
+            <PageActionButtons>
+              <Button
+                icon={<CheckOutlined />}
+                onClick={handleDocApprove}
+                type="primary"
+              >
+                Aprovar documento
+              </Button>
+
+              <DocsStdRejectButton
+                icon={<CloseOutlined />}
+                modalTitle="Rejeitar documento"
+                onRejectSubmit={handleDocReject}
+              >
+                Rejeitar{breakpoint.lg && " documento"}
+              </DocsStdRejectButton>
+            </PageActionButtons>
+          )}
+
+          <Divider marginBottom={12} />
+
+          <DocsStdInfo doc={doc} />
+
+          <Divider marginTop={12} />
+
+          <DocsStdViewPdfButton onClick={handleViewPdf} />
+        </PrintPrevent>
+      )
     ) : (
-      <Result
-        description="Você não tem acesso a este documento."
-        extra={
-          <Button onClick={handleNavigateBack} type="primary">
-            Voltar
-          </Button>
-        }
-        status="error"
-        title="Acesso restrito"
-      />
+      <DocsStdAccessDeniedResult onNavigateBack={handleNavigateBack} />
     )
   ) : (
     <Result404 backUrl="/docs/normas" isLoading={userLoading || docLoading}>
