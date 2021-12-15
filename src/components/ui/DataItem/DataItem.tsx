@@ -11,7 +11,6 @@ type DataItemProps = {
   iconMarginRight?: number;
   label: React.ReactNode;
   marginBottom?: boolean | number;
-  labelMarginBottom?: number;
   right?: React.ReactNode;
 };
 
@@ -24,18 +23,12 @@ export function DataItem({
   iconMarginRight,
   className,
   right,
-  labelMarginBottom,
 }: DataItemProps): JSX.Element {
   const containerStyle = useMemo(
     () => ({
       marginBottom: typeof marginBottom === "number" ? marginBottom : undefined,
     }),
     [marginBottom]
-  );
-
-  const labelStyle = useMemo(
-    () => ({ marginBottom: 8 + (labelMarginBottom ?? 0) }),
-    [labelMarginBottom]
   );
 
   const iconStyle = useMemo(
@@ -50,7 +43,7 @@ export function DataItem({
       }`.trim()}
       style={containerStyle}
     >
-      <Typography.Text className={classes.DataLabel} style={labelStyle}>
+      <Typography.Text className={classes.DataLabel}>
         <div>
           {icon && (
             <>
