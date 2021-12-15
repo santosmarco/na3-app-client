@@ -1,0 +1,11 @@
+.ToolbarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.ToolbarDocTitle {
+  margin: 0 !important;
+  max-width: 60%;
+}

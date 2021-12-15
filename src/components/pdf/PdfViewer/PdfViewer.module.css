@@ -1,9 +1,7 @@
 .PdfViewerContainer {
   flex: 1;
   display: flex;
-  margin-top: 12px;
-  margin-bottom: -16px;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 .PdfViewerLoading {

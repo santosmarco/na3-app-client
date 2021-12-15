@@ -7,7 +7,7 @@ import {
   FileOutlined,
 } from "@ant-design/icons";
 import { Result, Spinner } from "@components";
-import { PAGE_CONTAINER_PADDING } from "@constants";
+import { BREADCRUMB_MARGIN, PAGE_CONTAINER_PADDING } from "@constants";
 import { useTheme } from "@hooks";
 import type { LocalizationMap } from "@react-pdf-viewer/core";
 import { SpecialZoomLevel, Viewer } from "@react-pdf-viewer/core";
@@ -28,6 +28,9 @@ type PdfViewerProps = Pick<
   "actionHandlers" | "disabledActions"
 > & {
   url: Promise<string> | string | (() => Promise<string>);
+  title: string;
+  version?: number;
+  fullPage?: boolean;
   readProgressTooltip?: React.ReactNode;
   readProgressTooltipWhenComplete?: React.ReactNode;
   onReadProgressComplete?: () => void;
@@ -35,7 +38,12 @@ type PdfViewerProps = Pick<
 };
 
 export function PdfViewer({
+  // Required
   url: urlProp,
+  title,
+  // Optional
+  version,
+  fullPage,
   // Read progress
   readProgressTooltip,
   readProgressTooltipWhenComplete,
@@ -54,11 +62,21 @@ export function PdfViewer({
   const breakpoint = Grid.useBreakpoint();
 
   const containerStyle = useMemo(() => {
-    const offset = breakpoint.md
+    const offsetTop = fullPage
+      ? breakpoint.md
+        ? PAGE_CONTAINER_PADDING.TOP.MD - BREADCRUMB_MARGIN.TOP
+        : PAGE_CONTAINER_PADDING.TOP.XS
+      : undefined;
+    const offsetX = breakpoint.md
       ? PAGE_CONTAINER_PADDING.X.MD
       : PAGE_CONTAINER_PADDING.X.XS;
-    return { marginLeft: -offset, marginRight: -offset };
-  }, [breakpoint.md]);
+
+    return {
+      marginTop: offsetTop ? -offsetTop : undefined,
+      marginRight: -offsetX,
+      marginLeft: -offsetX,
+    };
+  }, [fullPage, breakpoint.md]);
 
   const handleUrlFetchError = useCallback((error: unknown) => {
     if (error instanceof Error) {
@@ -102,6 +120,8 @@ export function PdfViewer({
               <PdfViewerToolbar
                 actionHandlers={actionHandlers}
                 disabledActions={disabledActions}
+                docTitle={title}
+                docVersion={version}
                 slots={slots}
               />
             )}
