@@ -19,9 +19,13 @@ import React, { useMemo } from "react";
 
 type DocsStdInfoProps = {
   doc: Na3StdDocument;
+  defaultOpen?: boolean;
 };
 
-export function DocsStdInfo({ doc }: DocsStdInfoProps): JSX.Element {
+export function DocsStdInfo({
+  doc,
+  defaultOpen,
+}: DocsStdInfoProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
   const {
@@ -60,6 +64,7 @@ export function DocsStdInfo({ doc }: DocsStdInfoProps): JSX.Element {
 
   return (
     <Collapse
+      defaultOpen={defaultOpen}
       panels={[
         {
           header: "Informações",
