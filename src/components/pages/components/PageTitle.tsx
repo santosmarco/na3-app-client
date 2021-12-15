@@ -12,12 +12,6 @@ type PageTitleProps = {
   pre?: React.ReactNode;
 };
 
-const defaultProps: PageTitleProps = {
-  children: null,
-  icon: null,
-  pre: null,
-};
-
 export function PageTitle({
   icon,
   pre,
@@ -51,5 +45,3 @@ export function PageTitle({
     </div>
   );
 }
-
-PageTitle.defaultProps = defaultProps;
