@@ -30,6 +30,7 @@ type PdfViewerProps = Pick<
   url: Promise<string> | string | (() => Promise<string>);
   title: string;
   version?: number;
+  onNavigateBack?: (() => void) | null;
   fullPage?: boolean;
   readProgressTooltip?: React.ReactNode;
   readProgressTooltipWhenComplete?: React.ReactNode;
@@ -43,6 +44,7 @@ export function PdfViewer({
   title,
   // Optional
   version,
+  onNavigateBack,
   fullPage,
   // Read progress
   readProgressTooltip,
@@ -122,6 +124,7 @@ export function PdfViewer({
                 disabledActions={disabledActions}
                 docTitle={title}
                 docVersion={version}
+                onNavigateBack={onNavigateBack}
                 slots={slots}
               />
             )}

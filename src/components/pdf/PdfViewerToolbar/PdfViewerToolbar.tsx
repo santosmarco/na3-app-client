@@ -37,6 +37,7 @@ export type PdfViewerToolbarProps = {
     Record<PdfViewerToolbarActionId, (onClick: () => void) => void>
   >;
   docVersion?: number;
+  onNavigateBack?: (() => void) | null;
   hideHeader?: boolean;
 };
 
@@ -61,6 +62,7 @@ export function PdfViewerToolbar({
   actionHandlers,
   docTitle,
   docVersion,
+  onNavigateBack,
   hideHeader,
 }: PdfViewerToolbarProps): JSX.Element {
   const checkActionIsEnabled = useCallback(
@@ -86,7 +88,11 @@ export function PdfViewerToolbar({
   return (
     <>
       {!hideHeader && (
-        <PdfViewerToolbarHeader docTitle={docTitle} docVersion={docVersion} />
+        <PdfViewerToolbarHeader
+          docTitle={docTitle}
+          docVersion={docVersion}
+          onNavigateBack={onNavigateBack}
+        />
       )}
 
       <div className={classes.Toolbar}>
