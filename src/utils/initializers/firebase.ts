@@ -14,6 +14,13 @@ import type { ReadonlyDeep } from "type-fest";
 
 import { storeMessagingToken } from "../notifications/push";
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface Window {
+    FIREBASE_APPCHECK_DEBUG_TOKEN: boolean | string;
+  }
+}
+
 type InitFirebaseMessagingConfig = {
   readonly swRegistration: ReadonlyDeep<ServiceWorkerRegistration>;
   readonly vapidKey: string;
@@ -39,7 +46,6 @@ export function initFirebaseCore(
   const firebase = getApp();
   // Init Firebase's AppCheck
   if (process.env.NODE_ENV !== "production") {
-    // @ts-expect-error Firebase's AppCheck debug token
     window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
   }
   initializeAppCheck(firebase, {
