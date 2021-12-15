@@ -23,7 +23,7 @@ export type TimelineItemProps = Partial<
     | "red"
     | "volcano",
     string
-  >;
+  > | null;
   info?:
     | Falsy
     | ((Pick<TooltipProps, "arrowPointAtCenter" | "placement"> & {
@@ -52,7 +52,7 @@ export function TimelineItem({
   return (
     <Timeline.Item
       className={`${isLast ? "ant-timeline-item-pending" : ""} ${className}`}
-      color={color}
+      color={color || undefined}
     >
       <div>
         <Space size={breakpoint.lg ? "large" : "middle"}>
