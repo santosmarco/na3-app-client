@@ -314,8 +314,6 @@ export function DocsStdDetailsPage({
     );
   }, [setBreadcrumbExtra, doc, docVersion]);
 
-  console.log(userPermissions);
-
   return doc && currentUser ? (
     userPermissions?.read ? (
       isViewingPdf ? (
