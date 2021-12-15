@@ -14,7 +14,12 @@ import { addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
-import type { AppUser, FirebaseOperationResult, StdDocsState } from "../types";
+import type {
+  AppUser,
+  FirebaseOperationResult,
+  MaybeArray,
+  StdDocsState,
+} from "../types";
 import type { EventBuildConfig, StdDocBuilderData } from "../utils";
 import {
   buildNa3Error,
@@ -64,10 +69,15 @@ type UseNa3StdDocsResult = StdDocsState & {
       user: AppUser,
       versionId?: string
     ) => Na3StdDocumentEvent[];
+    userHasDocumentPermissions: (
+      user: AppUser,
+      doc: Na3StdDocument,
+      permissions: MaybeArray<keyof Na3StdDocumentPermissions>
+    ) => boolean;
     getUserPermissionsForDocument: (
       doc: Na3StdDocument,
       user: AppUser
-    ) => Record<keyof Na3StdDocumentPermissions, boolean>;
+    ) => Record<keyof Na3StdDocumentPermissions | "view", boolean>;
     registerAcknowledgment: (
       docId: string
     ) => Promise<
@@ -82,10 +92,6 @@ type UseNa3StdDocsResult = StdDocsState & {
         Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
       >
     >;
-    userCanApproveDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
-    userCanDownloadDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
-    userCanPrintDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
-    userCanReadDocument: (user: AppUser, doc: Na3StdDocument) => boolean;
     approveDocumentVersion: (
       docId: string
     ) => Promise<
@@ -271,74 +277,64 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [getDocumentLatestVersion]
   );
 
-  const userCanReadDocument = useCallback(
-    (user: AppUser, doc: Na3StdDocument): boolean => {
-      return (
-        user.isSuper ||
-        user.hasPrivileges("docs_std_read_all") ||
-        (user.hasPrivileges("docs_std_read_own") &&
-          doc.permissions.read.some((positionAllowed) =>
-            user.positions.map((pos) => pos.id).includes(positionAllowed)
-          ))
-      );
-    },
-    []
-  );
+  const userHasDocumentPermissions = useCallback(
+    (
+      user: AppUser,
+      doc: Na3StdDocument,
+      permissions: MaybeArray<
+        keyof Na3StdDocumentPermissions | "view" | "write"
+      >
+    ): boolean => {
+      const permissionsArr =
+        typeof permissions === "string" ? [permissions] : [...permissions];
 
-  const userCanPrintDocument = useCallback(
-    (user: AppUser, doc: Na3StdDocument): boolean => {
       return (
+        // Super users have permission for everything.
         user.isSuper ||
-        (user.hasPrivileges("docs_std_read_own") &&
-          doc.permissions.print.some((positionAllowed) =>
+        // So do users with the "docs_std_super" privilege.
+        user.hasPrivileges("docs_std_super") ||
+        permissionsArr.every((permissionToCheck) => {
+          // Only Super users or users with the "docs_std_super" privilege
+          // can approve documents.
+          if (permissionToCheck === "approve") {
+            return false;
+          }
+          // Apart from approving documents, users with the "docs_std_read_all"
+          // privilege have permission for all other actions.
+          if (user.hasPrivileges("docs_std_read_all")) {
+            return true;
+          }
+          // Only users with the "docs_std_write_new" privilege can write to
+          // documents.
+          if (permissionToCheck === "write") {
+            return user.hasPrivileges("docs_std_write_new");
+          }
+          // Regular users can only view document's content if it has been
+          // approved.
+          if (permissionToCheck === "view") {
+            return getDocumentStatus(doc) === "approved";
+          }
+          // Check permission against document's.
+          return doc.permissions[permissionToCheck].some((positionAllowed) =>
             user.positions.map((pos) => pos.id).includes(positionAllowed)
-          ))
+          );
+        })
       );
     },
-    []
-  );
-
-  const userCanDownloadDocument = useCallback(
-    (user: AppUser, doc: Na3StdDocument): boolean => {
-      return (
-        user.isSuper ||
-        (user.hasPrivileges("docs_std_read_own") &&
-          doc.permissions.download.some((positionAllowed) =>
-            user.positions.map((pos) => pos.id).includes(positionAllowed)
-          ))
-      );
-    },
-    []
-  );
-
-  const userCanApproveDocument = useCallback(
-    (user: AppUser, doc: Na3StdDocument): boolean => {
-      return (
-        user.isSuper ||
-        (user.hasPrivileges("docs_std_approve_all") &&
-          doc.permissions.approve.some((positionAllowed) =>
-            user.positions.map((pos) => pos.id).includes(positionAllowed)
-          ))
-      );
-    },
-    []
+    [getDocumentStatus]
   );
 
   const getUserPermissionsForDocument = useCallback(
     (doc: Na3StdDocument, user: AppUser) => {
       return {
-        read: userCanReadDocument(user, doc),
-        print: userCanPrintDocument(user, doc),
-        download: userCanDownloadDocument(user, doc),
-        approve: userCanApproveDocument(user, doc),
+        read: userHasDocumentPermissions(user, doc, "read"),
+        print: userHasDocumentPermissions(user, doc, "print"),
+        download: userHasDocumentPermissions(user, doc, "download"),
+        approve: userHasDocumentPermissions(user, doc, "approve"),
+        view: userHasDocumentPermissions(user, doc, "view"),
       };
     },
-    [
-      userCanReadDocument,
-      userCanPrintDocument,
-      userCanDownloadDocument,
-      userCanApproveDocument,
-    ]
+    [userHasDocumentPermissions]
   );
 
   const createDocument = useCallback(
@@ -524,10 +520,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       getDocumentDownloads,
       getUserDownloads,
       getDocumentDownloadUrl,
-      userCanReadDocument,
-      userCanPrintDocument,
-      userCanDownloadDocument,
-      userCanApproveDocument,
+      userHasDocumentPermissions,
       getUserPermissionsForDocument,
       registerAcknowledgment,
       registerDownload,

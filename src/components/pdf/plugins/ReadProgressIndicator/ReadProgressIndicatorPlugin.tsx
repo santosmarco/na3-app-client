@@ -13,7 +13,7 @@ type ReadProgressIndicatorPluginStore = {
   getPagesContainer?: () => HTMLElement | null;
 };
 
-type ReadProgressIndicatorPluginOptions = Partial<
+export type ReadProgressIndicatorPluginOptions = Partial<
   Omit<ReadProgressIndicatorCompInternalProps, "store">
 >;
 

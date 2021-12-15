@@ -1,3 +1,4 @@
+export { DEFAULT_APPROVER_POS_IDS } from "./app/stdDocs";
 export { FB_MSG_TOKENS_STORAGE_KEY, THEME_STORAGE_KEY } from "./localStorage";
 export { APP_VERSION, APP_VERSION_TIMESTAMP } from "./meta";
 export { PDF_VIEWER_WORKER_URL } from "./pdf";

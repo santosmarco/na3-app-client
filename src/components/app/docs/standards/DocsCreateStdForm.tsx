@@ -7,8 +7,9 @@ import {
   Na3PositionSelect,
   SubmitButton,
 } from "@components";
+import { DEFAULT_APPROVER_POS_IDS } from "@config";
 import { useForm } from "@hooks";
-import { useNa3Departments, useNa3StdDocs } from "@modules/na3-react";
+import { useNa3StdDocs } from "@modules/na3-react";
 import type { Na3PositionId, Na3StdDocumentTypeId } from "@modules/na3-types";
 import { createErrorNotifier, getStdDocTypeSelectOptions } from "@utils";
 import { Col, Modal, notification, Row } from "antd";
@@ -34,15 +35,12 @@ export function DocsCreateStdForm({
   onSubmit,
 }: DocsCreateStdFormProps): JSX.Element {
   const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>([]);
+  const [printerPosIds, setPrinterPosIds] = useState<Na3PositionId[]>([]);
   const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>([]);
-  const [approverPosIds, setApproverPosIds] = useState<Na3PositionId[]>([]);
 
   const [docTitle, setDocTitle] = useState("");
   const [docVersion, setDocVersion] = useState("");
 
-  const {
-    helpers: { getByPositionIds: getDepartmentsByPositionIds },
-  } = useNa3Departments();
   const {
     helpers: { createDocument },
   } = useNa3StdDocs();
@@ -66,6 +64,7 @@ export function DocsCreateStdForm({
         "nextRevisionAt",
         dayjs()
           .add(+timeDays, "months")
+          .startOf("month")
           .format()
       );
     },
@@ -88,7 +87,7 @@ export function DocsCreateStdForm({
         content: (
           <>
             Confirma a criação do documento {`"${formValues.title.trim()}"`}{" "}
-            <em>(v. {formValues.versionNumber})</em>?
+            <em>(v.{formValues.versionNumber})</em>?
           </>
         ),
         okText: "Criar",
@@ -117,10 +116,10 @@ export function DocsCreateStdForm({
             timeBetweenRevisionsMs:
               +formValues.timeBetweenRevisionsDays * 24 * 60 * 60 * 1000,
             permissions: {
-              approve: viewerPosIds,
+              read: viewerPosIds,
+              print: printerPosIds,
               download: downloaderPosIds,
-              print: viewerPosIds,
-              read: approverPosIds,
+              approve: DEFAULT_APPROVER_POS_IDS,
             },
             file: formValues.fileList[0].originFileObj,
           });
@@ -148,8 +147,8 @@ export function DocsCreateStdForm({
     [
       form,
       viewerPosIds,
+      printerPosIds,
       downloaderPosIds,
-      approverPosIds,
       onSubmit,
       createDocument,
     ]
@@ -174,6 +173,7 @@ export function DocsCreateStdForm({
 
         <Col lg={8} md={10} sm={12} xl={6} xs={24} xxl={4}>
           <FormField
+            autoUpperCase={true}
             label="Código"
             name={form.fieldNames.code}
             rules={{ required: "Defina o código do documento" }}
@@ -249,18 +249,39 @@ export function DocsCreateStdForm({
           <FormItem
             description={
               <>
-                Selecione as funções que poderão <strong>visualizar</strong> o
+                Selecione as posições que poderão <strong>visualizar</strong> o
                 documento.
               </>
             }
             label="Permissões de visualização"
           />
         </Col>
-
         <Col md={16} xs={24}>
           <Na3PositionSelect
             errorMessage="Defina as posições com permissão de visualização"
             onValueChange={setViewerPosIds}
+          />
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col md={8} xs={24}>
+          <FormItem
+            description={
+              <>
+                Selecione as posições que poderão <strong>imprimir</strong> o
+                documento.
+              </>
+            }
+            label="Permissões de impressão"
+            required={false}
+          />
+        </Col>
+        <Col md={16} xs={24}>
+          <Na3PositionSelect
+            onValueChange={setPrinterPosIds}
+            required={false}
+            selectablePositions={viewerPosIds}
           />
         </Col>
       </Row>
@@ -275,39 +296,14 @@ export function DocsCreateStdForm({
               </>
             }
             label="Permissões de download"
+            required={false}
           />
         </Col>
-
         <Col md={16} xs={24}>
           <Na3PositionSelect
-            errorMessage="Defina as posições com permissão de download"
             onValueChange={setDownloaderPosIds}
-            selectableDepartments={getDepartmentsByPositionIds(viewerPosIds)}
-          />
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col md={8} xs={24}>
-          <FormItem
-            description={
-              <>
-                Selecione as funções que poderão <strong>aprovar</strong> o
-                documento.
-              </>
-            }
-            label="Permissões de aprovação"
-          />
-        </Col>
-
-        <Col md={16} xs={24}>
-          <Na3PositionSelect
-            errorMessage="Defina as posições com permissão de aprovação"
-            onValueChange={setApproverPosIds}
-            selectableDepartments={getDepartmentsByPositionIds([
-              "diretoria.diretor-operacoes",
-              "diretoria.diretor-financeiro",
-            ])}
+            required={false}
+            selectablePositions={printerPosIds}
           />
         </Col>
       </Row>

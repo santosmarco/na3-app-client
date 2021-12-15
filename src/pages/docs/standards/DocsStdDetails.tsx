@@ -314,6 +314,8 @@ export function DocsStdDetailsPage({
     );
   }, [setBreadcrumbExtra, doc, docVersion]);
 
+  console.log(userPermissions);
+
   return doc && currentUser ? (
     userPermissions?.read ? (
       isViewingPdf ? (
@@ -325,19 +327,22 @@ export function DocsStdDetailsPage({
           ]}
           fullPage={true}
           onNavigateBack={handlePdfViewerHide}
-          onReadProgressComplete={handleAcknowledgment}
-          readProgressForceComplete={!!userAcknowledgment}
-          readProgressTooltip="Progresso da leitura"
-          readProgressTooltipWhenComplete={
-            <>
-              <div>
-                <strong>Você já leu este documento!</strong>
-              </div>
-              {userAcknowledgment && (
-                <em>em {timestampToStr(userAcknowledgment.timestamp)}</em>
-              )}
-            </>
-          }
+          readProgressOptions={{
+            active: docStatus === "approved",
+            onComplete: handleAcknowledgment,
+            forceComplete: !!userAcknowledgment,
+            tooltip: "Progresso da leitura",
+            tooltipWhenComplete: (
+              <>
+                <div>
+                  <strong>Você já leu este documento!</strong>
+                </div>
+                {userAcknowledgment && (
+                  <em>em {timestampToStr(userAcknowledgment.timestamp)}</em>
+                )}
+              </>
+            ),
+          }}
           title={doc.title}
           url={handleGetPdfUrl}
           version={docVersion?.number}
@@ -346,7 +351,9 @@ export function DocsStdDetailsPage({
         <PrintPrevent disabled={userPermissions.print}>
           <PageTitle>{doc.title}</PageTitle>
 
-          {!userAcknowledgment && <DocsStdReadPendingAlert />}
+          {docStatus === "approved" && !userAcknowledgment && (
+            <DocsStdReadPendingAlert onViewPdf={handlePdfViewerShow} />
+          )}
 
           <PageDescription>{doc.description}</PageDescription>
 
@@ -377,7 +384,13 @@ export function DocsStdDetailsPage({
 
             <Divider marginTop={12} />
 
-            <DocsStdViewPdfButton onClick={handlePdfViewerShow} />
+            <DocsStdViewPdfButton
+              disabled={!userPermissions.view}
+              onClick={handlePdfViewerShow}
+              tooltip={
+                !userPermissions.view && "Esse documento ainda não foi aprovado"
+              }
+            />
           </Page>
         </PrintPrevent>
       )

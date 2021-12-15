@@ -1,12 +1,12 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { FormField } from "@components";
 import { useNa3Departments, useNa3Users } from "@modules/na3-react";
-import type {
-  Na3Department,
-  Na3DepartmentId,
-  Na3PositionId,
-} from "@modules/na3-types";
-import { getDepartmentSelectOptions } from "@utils";
+import type { Na3DepartmentId, Na3PositionId } from "@modules/na3-types";
+import {
+  getDepartmentSelectOptions,
+  removeDuplicates,
+  removeNullables,
+} from "@utils";
 import { Button, Col, Row } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -21,18 +21,24 @@ type PositionField = {
 };
 
 type Na3PositionSelectProps = {
-  disabled?: boolean;
   errorMessage?: string;
   helpWhenEmpty?: React.ReactNode;
   onValueChange?: (positionIds: Na3PositionId[]) => void;
-  selectableDepartments?: Na3Department[];
+  selectablePositions?: Na3PositionId[];
+  required?: boolean;
+  disabled?: boolean;
+};
+
+const defaultProps = {
+  required: true,
 };
 
 export function Na3PositionSelect({
   onValueChange,
   errorMessage,
-  selectableDepartments,
+  selectablePositions,
   helpWhenEmpty,
+  required,
   disabled,
 }: Na3PositionSelectProps): JSX.Element {
   const departments = useNa3Departments();
@@ -42,37 +48,58 @@ export function Na3PositionSelect({
     createBlankPositionField(),
   ]);
 
-  const selectableDepartmentOptions = useMemo(
-    () =>
-      getDepartmentSelectOptions(
-        (selectableDepartments || departments.data || [])
-          .filter(
-            (dpt, idx, arr) => arr.map((dpt) => dpt.id).indexOf(dpt.id) === idx
+  const selectableDepartmentOptions = useMemo(() => {
+    if (!departments.data) {
+      return [];
+    }
+
+    let dpts = departments.data;
+
+    if (selectablePositions) {
+      dpts = removeNullables(
+        removeDuplicates(
+          selectablePositions.map(
+            (pos) => departments.helpers.splitPositionId(pos)[0]
           )
-          .filter(
-            (dpt) =>
-              !dpt.positions
-                .map((pos) => pos.id)
-                .every((posId) =>
-                  positionFields
-                    .map((posField) => posField.positionId)
-                    .includes(posId)
-                )
-          )
-      ),
-    [departments.data, positionFields, selectableDepartments]
-  );
+        ).map((dptId) => departments.helpers.getById(dptId))
+      );
+    }
+
+    return getDepartmentSelectOptions(
+      dpts.filter((dpt) => {
+        const allDptPositionsAreSelected = dpt.positions.every((pos) =>
+          positionFields.map((posField) => posField.positionId).includes(pos.id)
+        );
+
+        return !allDptPositionsAreSelected;
+      })
+    );
+  }, [
+    departments.data,
+    departments.helpers,
+    positionFields,
+    selectablePositions,
+  ]);
 
   const getSelectablePositionOptions = useCallback(
-    (departmentId: Na3DepartmentId) =>
-      departments.helpers
-        .getById(departmentId)
-        ?.positions.filter(
-          (pos) =>
-            !positionFields
-              .map((posField) => posField.positionId)
-              .includes(pos.id)
-        )
+    (departmentId: Na3DepartmentId) => {
+      const dpt = departments.helpers.getById(departmentId);
+
+      if (!dpt) {
+        return [];
+      }
+
+      return dpt.positions
+        .filter((pos) => {
+          const posIsSelectable = selectablePositions
+            ? selectablePositions.includes(pos.id)
+            : true;
+          const posIsAlreadySelected = positionFields
+            .map((posField) => posField.positionId)
+            .includes(pos.id);
+
+          return posIsSelectable && !posIsAlreadySelected;
+        })
         .map((pos) => {
           const numOfUsersInPosition =
             users.helpers.getAllInPositions(pos).length;
@@ -97,8 +124,9 @@ export function Na3PositionSelect({
             labelWhenSelected: pos.shortName.trim().toUpperCase(),
             value: pos.id,
           };
-        }) || [],
-    [departments.helpers, users.helpers, positionFields]
+        });
+    },
+    [departments.helpers, users.helpers, positionFields, selectablePositions]
   );
 
   const handlePositionFieldAdd = useCallback(() => {
@@ -149,7 +177,7 @@ export function Na3PositionSelect({
     <>
       {positionFields.map((field, idx) => (
         <Row gutter={{ xs: 6, sm: 6, md: 6, lg: 16 }} key={field.id}>
-          <Col lg={12} xs={11}>
+          <Col span={12}>
             <FormField
               defaultHelp={
                 idx === 0 &&
@@ -163,9 +191,10 @@ export function Na3PositionSelect({
                 handlePositionFieldChange(field.id, "departmentId", value);
               }}
               options={selectableDepartmentOptions}
-              required={idx === 0}
+              required={required && idx === 0}
               rules={{
                 required:
+                  required &&
                   idx === 0 &&
                   (errorMessage || "Atribua uma posição ao colaborador"),
               }}
@@ -173,7 +202,7 @@ export function Na3PositionSelect({
             />
           </Col>
 
-          <Col lg={idx === 0 ? 12 : 10} xs={idx === 0 ? 13 : 10}>
+          <Col span={idx === 0 ? 12 : 10}>
             <FormField
               disabled={disabled || !field.departmentId}
               label="Função"
@@ -189,14 +218,14 @@ export function Na3PositionSelect({
               placeholder={
                 !field.departmentId ? "Selecione o setor primeiro" : undefined
               }
-              required={idx === 0}
-              rules={{ required: idx === 0 }}
+              required={required && idx === 0}
+              rules={{ required: required && idx === 0 }}
               type="select"
             />
           </Col>
 
           {idx !== 0 && (
-            <Col className={classes.RemovePositionBtn} lg={2} xs={3}>
+            <Col className={classes.RemovePositionBtn} span={2}>
               <Button
                 block={true}
                 danger={true}
@@ -234,3 +263,5 @@ function createBlankPositionField(): PositionField {
     positionId: "",
   };
 }
+
+Na3PositionSelect.defaultProps = defaultProps;

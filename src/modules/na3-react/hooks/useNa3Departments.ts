@@ -5,6 +5,7 @@ import type {
   Na3DepartmentType,
   Na3Machine,
   Na3PositionId,
+  Na3PositionIdBase,
 } from "@modules/na3-types";
 import { isArray } from "lodash";
 import { useCallback } from "react";
@@ -35,6 +36,9 @@ export type UseNa3DepartmentsResult = {
       dptId: LiteralUnion<Na3DepartmentId<"shop-floor">, string>,
       machineId: string
     ) => Na3Machine | undefined;
+    splitPositionId: (
+      positionId: Na3PositionId
+    ) => [Na3DepartmentId, Na3PositionIdBase];
     isDptType: (type: unknown) => type is Na3DepartmentType;
   };
   loading: boolean;
@@ -121,6 +125,13 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     [getById]
   );
 
+  const splitPositionId = useCallback(
+    (positionId: Na3PositionId): [Na3DepartmentId, Na3PositionIdBase] => {
+      return positionId.split(".") as [Na3DepartmentId, Na3PositionIdBase];
+    },
+    []
+  );
+
   const isDptType = useCallback((type: unknown): type is Na3DepartmentType => {
     return (
       typeof type === "string" &&
@@ -136,8 +147,9 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
       getByIdsOrTypes,
       getByType,
       getByPositionIds,
-      isDptType,
       getDepartmentMachineById,
+      splitPositionId,
+      isDptType,
     },
   };
 }

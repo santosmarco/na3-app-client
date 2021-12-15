@@ -20,6 +20,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { PdfViewerToolbarProps } from "../PdfViewerToolbar/PdfViewerToolbar";
 import { PdfViewerToolbar } from "../PdfViewerToolbar/PdfViewerToolbar";
+import type { ReadProgressIndicatorPluginOptions } from "../plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
 import { createReadProgressIndicatorPlugin } from "../plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
 import classes from "./PdfViewer.module.css";
 
@@ -32,10 +33,9 @@ type PdfViewerProps = Pick<
   version?: number;
   onNavigateBack?: (() => void) | null;
   fullPage?: boolean;
-  readProgressTooltip?: React.ReactNode;
-  readProgressTooltipWhenComplete?: React.ReactNode;
-  onReadProgressComplete?: () => void;
-  readProgressForceComplete?: boolean;
+  readProgressOptions?: ReadProgressIndicatorPluginOptions & {
+    active?: boolean;
+  };
 };
 
 export function PdfViewer({
@@ -46,11 +46,8 @@ export function PdfViewer({
   version,
   onNavigateBack,
   fullPage,
-  // Read progress
-  readProgressTooltip,
-  readProgressTooltipWhenComplete,
-  onReadProgressComplete,
-  readProgressForceComplete,
+  // Read progress options
+  readProgressOptions,
   // Toolbar
   disabledActions,
   actionHandlers,
@@ -129,7 +126,7 @@ export function PdfViewer({
               />
             )}
           </Toolbar>
-          <ReadProgressIndicator />
+          {readProgressOptions?.active && <ReadProgressIndicator />}
         </>
       );
     },
@@ -139,12 +136,8 @@ export function PdfViewer({
     sidebarTabs: handleViewerSidebarTabs,
   });
 
-  const readProgressIndicatorPlugin = createReadProgressIndicatorPlugin({
-    tooltip: readProgressTooltip,
-    tooltipWhenComplete: readProgressTooltipWhenComplete,
-    onComplete: onReadProgressComplete,
-    forceComplete: readProgressForceComplete,
-  });
+  const readProgressIndicatorPlugin =
+    createReadProgressIndicatorPlugin(readProgressOptions);
 
   return (
     <div className={classes.PdfViewerContainer} style={containerStyle}>

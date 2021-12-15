@@ -198,7 +198,7 @@ export function FormField<SelectValue extends string = string>(
       ? {
           ...rules,
           required:
-            required !== false &&
+            required &&
             (typeof rules.required === "string"
               ? rules.required
               : "Campo obrigatório"),
@@ -338,8 +338,14 @@ export function FormField<SelectValue extends string = string>(
     }
   }, [value, prevValue, type, isTouched, hasValue, onValueChange, onFieldBlur]);
 
+  const disabled = useMemo(
+    (): boolean => disabledProp || isLoading || isSubmitting,
+    [disabledProp, isLoading, isSubmitting]
+  );
+
   const placeholder = useMemo((): string => {
     if (placeholderProp) return placeholderProp;
+    if (disabled) return "";
     else {
       const verb = isTouchDevice() ? "Toque" : "Clique";
       switch (type) {
@@ -363,12 +369,7 @@ export function FormField<SelectValue extends string = string>(
             : "Clique ou arraste um arquivo para cá";
       }
     }
-  }, [placeholderProp, type]);
-
-  const disabled = useMemo(
-    (): boolean => disabledProp || isLoading || isSubmitting,
-    [disabledProp, isLoading, isSubmitting]
-  );
+  }, [placeholderProp, disabled, type]);
 
   const labelComponent = useMemo(
     (): JSX.Element => <FieldLabel isOptional={!required} text={label} />,
