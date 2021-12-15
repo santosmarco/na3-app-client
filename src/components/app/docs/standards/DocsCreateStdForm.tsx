@@ -130,8 +130,8 @@ export function DocsCreateStdForm({
             notification.success({
               description: (
                 <>
-                  Documento <em>{formValues.title.trim()}</em> criado com
-                  sucesso!
+                  Documento {`"${formValues.title.trim()}"`}{" "}
+                  <em>(v.{formValues.versionNumber})</em> criado com sucesso!
                 </>
               ),
               message: "Documento criado",
