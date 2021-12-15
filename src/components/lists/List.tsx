@@ -65,7 +65,9 @@ export function List<Item extends Record<string, unknown>>({
 
   useEffect(() => {
     if (data) {
-      setLoadedData((currLoaded) => data.slice(0, currLoaded.length || 15));
+      setLoadedData((currLoaded) =>
+        data.slice(0, currLoaded.length <= 15 ? 15 : currLoaded.length)
+      );
     }
   }, [data]);
 
