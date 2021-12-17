@@ -12,9 +12,9 @@ import {
 import type { ToolbarSlot } from "@react-pdf-viewer/default-layout";
 import React, { useCallback } from "react";
 
-import { PdfViewerToolbarButton } from "../PdfViewerToolbarButton/PdfViewerToolbarButton";
-import { PdfViewerToolbarHeader } from "../PdfViewerToolbarHeader/PdfViewerToolbarHeader";
 import classes from "./PdfViewerToolbar.module.css";
+import { PdfViewerToolbarButton } from "./PdfViewerToolbarButton/PdfViewerToolbarButton";
+import { PdfViewerToolbarHeader } from "./PdfViewerToolbarHeader/PdfViewerToolbarHeader";
 
 export type PdfViewerToolbarActionId =
   | "download"

@@ -6,7 +6,7 @@ import {
   BookOutlined,
   FileOutlined,
 } from "@ant-design/icons";
-import { Result, Spinner } from "@components";
+import { Logo, Result, Spinner } from "@components";
 import { BREADCRUMB_MARGIN, PAGE_CONTAINER_PADDING } from "@constants";
 import { useTheme } from "@hooks";
 import type { LocalizationMap } from "@react-pdf-viewer/core";
@@ -18,11 +18,13 @@ import { SelectionMode } from "@react-pdf-viewer/selection-mode";
 import { Grid, Progress } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { PdfViewerToolbarProps } from "../PdfViewerToolbar/PdfViewerToolbar";
-import { PdfViewerToolbar } from "../PdfViewerToolbar/PdfViewerToolbar";
-import type { ReadProgressIndicatorPluginOptions } from "../plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
-import { createReadProgressIndicatorPlugin } from "../plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
+import type { PdfViewerWatermarkOptions } from "./components/PdfViewerPage/PdfViewerPage";
+import { PdfViewerPage } from "./components/PdfViewerPage/PdfViewerPage";
+import type { PdfViewerToolbarProps } from "./components/PdfViewerToolbar/PdfViewerToolbar";
+import { PdfViewerToolbar } from "./components/PdfViewerToolbar/PdfViewerToolbar";
 import classes from "./PdfViewer.module.css";
+import type { ReadProgressIndicatorPluginOptions } from "./plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
+import { createReadProgressIndicatorPlugin } from "./plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
 
 type PdfViewerProps = Pick<
   PdfViewerToolbarProps,
@@ -33,6 +35,7 @@ type PdfViewerProps = Pick<
   version?: number;
   onNavigateBack?: (() => void) | null;
   fullPage?: boolean;
+  watermark?: PdfViewerWatermarkOptions | "default";
   readProgressOptions?: ReadProgressIndicatorPluginOptions & {
     active?: boolean;
   };
@@ -46,6 +49,7 @@ export function PdfViewer({
   version,
   onNavigateBack,
   fullPage,
+  watermark,
   // Read progress options
   readProgressOptions,
   // Toolbar
@@ -168,6 +172,29 @@ export function PdfViewer({
                 percent={Math.round(percentage)}
                 type="circle"
                 width={80}
+              />
+            )}
+            renderPage={({
+              canvasLayer,
+              annotationLayer,
+              textLayer,
+              scale,
+            }): JSX.Element => (
+              <PdfViewerPage
+                scale={scale}
+                viewLayers={{
+                  canvas: canvasLayer,
+                  annotation: annotationLayer,
+                  text: textLayer,
+                }}
+                watermarkOptions={
+                  watermark === "default"
+                    ? {
+                        component: <Logo opacity={0.2} theme="dark" />,
+                        scale: 3,
+                      }
+                    : watermark
+                }
               />
             )}
             theme={theme}

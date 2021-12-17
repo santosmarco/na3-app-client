@@ -1,0 +1,25 @@
+.WatermarkContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.Watermark {
+  /* Text watermark config */
+  color: rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  text-transform: uppercase;
+  user-select: none;
+
+  /* Rotation */
+  transform: rotate(-45deg);
+  transform-origin: center center;
+
+  /* zoom: Depends on the `scale` prop; dynamically set by component. */
+  /* -moz-transform: Same as `zoom`. */
+}
