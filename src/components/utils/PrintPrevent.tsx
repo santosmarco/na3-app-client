@@ -21,11 +21,7 @@ export function PrintPrevent({
         }`}
       >
         <div className={classes.PrintPreventContent}>
-          <Logo
-            className={classes.PrintPreventLogo}
-            height={48}
-            theme="light"
-          />
+          <Logo className={classes.PrintPreventLogo} height={48} theme="dark" />
 
           <Typography.Title className={classes.PrintPreventTitle} level={4}>
             Você não pode imprimir esta página.
