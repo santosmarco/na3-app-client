@@ -1,5 +1,6 @@
+import { Tag } from "@components";
 import type { SelectProps as AntdSelectProps, TagProps } from "antd";
-import { Select as AntdSelect, Tag } from "antd";
+import { Select as AntdSelect } from "antd";
 import { isArray } from "lodash";
 import { nanoid } from "nanoid";
 import React, { useCallback, useMemo } from "react";
@@ -85,7 +86,6 @@ export function Select<Value extends SelectValue = SelectValue>({
 
       return (
         <div
-          className={`${classes.LabelWhenSelected}`}
           style={{
             height: isMultiple ? 28 : undefined,
             ...onTagProps?.(optionValueStr).containerStyle,
@@ -103,6 +103,7 @@ export function Select<Value extends SelectValue = SelectValue>({
               marginRight: 3,
               ...onTagProps?.(optionValueStr).style,
             }}
+            wrapperClassName={classes.LabelWhenSelected}
           >
             {label}
           </Tag>

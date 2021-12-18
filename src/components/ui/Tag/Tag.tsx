@@ -20,6 +20,11 @@ export type TagProps = {
   marginRight?: "default";
   noStatusIcon?: boolean;
   textColor?: string;
+  closable?: boolean;
+  onClose?: () => void;
+  style?: React.CSSProperties;
+  wrapperClassName?: string;
+  mode?: "select";
 };
 
 export function Tag({
@@ -29,15 +34,29 @@ export function Tag({
   children,
   icon,
   noStatusIcon,
+  closable,
+  onClose,
+  style: styleProp,
+  wrapperClassName,
+  mode,
 }: TagProps): JSX.Element {
-  const style = useMemo(() => ({ color: textColor }), [textColor]);
+  const style = useMemo(
+    () => ({ ...styleProp, color: textColor }),
+    [styleProp, textColor]
+  );
 
   return (
-    <span className={classes.TagContainer}>
+    <span
+      className={`${mode === "select" ? classes.SelectMode : ""} ${
+        wrapperClassName || ""
+      }`.trim()}
+    >
       <AntdTag
         className={marginRight === "default" ? undefined : classes.Tag}
+        closable={closable}
         color={color}
         icon={icon || (!noStatusIcon && getTagIcon(color))}
+        onClose={onClose}
         style={style}
       >
         <small>

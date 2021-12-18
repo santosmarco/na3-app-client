@@ -9,7 +9,7 @@ import React, { useMemo } from "react";
 import type { TagProps } from "./Tag";
 import { Tag } from "./Tag";
 
-type DocsStdTypeTagProps = Pick<TagProps, "marginRight"> & {
+type DocsStdTypeTagProps = Pick<TagProps, "marginRight" | "mode"> & {
   short?: boolean;
   type: Na3StdDocumentType | Na3StdDocumentTypeId;
   variant?: "dot" | "tag";
@@ -20,6 +20,7 @@ export function DocsStdTypeTag({
   variant,
   short,
   marginRight,
+  mode,
 }: DocsStdTypeTagProps): JSX.Element {
   const {
     helpers: { getDocumentTypeFromTypeId },
@@ -41,7 +42,7 @@ export function DocsStdTypeTag({
     );
   }
   return (
-    <Tag color={parsedType.color} marginRight={marginRight}>
+    <Tag color={parsedType.color} marginRight={marginRight} mode={mode}>
       {parsedType[short ? "shortName" : "name"].toUpperCase()}
     </Tag>
   );

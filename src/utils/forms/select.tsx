@@ -90,7 +90,7 @@ export function getPrioritySelectOptions(): Array<
 > {
   return getPriorityValuesConfig({ sorted: true }).map((config) => ({
     label: <PriorityTag priority={config.value} type="dot" />,
-    labelWhenSelected: <PriorityTag priority={config.value} />,
+    labelWhenSelected: <PriorityTag mode="select" priority={config.value} />,
     value: config.value,
   }));
 }
@@ -103,7 +103,7 @@ export function getMaintEmployeeSelectOptions(
     .map((maintainer) => ({
       label: maintainer.compactDisplayName,
       labelWhenSelected: (
-        <Tag color={maintainer.style.webColor}>
+        <Tag color={maintainer.style.webColor} mode="select">
           {maintainer.compactDisplayName}
         </Tag>
       ),
@@ -118,7 +118,7 @@ export function getStdDocTypeSelectOptions(): Array<
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((docType) => ({
       label: <DocsStdTypeTag type={docType} variant="dot" />,
-      labelWhenSelected: <DocsStdTypeTag type={docType} />,
+      labelWhenSelected: <DocsStdTypeTag mode="select" type={docType} />,
       value: docType.id,
     }));
 }

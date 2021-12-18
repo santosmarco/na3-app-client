@@ -1,9 +1,8 @@
-.TagContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .Tag {
   margin-right: 0;
+}
+
+.SelectMode {
+  display: flex;
+  align-items: center;
 }
