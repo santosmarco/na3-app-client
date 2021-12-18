@@ -8,7 +8,7 @@ const parserDictionary = {
   priority: "Prioridade",
   eta: "Previsão de entrega",
 
-  // General parsings
+  // General
   "application/pdf": ".pdf",
 
   // Levels of priority
@@ -74,6 +74,16 @@ const parserDictionary = {
   "maint-predprev-status": "Progresso",
   "maint-predprev-complete": "Entregue",
   "maint-predprev-edit": "Editada",
+
+  // DocsStd
+  // Types of event
+  acknowledge: "Confirmação de leitura",
+  approve: "Versão aprovada",
+  create: "Versão lançada",
+  download: "Download",
+  edit: "Versão editada",
+  reject: "Versão rejeitada",
+  upgrade: "Documento atualizado",
 };
 
 type StringId = keyof typeof parserDictionary;

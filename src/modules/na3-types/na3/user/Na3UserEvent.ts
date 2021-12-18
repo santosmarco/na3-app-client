@@ -22,6 +22,14 @@ type Na3UserEventMap = {
     category: "docs_std_manager";
     data: { docId: string };
   };
+  DOCS_STD_EDIT: {
+    category: "docs_std_manager";
+    data: { docId: string; comment: string };
+  };
+  DOCS_STD_UPGRADE: {
+    category: "docs_std_manager";
+    data: { docId: string; comment: string };
+  };
   SERVICE_ORDER_ACCEPT_SOLUTION: {
     category: "service_order_operator";
     data: { id: string; msFromDeliver: number | null };

@@ -5,6 +5,7 @@ export { useFileDownload } from "./useFileDownload";
 export type { UseFormReturn } from "./useForm";
 export { useForm } from "./useForm";
 export { useId } from "./useId";
+export { useModal } from "./useModal";
 export { usePdf } from "./usePdf";
 export { useQuery } from "./useQuery";
 export type { ThemeMode } from "./useTheme";

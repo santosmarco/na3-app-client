@@ -1,10 +1,15 @@
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  EditOutlined,
+  UpOutlined,
+} from "@ant-design/icons";
 import type { PdfViewerDocLoadEvent } from "@components";
 import {
   Divider,
   DocsStdAccessDeniedResult,
-  DocsStdEditButton,
   DocsStdInfo,
+  DocsStdModifyButton,
   DocsStdReadPendingAlert,
   DocsStdRejectButton,
   DocsStdViewPdfButton,
@@ -145,13 +150,18 @@ export function DocsStdDetailsPage({
 
   const handlePdfDocLoad = useCallback(
     ({ doc }: PdfViewerDocLoadEvent) => {
-      if (!userAcknowledgment && doc.numPages === 1) {
-        setTimeout(() => {
+      if (
+        docStatus === "approved" &&
+        !userAcknowledgment &&
+        doc.numPages === 1
+      ) {
+        const timeout = setTimeout(() => {
           void handleAcknowledgment();
+          clearTimeout(timeout);
         }, 2000);
       }
     },
-    [userAcknowledgment, handleAcknowledgment]
+    [docStatus, userAcknowledgment, handleAcknowledgment]
   );
 
   const handlePdfDownload = useCallback(() => {
@@ -392,8 +402,18 @@ export function DocsStdDetailsPage({
                 </>
               )}
 
-              {userPermissions.write && docStatus === "pending" && (
-                <DocsStdEditButton doc={doc} />
+              {userPermissions.write && (
+                <DocsStdModifyButton
+                  doc={doc}
+                  icon={
+                    docStatus === "pending" ? <EditOutlined /> : <UpOutlined />
+                  }
+                  upgrade={docStatus === "approved"}
+                >
+                  {docStatus === "pending"
+                    ? "Editar documento"
+                    : "Atualizar documento"}
+                </DocsStdModifyButton>
               )}
             </PageActionButtons>
 
@@ -404,6 +424,7 @@ export function DocsStdDetailsPage({
                 defaultOpen={breakpoint.lg}
                 doc={doc}
                 showPermissions={userPermissions.viewAdditionalInfo}
+                showTimeline={userPermissions.viewAdditionalInfo}
               />
 
               <Divider marginTop={12} />

@@ -15,7 +15,7 @@ import type { SidebarTab } from "@react-pdf-viewer/default-layout";
 import { defaultLayoutPlugin as createDefaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import pt_PT from "@react-pdf-viewer/locales/lib/pt_PT.json";
 import { SelectionMode } from "@react-pdf-viewer/selection-mode";
-import { Grid, Progress } from "antd";
+import { Button, Grid, Progress } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { PdfViewerWatermarkOptions } from "./components/PdfViewerPage/PdfViewerPage";
@@ -173,6 +173,11 @@ export function PdfViewer({
                   error?.message ||
                   loadError.message ||
                   "Não foi possível carregar o documento."
+                }
+                extra={
+                  <Button onClick={onNavigateBack || undefined} type="primary">
+                    Voltar
+                  </Button>
                 }
                 status="error"
                 title="Algo deu errado"

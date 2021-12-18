@@ -1,25 +1,37 @@
 import { Grid, Modal } from "antd";
 import React from "react";
 
-type FormModalProps = {
+type ModalWideProps = {
   visible: boolean;
   onClose: () => void;
   title: React.ReactNode;
   children: React.ReactNode;
+  footer?: React.ReactNode;
+  destroyOnClose?: boolean;
+  centered?: boolean;
 };
 
-export function FormModal({
+const defaultProps = {
+  destroyOnClose: true,
+  footer: null,
+};
+
+export function ModalWide({
   visible,
   onClose,
   title,
   children,
-}: FormModalProps): JSX.Element {
+  footer,
+  destroyOnClose,
+  centered,
+}: ModalWideProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
   return (
     <Modal
-      destroyOnClose={true}
-      footer={null}
+      centered={centered}
+      destroyOnClose={destroyOnClose}
+      footer={footer}
       onCancel={onClose}
       title={title}
       visible={visible}
@@ -29,3 +41,5 @@ export function FormModal({
     </Modal>
   );
 }
+
+ModalWide.defaultProps = defaultProps;

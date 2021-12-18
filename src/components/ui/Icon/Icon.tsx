@@ -50,7 +50,6 @@ export function Icon({
     return { color: colorValue };
   }, [color]);
 
-
   if (animated) {
     return (
       <Animated

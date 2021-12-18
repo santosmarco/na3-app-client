@@ -1,17 +1,23 @@
 import { EditOutlined } from "@ant-design/icons";
-import { DocsCreateStdForm, FormModal } from "@components";
+import { DocsCreateStdForm, ModalWide } from "@components";
 import { useNa3StdDocs } from "@modules/na3-react";
 import type { Na3StdDocument } from "@modules/na3-types";
 import { Button } from "antd";
 import React, { useCallback, useMemo, useState } from "react";
 
-type DocsStdEditButtonProps = {
+type DocsStdModifyButtonProps = {
   doc: Na3StdDocument;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+  upgrade?: boolean;
 };
 
-export function DocsStdEditButton({
+export function DocsStdModifyButton({
   doc,
-}: DocsStdEditButtonProps): JSX.Element {
+  children,
+  icon,
+  upgrade,
+}: DocsStdModifyButtonProps): JSX.Element {
   const [formIsVisible, setFormIsVisible] = useState(false);
 
   const {
@@ -31,27 +37,32 @@ export function DocsStdEditButton({
     setFormIsVisible(false);
   }, []);
 
-  const handleDocEdit = useCallback(() => {
-    return;
-  }, []);
+  const handleDocModify = useCallback(() => {
+    handleFormClose();
+  }, [handleFormClose]);
 
   return (
     <>
-      <Button icon={<EditOutlined />} onClick={handleFormOpen} type="primary">
-        Editar documento
+      <Button
+        icon={icon || <EditOutlined />}
+        onClick={handleFormOpen}
+        type="primary"
+      >
+        {children}
       </Button>
 
-      <FormModal
+      <ModalWide
         onClose={handleFormClose}
-        title="Teste"
+        title={children}
         visible={formIsVisible}
       >
         <DocsCreateStdForm
           editingDoc={doc}
-          onSubmit={handleDocEdit}
+          onSubmit={handleDocModify}
+          upgrade={upgrade}
           version={docVersion}
         />
-      </FormModal>
+      </ModalWide>
     </>
   );
 }

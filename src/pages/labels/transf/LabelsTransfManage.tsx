@@ -2,10 +2,11 @@ import {
   LabelsTransfList,
   LabelsTransfTemplateForm,
   ListFormPage,
+  ModalWide,
 } from "@components";
 import { useNa3TransfLabelTemplates } from "@modules/na3-react";
 import type { Na3TransfLabelTemplate } from "@modules/na3-types";
-import { Grid, Modal, notification } from "antd";
+import { Modal, notification } from "antd";
 import React, { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -14,7 +15,6 @@ export function LabelsTransfManagePage(): JSX.Element {
     useState<Na3TransfLabelTemplate>();
 
   const history = useHistory();
-  const breakpoint = Grid.useBreakpoint();
 
   const transfLabelTemplates = useNa3TransfLabelTemplates();
 
@@ -85,20 +85,17 @@ export function LabelsTransfManagePage(): JSX.Element {
         title="Etiquetas • Transferência"
       />
 
-      <Modal
-        destroyOnClose={true}
-        footer={null}
-        onCancel={handleCloseModal}
+      <ModalWide
+        onClose={handleCloseModal}
         title={selectedTemplate?.name.trim().toUpperCase()}
         visible={!!selectedTemplate}
-        width={breakpoint.lg ? "65%" : breakpoint.md ? "80%" : undefined}
       >
         <LabelsTransfTemplateForm
           editingTemplate={selectedTemplate}
           onDelete={handleDeleteTemplate}
           onSubmit={handleCloseModal}
         />
-      </Modal>
+      </ModalWide>
     </>
   );
 }

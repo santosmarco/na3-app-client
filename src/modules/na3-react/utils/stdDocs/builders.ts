@@ -16,12 +16,20 @@ export type StdDocBuilderData = Required<
 
 export function buildStdDocument(
   data: StdDocBuilderData,
-  origin: { device: Na3AppDevice; user: AppUser }
+  origin: { device: Na3AppDevice; user: AppUser },
+  options?: { versions?: Na3StdDocumentVersion[]; upgrade?: boolean }
 ): Omit<Na3StdDocument, "id"> {
   const creationEvent = buildStdDocumentEvents(
     { type: "create", payload: { comment: null } },
     origin
   );
+
+  const newVersion = {
+    createdAt: timestamp(),
+    id: nanoid(),
+    number: data.currentVersionNumber,
+    events: [creationEvent],
+  };
 
   const doc: Omit<Na3StdDocument, "id"> = {
     code: data.code,
@@ -31,14 +39,11 @@ export function buildStdDocument(
     timeBetweenRevisionsMs: data.timeBetweenRevisionsMs,
     title: data.title.trim(),
     type: data.type,
-    versions: [
-      {
-        createdAt: timestamp(),
-        id: nanoid(),
-        number: data.currentVersionNumber,
-        events: [creationEvent],
-      },
-    ],
+    versions: options?.versions
+      ? options.upgrade
+        ? [...options.versions, newVersion]
+        : options.versions
+      : [newVersion],
   };
 
   return doc;

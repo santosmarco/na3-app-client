@@ -15,4 +15,6 @@ export const NA3_USER_EVENT_CATEGORY_MAP: Record<
   DOCS_STD_DOWNLOAD: "docs_std_consumer",
   DOCS_STD_APPROVE: "docs_std_approver",
   DOCS_STD_REJECT: "docs_std_approver",
+  DOCS_STD_EDIT: "docs_std_manager",
+  DOCS_STD_UPGRADE: "docs_std_manager",
 };

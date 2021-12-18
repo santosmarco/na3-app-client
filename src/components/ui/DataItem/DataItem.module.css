@@ -5,10 +5,6 @@
   margin-bottom: 8px;
 }
 
-.DataMarginBottom {
-  margin-bottom: 22px;
-}
-
 /* up to md */
 @media screen and (max-width: 768px) {
   .DataLabel {

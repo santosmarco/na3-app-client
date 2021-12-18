@@ -3,6 +3,7 @@ export * from "./datetime";
 export * from "./device";
 export * from "./errors/na3Errors";
 export * from "./firebase/firestore";
+export * from "./firebase/storage";
 export * from "./maintProjects/maintProjects";
 export * from "./reports";
 export * from "./serviceOrders/builders";

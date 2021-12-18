@@ -417,9 +417,9 @@ export function MaintServiceOrderDetailsPage({
       <Divider />
 
       <Page scrollTopOffset={24}>
-        <Row gutter={12}>
+        <Row gutter={[12, 12]}>
           <Col lg={6} xs={12}>
-            <DataItem label="Status" marginBottom={!breakpoint.lg}>
+            <DataItem label="Status">
               <ServiceOrderStatusBadge status={serviceOrder.status} />
             </DataItem>
           </Col>
@@ -457,9 +457,9 @@ export function MaintServiceOrderDetailsPage({
 
         <Divider />
 
-        <Row gutter={12}>
+        <Row gutter={[12, 12]}>
           <Col lg={6} xs={8}>
-            <DataItem label="Tipo" marginBottom={!breakpoint.lg}>
+            <DataItem label="Tipo">
               {parseStringId(serviceOrder.maintenanceType)}
             </DataItem>
           </Col>
@@ -512,12 +512,9 @@ export function MaintServiceOrderDetailsPage({
 
         <Divider />
 
-        <Row gutter={12}>
+        <Row gutter={[12, 12]}>
           <Col lg={12} xs={24}>
-            <DataItem
-              label="Informações adicionais"
-              marginBottom={!breakpoint.lg}
-            >
+            <DataItem label="Informações adicionais">
               {serviceOrder.additionalInfo ? (
                 <em>{serviceOrder.additionalInfo}</em>
               ) : (

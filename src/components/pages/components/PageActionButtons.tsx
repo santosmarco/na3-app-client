@@ -26,15 +26,15 @@ export function PageActionButtons({
       {left && right && (
         <>
           <div>
-            <Space>{left}</Space>
+            <Space wrap={true}>{left}</Space>
           </div>
           <div>
-            <Space>{right}</Space>
+            <Space wrap={true}>{right}</Space>
           </div>
         </>
       )}
 
-      {children && <Space>{children}</Space>}
+      {children && <Space wrap={true}>{children}</Space>}
     </Row>
   );
 }

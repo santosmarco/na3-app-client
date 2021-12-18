@@ -1,7 +1,7 @@
 import labelLayout from "@assets/labelsTransfLayout.svg";
-import { Divider } from "@components";
+import { Divider, ModalWide } from "@components";
 import type { Na3ApiLabel } from "@modules/na3-types";
-import { Grid, Modal, Typography } from "antd";
+import { Grid, Typography } from "antd";
 import barcode from "jsbarcode";
 import QrCode from "qrcode";
 import React, { useCallback, useMemo, useState } from "react";
@@ -107,9 +107,8 @@ export function LabelsTransfPreview({
   );
 
   return (
-    <Modal
+    <ModalWide
       centered={true}
-      destroyOnClose={true}
       footer={
         <PreviewFooter
           onCancel={onCancel}
@@ -117,10 +116,9 @@ export function LabelsTransfPreview({
           onSave={handleSave}
         />
       }
-      onCancel={onCancel}
+      onClose={onCancel}
       title="Pré-visualização"
       visible={!!label}
-      width={breakpoint.lg ? "65%" : breakpoint.md ? "80%" : undefined}
     >
       {label && (
         <>
@@ -167,6 +165,6 @@ export function LabelsTransfPreview({
           </div>
         </>
       )}
-    </Modal>
+    </ModalWide>
   );
 }

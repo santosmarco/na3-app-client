@@ -1,5 +1,5 @@
 import type { UploadFile } from "@components";
-import { Divider, Form, FormField, SubmitButton } from "@components";
+import { Divider, Form, FormField, PageAlert, SubmitButton } from "@components";
 import { DEFAULT_APPROVER_POS_IDS } from "@config";
 import { useForm } from "@hooks";
 import { useNa3StdDocs } from "@modules/na3-react";
@@ -20,6 +20,7 @@ type DocsCreateStdFormProps = {
   onSubmit?: () => void;
   editingDoc?: Na3StdDocument;
   version?: Na3StdDocumentVersion;
+  upgrade?: boolean;
 };
 
 type FormValues = {
@@ -31,6 +32,7 @@ type FormValues = {
   title: string;
   type: Na3StdDocumentTypeId | "";
   versionNumber: string;
+  comment: string;
 };
 
 const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
@@ -39,6 +41,7 @@ export function DocsCreateStdForm({
   onSubmit,
   editingDoc,
   version,
+  upgrade,
 }: DocsCreateStdFormProps): JSX.Element {
   const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>(
     editingDoc?.permissions.read || []
@@ -54,7 +57,7 @@ export function DocsCreateStdForm({
   );
 
   const {
-    helpers: { createDocument },
+    helpers: { createDocument, editDocumentVersion, upgradeDocument },
   } = useNa3StdDocs();
 
   const form = useForm<FormValues>({
@@ -67,8 +70,11 @@ export function DocsCreateStdForm({
       title: editingDoc?.title || "",
       type: editingDoc?.type || "",
       nextRevisionAt: editingDoc?.nextRevisionAt || "",
-      versionNumber: version?.number ? (version.number + 1).toString() : "",
+      versionNumber: version?.number
+        ? (upgrade ? version.number + 1 : version.number).toString()
+        : "",
       fileList: [],
+      comment: "",
     },
   });
 
@@ -87,16 +93,22 @@ export function DocsCreateStdForm({
 
   const handleSubmit = useCallback(
     (formValues: FormValues) => {
-      const notifyError = createErrorNotifier("Erro ao criar o documento");
+      const notifyError = createErrorNotifier(
+        `Erro ao ${
+          editingDoc ? "editar" : upgrade ? "atualizar" : "criar"
+        } o documento`
+      );
 
       const confirmModal = Modal.confirm({
         content: (
           <>
-            Confirma a criação do documento {`"${formValues.title.trim()}"`}{" "}
+            Confirma a{" "}
+            {editingDoc ? "edição" : upgrade ? "atualização" : "criação"} do
+            documento {`"${formValues.title.trim()}"`}{" "}
             <em>(v.{formValues.versionNumber})</em>?
           </>
         ),
-        okText: "Criar",
+        okText: editingDoc ? "Editar" : upgrade ? "Atualizar" : "Criar",
         onOk: async () => {
           if (formValues.type === "") {
             notifyError("Atribua um tipo ao documento.");
@@ -114,7 +126,7 @@ export function DocsCreateStdForm({
 
           const titleTrimmed = formValues.title.trim();
 
-          const operationRes = await createDocument({
+          const docData = {
             code: formValues.code,
             title: titleTrimmed,
             description: formValues.description.trim(),
@@ -129,11 +141,15 @@ export function DocsCreateStdForm({
               download: downloaderPosIds,
               approve: approverPosIds,
             },
-            file: {
-              ...formValues.fileList[0].originFileObj,
-              name: `${titleTrimmed}_v${formValues.versionNumber}`,
-            },
-          });
+            file: formValues.fileList[0].originFileObj,
+            comment: formValues.comment.trim(),
+          };
+
+          const operationRes = await (editingDoc
+            ? upgrade
+              ? upgradeDocument(editingDoc.id, docData)
+              : editDocumentVersion(editingDoc.id, docData)
+            : createDocument(docData));
 
           if (operationRes.error) {
             notifyError(operationRes.error.message);
@@ -142,17 +158,23 @@ export function DocsCreateStdForm({
               description: (
                 <>
                   Documento {`"${formValues.title.trim()}"`}{" "}
-                  <em>(v.{formValues.versionNumber})</em> criado com sucesso!
+                  <em>(v.{formValues.versionNumber})</em>{" "}
+                  {editingDoc ? "editado" : upgrade ? "atualizado" : "criado"}{" "}
+                  com sucesso!
                 </>
               ),
-              message: "Documento criado",
+              message: `Documento ${
+                editingDoc ? "editado" : upgrade ? "atualizado" : "criado"
+              }`,
             });
 
             form.resetForm();
             onSubmit?.();
           }
         },
-        title: "Criar documento?",
+        title: `${
+          editingDoc ? "Editar" : upgrade ? "Atualizar" : "Criar"
+        } documento?`,
       });
     },
     [
@@ -161,8 +183,12 @@ export function DocsCreateStdForm({
       printerPosIds,
       downloaderPosIds,
       approverPosIds,
+      editingDoc,
+      upgrade,
       onSubmit,
       createDocument,
+      editDocumentVersion,
+      upgradeDocument,
     ]
   );
 
@@ -172,6 +198,29 @@ export function DocsCreateStdForm({
       onSubmit={handleSubmit}
       requiredPrivileges={["docs_std_write_new"]}
     >
+      {editingDoc && (
+        <PageAlert>
+          {upgrade ? (
+            <>
+              <strong>Atenção!</strong> Ao salvar suas alterações, uma nova
+              versão para esse documento será criada. A versão atual continuará
+              sendo mostrada aos usuários até que esta seja aprovada.
+            </>
+          ) : (
+            <>
+              <div>
+                Esta versão ainda não foi aprovada. Suas edições serão salvas
+                sobre o documento atual.
+              </div>
+              <div>
+                Se você deseja atualizar esse documento, por favor, aguarde sua
+                aprovação.
+              </div>
+            </>
+          )}
+        </PageAlert>
+      )}
+
       <Row gutter={16}>
         <Col lg={16} md={14} sm={12} xl={18} xs={24} xxl={20}>
           <FormField
@@ -308,7 +357,29 @@ export function DocsCreateStdForm({
 
       <Divider />
 
-      <SubmitButton label="Criar documento" labelWhenLoading="Enviando..." />
+      <FormField
+        hidden={!editingDoc}
+        label="Comentário"
+        name={form.fieldNames.comment}
+        required={!!editingDoc}
+        rules={{
+          required: editingDoc && "Comente as alterações propostas",
+        }}
+        type="textArea"
+      />
+
+      {editingDoc && <Divider />}
+
+      <SubmitButton
+        label={
+          editingDoc
+            ? "Salvar alterações"
+            : upgrade
+            ? "Enviar atualização"
+            : "Criar documento"
+        }
+        labelWhenLoading="Enviando..."
+      />
     </Form>
   );
 }

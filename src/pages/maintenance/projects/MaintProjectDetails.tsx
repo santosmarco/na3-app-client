@@ -13,6 +13,7 @@ import {
   MaintProjectStatusBadge,
   MaintProjectTimeline,
   MaintProjectTimeRemaining,
+  ModalWide,
   Page,
   PageActionButtons,
   PageAlert,
@@ -248,9 +249,9 @@ export function MaintProjectDetails({
       <Divider />
 
       <Page preventScroll={breakpoint.lg} scrollTopOffset={24}>
-        <Row gutter={12}>
+        <Row gutter={[12, 12]}>
           <Col lg={6} xs={12}>
-            <DataItem label="Status" marginBottom={!breakpoint.lg}>
+            <DataItem label="Status">
               <MaintProjectStatusBadge
                 isPredPrev={isPredPrev}
                 status={projectStatus || "running"}
@@ -332,20 +333,17 @@ export function MaintProjectDetails({
         type={actionModalType || "status"}
       />
 
-      <Modal
-        destroyOnClose={true}
-        footer={null}
-        onCancel={handleEditModalClose}
+      <ModalWide
+        onClose={handleEditModalClose}
         title="Editar projeto"
         visible={editModalIsOpen}
-        width={breakpoint.lg ? "65%" : breakpoint.md ? "80%" : undefined}
       >
         <MaintCreateProjectForm
           editingProject={project}
           isPredPrev={isPredPrev}
           onSubmit={handleEditModalClose}
         />
-      </Modal>
+      </ModalWide>
     </>
   ) : (
     <Result404

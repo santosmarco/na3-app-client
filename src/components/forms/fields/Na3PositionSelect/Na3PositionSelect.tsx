@@ -197,7 +197,7 @@ export function Na3PositionSelect({
   return (
     <>
       {positionFields.map((field, idx) => (
-        <Row gutter={{ xs: 6, sm: 6, md: 6, lg: 16 }} key={field.id}>
+        <Row gutter={{ xs: 3, sm: 4, md: 6, lg: 10 }} key={field.id}>
           <Col span={12}>
             <FormField
               defaultHelp={

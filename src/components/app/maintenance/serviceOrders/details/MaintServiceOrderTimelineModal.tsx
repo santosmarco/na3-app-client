@@ -1,8 +1,8 @@
 import type { TimelineItemProps } from "@components";
-import { Timeline, UserTag } from "@components";
+import { ModalWide, Timeline, UserTag } from "@components";
 import type { Na3ServiceOrderEvent } from "@modules/na3-types";
 import { getMaintPersonDisplayName, parseStringId } from "@utils";
-import { Grid, Modal, Space } from "antd";
+import { Space } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 
@@ -17,15 +17,12 @@ export function MaintServiceOrderTimelineModal({
   events,
   onClose,
 }: MaintServiceOrderTimelineModalProps): JSX.Element {
-  const breakpoint = Grid.useBreakpoint();
-
   return (
-    <Modal
-      footer={null}
-      onCancel={onClose}
+    <ModalWide
+      destroyOnClose={false}
+      onClose={onClose}
       title="Histórico"
       visible={isVisible}
-      width={breakpoint.lg ? "65%" : breakpoint.md ? "80%" : undefined}
     >
       <Timeline
         items={events
@@ -53,7 +50,7 @@ export function MaintServiceOrderTimelineModal({
             })
           )}
       />
-    </Modal>
+    </ModalWide>
   );
 }
 

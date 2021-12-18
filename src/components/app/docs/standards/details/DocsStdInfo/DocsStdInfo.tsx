@@ -1,6 +1,7 @@
 import {
   CheckOutlined,
   DownloadOutlined,
+  HistoryOutlined,
   InfoCircleOutlined,
   PrinterOutlined,
   ReadOutlined,
@@ -22,17 +23,20 @@ import React, { useMemo } from "react";
 import { DocsStdAvatarGroup } from "./DocsStdAvatarGroup";
 import classes from "./DocsStdInfo.module.css";
 import { DocsStdPermissionsData } from "./DocsStdPermissionsData";
+import { DocsStdTimeline } from "./DocsStdTimeline";
 
 type DocsStdInfoProps = {
   doc: Na3StdDocument;
   defaultOpen?: boolean;
   showPermissions?: boolean;
+  showTimeline?: boolean;
 };
 
 export function DocsStdInfo({
   doc,
   defaultOpen,
   showPermissions,
+  showTimeline,
 }: DocsStdInfoProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
 
@@ -65,22 +69,30 @@ export function DocsStdInfo({
           header: "Informações",
           icon: <InfoCircleOutlined />,
           content: (
-            <Row>
-              <Col lg={3} xs={8}>
-                <DataItem label="Tipo" marginBottom={!breakpoint.lg}>
+            <Row gutter={[12, 12]}>
+              <Col lg={3} xs={12}>
+                <DataItem label="Tipo">
                   <div className={classes.DocData}>
                     <DocsStdTypeTag short={true} type={doc.type} />
                   </div>
                 </DataItem>
               </Col>
 
-              <Col lg={3} xs={8}>
-                <DataItem label="Código" marginBottom={!breakpoint.lg}>
-                  <div className={classes.DocData}>{doc.code}</div>
+              <Col lg={3} xs={12}>
+                <DataItem label={breakpoint.lg ? "Código" : "Código/Versão"}>
+                  <div className={classes.DocData}>
+                    {doc.code}
+                    {!breakpoint.lg && docVersion && (
+                      <>
+                        {" "}
+                        / <em>v.{docVersion.number}</em>
+                      </>
+                    )}
+                  </div>
                 </DataItem>
               </Col>
 
-              <Col lg={3} xs={8}>
+              <Col lg={3} xs={0}>
                 <DataItem label="Versão">
                   <div className={classes.DocData}>
                     <em>
@@ -91,7 +103,7 @@ export function DocsStdInfo({
               </Col>
 
               <Col lg={3} xs={12}>
-                <DataItem label="Status" marginBottom={!breakpoint.lg}>
+                <DataItem label="Status">
                   <div className={classes.DocData}>
                     <DocsStdStatusBadge
                       status={getDocumentStatus(doc)}
@@ -151,7 +163,7 @@ export function DocsStdInfo({
           header: "Permissões",
           icon: <UnlockOutlined />,
           content: (
-            <Row>
+            <Row gutter={[12, 12]}>
               <DocsStdPermissionsData
                 doc={doc}
                 icon={<ReadOutlined />}
@@ -181,6 +193,12 @@ export function DocsStdInfo({
               />
             </Row>
           ),
+        },
+
+        showTimeline && {
+          header: "Histórico",
+          icon: <HistoryOutlined />,
+          content: <DocsStdTimeline doc={doc} />,
         },
       ]}
     />

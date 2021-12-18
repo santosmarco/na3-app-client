@@ -12,7 +12,7 @@ import type {
 import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
 import dayjs from "dayjs";
 import { addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
 
 import type {
@@ -28,6 +28,7 @@ import {
   buildStdDocumentEvents,
   buildStdDocumentUrl,
   getCollection,
+  getFolder,
   handleFilterFalsies,
 } from "../utils";
 import { useNa3Users } from "./useNa3Users";
@@ -112,6 +113,14 @@ type UseNa3StdDocsResult = StdDocsState & {
         Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
       >
     >;
+    editDocumentVersion: (
+      docId: string,
+      data: StdDocBuilderData & { file: File; comment: string }
+    ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
+    upgradeDocument: (
+      docId: string,
+      data: StdDocBuilderData & { file: File; comment: string }
+    ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
   };
 };
 
@@ -126,6 +135,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   } = useNa3Users();
 
   const fbCollectionRef = useRef(getCollection("docs-std", environment));
+  const fbStorageRef = useRef(getFolder("docs-std", environment));
 
   const getDocumentById = useCallback(
     (docId: string) => {
@@ -279,7 +289,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
       try {
         const url = await getDownloadURL(
-          ref(getStorage(), buildStdDocumentUrl(doc, latestVersion))
+          ref(fbStorageRef.current, buildStdDocumentUrl(doc, latestVersion))
         );
 
         return { error: null, data: url };
@@ -388,7 +398,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
         await uploadBytes(
           ref(
-            getStorage(),
+            fbStorageRef.current,
             buildStdDocumentUrl(addedDocument, addedDocument.versions[0])
           ),
           data.file
@@ -536,6 +546,101 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [pushVersionEvent, currentUser]
   );
 
+  const modifyDocument = useCallback(
+    async (
+      docId: string,
+      data: StdDocBuilderData & { file: File; comment: string },
+      options?: { upgrade?: boolean }
+    ): Promise<FirebaseOperationResult<Na3StdDocument>> => {
+      if (!currentUser) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
+      const docToModify = getDocumentById(docId);
+      if (!docToModify) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+        };
+      }
+
+      const docOverwrite = buildStdDocument(
+        data,
+        { device, user: currentUser },
+        { versions: docToModify.versions, upgrade: options?.upgrade }
+      );
+
+      const trimmedComment = data.comment.trim();
+
+      try {
+        await pushVersionEvent(docId, {
+          type: options?.upgrade ? "upgrade" : "edit",
+          payload: { comment: trimmedComment },
+        });
+
+        await updateDoc(doc(fbCollectionRef.current, docId), docOverwrite);
+
+        const updatedDoc = { ...docOverwrite, id: docId };
+
+        const docLatestVersion = getDocumentLatestVersion(updatedDoc);
+        if (!docLatestVersion) {
+          return {
+            data: null,
+            error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+          };
+        }
+
+        await uploadBytes(
+          ref(
+            fbStorageRef.current,
+            buildStdDocumentUrl(updatedDoc, docLatestVersion)
+          ),
+          data.file
+        );
+
+        const eventData = { docId, comment: trimmedComment };
+        if (options?.upgrade) {
+          void currentUser.registerEvents({ DOCS_STD_UPGRADE: eventData });
+        } else {
+          void currentUser.registerEvents({ DOCS_STD_EDIT: eventData });
+        }
+
+        return { data: updatedDoc, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
+      }
+    },
+    [
+      currentUser,
+      device,
+      getDocumentById,
+      getDocumentLatestVersion,
+      pushVersionEvent,
+    ]
+  );
+
+  const editDocumentVersion = useCallback(
+    async (
+      docId: string,
+      data: StdDocBuilderData & { file: File; comment: string }
+    ) => modifyDocument(docId, data, { upgrade: false }),
+    [modifyDocument]
+  );
+
+  const upgradeDocument = useCallback(
+    async (
+      docId: string,
+      data: StdDocBuilderData & { file: File; comment: string }
+    ) => modifyDocument(docId, data, { upgrade: true }),
+    [modifyDocument]
+  );
+
   return {
     ...stdDocs,
     helpers: {
@@ -558,6 +663,8 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       registerDownload,
       approveDocumentVersion,
       rejectDocumentVersion,
+      editDocumentVersion,
+      upgradeDocument,
     },
   };
 }
