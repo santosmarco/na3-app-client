@@ -6,7 +6,7 @@ import React, { useMemo } from "react";
 import type { FieldStatus } from "../../FormField/FormField";
 import classes from "./FieldHelp.module.css";
 
-type FieldHelpProps = {
+export type FieldHelpProps = {
   contentWhenDisabled: React.ReactNode | undefined;
   contentWhenLoading: React.ReactNode | undefined;
   contentWhenValid: React.ReactNode | undefined;
@@ -75,8 +75,8 @@ export function FieldHelp({
       );
     case "untouched":
     default:
-      return (
+      return defaultContent ? (
         <Typography.Text type={textType}>{defaultContent}</Typography.Text>
-      );
+      ) : null;
   }
 }
