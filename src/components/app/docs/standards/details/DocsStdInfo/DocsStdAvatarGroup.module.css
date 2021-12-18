@@ -1,3 +1,5 @@
-.NoUsers {
+.Container {
   height: 32px;
+  display: flex;
+  align-items: center;
 }

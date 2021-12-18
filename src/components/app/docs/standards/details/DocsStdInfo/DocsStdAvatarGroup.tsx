@@ -42,16 +42,20 @@ export function DocsStdAvatarGroup({
     []
   );
 
-  return data.length > 0 ? (
-    <UserAvatarGroup
-      data={data}
-      maxCount={5}
-      onTooltipProps={handleTooltip}
-      type="initials"
-    />
-  ) : (
-    <Typography.Text className={classes.NoUsers} italic={true} type="secondary">
-      Nenhum usuário...
-    </Typography.Text>
+  return (
+    <div className={classes.Container}>
+      {data.length > 0 ? (
+        <UserAvatarGroup
+          data={data}
+          maxCount={5}
+          onTooltipProps={handleTooltip}
+          type="initials"
+        />
+      ) : (
+        <Typography.Text italic={true} type="secondary">
+          Nenhum usuário...
+        </Typography.Text>
+      )}
+    </div>
   );
 }
