@@ -14,6 +14,7 @@ type DocsStdPermissionsDataProps = {
   permissionId: keyof Na3StdDocumentPermissions;
   label: string;
   icon: React.ReactNode;
+  wrapperClassName?: string;
 };
 
 export function DocsStdPermissionsData({
@@ -21,6 +22,7 @@ export function DocsStdPermissionsData({
   permissionId,
   label,
   icon,
+  wrapperClassName,
 }: DocsStdPermissionsDataProps): JSX.Element {
   const {
     helpers: { getPositionsById },
@@ -53,7 +55,9 @@ export function DocsStdPermissionsData({
         }}
         label={label}
       >
-        <DocsStdAvatarGroup data={usersWithPermission} />
+        <div className={wrapperClassName}>
+          <DocsStdAvatarGroup data={usersWithPermission} />
+        </div>
       </DataItem>
     </Col>
   );
