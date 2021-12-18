@@ -260,6 +260,7 @@ export function DocsCreateStdForm({
         errorMessage="Defina as posições com permissão de visualização"
         name="visualização"
         onValueChange={setViewerPosIds}
+        required={true}
         verb="visualizar"
       />
 
@@ -286,6 +287,7 @@ export function DocsCreateStdForm({
         disabled={true}
         name="aprovação"
         onValueChange={setApproverPosIds}
+        required={true}
         verb="aprovar"
       />
 

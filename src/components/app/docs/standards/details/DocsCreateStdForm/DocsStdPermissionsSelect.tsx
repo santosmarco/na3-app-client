@@ -14,6 +14,10 @@ type DocsStdPermissionsSelectProps = {
   errorMessage?: string;
 };
 
+const defaultProps = {
+  required: false,
+};
+
 export function DocsStdPermissionsSelect({
   name,
   verb,
@@ -51,3 +55,5 @@ export function DocsStdPermissionsSelect({
     </Row>
   );
 }
+
+DocsStdPermissionsSelect.defaultProps = defaultProps;
