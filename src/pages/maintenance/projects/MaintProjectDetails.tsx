@@ -189,7 +189,10 @@ export function MaintProjectDetails({
 
   return project ? (
     <>
-      <PageTitle pre={formatInternalId(project.internalId)}>
+      <PageTitle
+        pre={formatInternalId(project.internalId)}
+        tooltip={user?.isSuper && `ID: ${project.id}`}
+      >
         {project.title}
       </PageTitle>
 

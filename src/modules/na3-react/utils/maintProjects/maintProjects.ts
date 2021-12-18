@@ -109,7 +109,14 @@ export function buildMaintProjectEvents(
   function buildOneEvent(
     config: MaintProjectEventBuilderData
   ): Na3MaintenanceProjectEvent {
-    return { ...config, ...payload, timestamp: Timestamp.now() };
+    return {
+      ...config,
+      author: {
+        uid: payload.author.uid,
+        displayName: payload.author.displayName,
+      },
+      timestamp: Timestamp.now(),
+    };
   }
 
   if (!("length" in eventOrEvents)) {

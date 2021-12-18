@@ -14,7 +14,7 @@ export type Na3MaintenanceProjectEvent = {
   | { type: "create" }
 );
 
-type Na3MaintenanceProjectBase = {
+export type Na3MaintenanceProject = {
   description: string;
   eta: Timestamp;
   events: Na3MaintenanceProjectEvent[];
@@ -26,19 +26,9 @@ type Na3MaintenanceProjectBase = {
     others: Array<Na3MaintenancePerson | string> | /* Legacy: */ string;
   };
   title: string;
-};
 
-export type Na3MaintenanceProjectGeneral = Na3MaintenanceProjectBase & {
-  isPredPrev: false | null;
+  isPredPrev?: boolean | null;
 };
-
-export type Na3MaintenanceProjectPredPrev = Na3MaintenanceProjectBase & {
-  isPredPrev: true;
-};
-
-export type Na3MaintenanceProject =
-  | Na3MaintenanceProjectGeneral
-  | Na3MaintenanceProjectPredPrev;
 
 export type Na3MaintenanceProjectChangeKey =
   | "description"
@@ -57,19 +47,17 @@ export type Na3MaintenanceProjectChange<
   Key extends Na3MaintenanceProjectChangeKey = Na3MaintenanceProjectChangeKey
 > = {
   description: Na3MaintenanceProjectChangeBody<
-    Na3MaintenanceProjectBase["description"]
+    Na3MaintenanceProject["description"]
   >;
-  eta: Na3MaintenanceProjectChangeBody<Na3MaintenanceProjectBase["eta"]>;
-  priority: Na3MaintenanceProjectChangeBody<
-    Na3MaintenanceProjectBase["priority"]
-  >;
+  eta: Na3MaintenanceProjectChangeBody<Na3MaintenanceProject["eta"]>;
+  priority: Na3MaintenanceProjectChangeBody<Na3MaintenanceProject["priority"]>;
   teamManager: Na3MaintenanceProjectChangeBody<
-    Na3MaintenanceProjectBase["team"]["manager"]
+    Na3MaintenanceProject["team"]["manager"]
   >;
   teamOthers: Na3MaintenanceProjectChangeBody<
-    Na3MaintenanceProjectBase["team"]["others"]
+    Na3MaintenanceProject["team"]["others"]
   >;
-  title: Na3MaintenanceProjectChangeBody<Na3MaintenanceProjectBase["title"]>;
+  title: Na3MaintenanceProjectChangeBody<Na3MaintenanceProject["title"]>;
 }[Key];
 
 export type Na3MaintenanceProjectEditEventChanges = Partial<{

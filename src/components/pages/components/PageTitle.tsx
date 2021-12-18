@@ -1,6 +1,6 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Divider } from "@components";
-import { Button, Grid } from "antd";
+import { Button, Grid, Tooltip } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -10,12 +10,14 @@ type PageTitleProps = {
   children?: React.ReactNode;
   icon?: React.ReactNode;
   pre?: React.ReactNode;
+  tooltip?: React.ReactNode;
 };
 
 export function PageTitle({
   icon,
   pre,
   children,
+  tooltip,
 }: PageTitleProps): JSX.Element {
   const history = useHistory();
 
@@ -40,7 +42,13 @@ export function PageTitle({
       )}
 
       <Divider icon={icon} marginTop={0} pre={pre}>
-        {children}
+        <Tooltip
+          placement="topLeft"
+          title={typeof tooltip === "string" ? <em>{tooltip}</em> : tooltip}
+          visible={tooltip ? undefined : false}
+        >
+          {children}
+        </Tooltip>
       </Divider>
     </div>
   );

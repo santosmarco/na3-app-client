@@ -6,10 +6,14 @@ import type {
   Na3MaintenanceProjectEditEventChanges,
   Na3MaintenanceProjectStatus,
 } from "@modules/na3-types";
-import { isMaintProjectEditEventChangeKey } from "@utils";
 import dayjs from "dayjs";
-import type { FieldValue } from "firebase/firestore";
-import { addDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  doc,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
 import type { FirebaseDocOperationResult } from "../types";
@@ -253,13 +257,10 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
 
         const docChanges: Na3MaintenanceProjectEditEventChanges = {};
         Object.keys(updateData).forEach((key) => {
-          if (!isMaintProjectEditEventChangeKey(key)) {
-            return;
-          }
-
           switch (key) {
             case "title":
             case "description":
+              // Check for title and description.
               if (updateData[key] !== projectToUpdate[key]) {
                 docChanges[key] = {
                   old: projectToUpdate[key],
@@ -268,6 +269,7 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
               }
               break;
             case "priority":
+              // Check for priority.
               if (updateData[key] !== projectToUpdate[key]) {
                 docChanges[key] = {
                   old: projectToUpdate[key],
@@ -275,16 +277,40 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
                 };
               }
               break;
-            case "teamManager":
-              if (updateData.team.manager !== projectToUpdate.team.manager) {
+            case "team":
+              // Check for teamManager.
+              if (
+                updateData.team.manager.uid !==
+                (typeof projectToUpdate.team.manager === "string"
+                  ? projectToUpdate.team.manager
+                  : projectToUpdate.team.manager.uid)
+              ) {
                 docChanges.teamManager = {
                   old: projectToUpdate.team.manager,
                   new: updateData.team.manager,
                 };
               }
-              break;
-            case "teamOthers":
-              if (updateData.team.members !== projectToUpdate.team.others) {
+              // Check for teamOthers.
+              if (
+                updateData.team.members.some(
+                  (updatedMember) =>
+                    !(
+                      typeof projectToUpdate.team.others === "string"
+                        ? []
+                        : projectToUpdate.team.others
+                    )
+                      .map((oldMember) =>
+                        typeof oldMember === "string"
+                          ? oldMember
+                          : oldMember.uid
+                      )
+                      .includes(
+                        typeof updatedMember === "string"
+                          ? updatedMember
+                          : updatedMember.uid
+                      )
+                )
+              ) {
                 docChanges.teamOthers = {
                   old: projectToUpdate.team.others,
                   new: updateData.team.members,
@@ -292,10 +318,15 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
               }
               break;
             case "eta":
-              if (!updateData.eta.isSame(projectToUpdate.eta.toDate())) {
-                docChanges.teamOthers = {
-                  old: dayjs(projectToUpdate.eta.toDate()).format(),
-                  new: dayjs(updateData.eta).format(),
+              // Check for ETA.
+              if (
+                !dayjs(updateData.eta)
+                  .startOf("day")
+                  .isSame(dayjs(projectToUpdate.eta.toDate()).startOf("day"))
+              ) {
+                docChanges.eta = {
+                  old: projectToUpdate.eta,
+                  new: Timestamp.fromDate(updateData.eta.toDate()),
                 };
               }
               break;
@@ -307,18 +338,24 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
           { author: updateData.author }
         );
 
-        if (projectToUpdate.events[0].author !== updateData.author) {
+        const docCreator = projectToUpdate.events[0].author;
+
+        if (
+          typeof docCreator === "string"
+            ? docCreator
+            : docCreator.uid !== updateData.author.uid
+        ) {
           await updateDoc(docRef, {
             ...updated,
             // For some reason, Firebase doesn't let us set isPredPrev to false,
             // so we have to force it.
-            isPredPrev: (updated.isPredPrev || false) as unknown as FieldValue,
             events: [
               buildMaintProjectEvents(
                 { type: "create" },
                 { author: updateData.author }
               ),
               ...projectToUpdate.events.slice(1),
+              editEvent,
             ],
           });
         } else {
@@ -326,7 +363,6 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
             ...updated,
             // For some reason, Firebase doesn't let us set isPredPrev to false,
             // so we have to force it.
-            isPredPrev: (updated.isPredPrev || false) as unknown as FieldValue,
             events: arrayUnion(editEvent),
           });
         }
