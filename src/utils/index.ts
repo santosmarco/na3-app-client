@@ -1,4 +1,5 @@
 export * from "./arrays";
+export * from "./colors";
 export * from "./datetime";
 export * from "./device";
 export * from "./formatters";

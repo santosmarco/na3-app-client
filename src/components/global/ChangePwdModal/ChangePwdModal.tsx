@@ -1,8 +1,8 @@
-import { gold } from "@ant-design/colors";
 import { LockOutlined } from "@ant-design/icons";
 import { Form, FormField, FormItem, SubmitButton } from "@components";
 import { useForm } from "@hooks";
 import { useCurrentUser } from "@modules/na3-react";
+import { getStatusColor } from "@utils";
 import {
   Alert,
   message,
@@ -242,7 +242,9 @@ export function ChangePwdModal(): JSX.Element {
               showInfo={isPwdStrong}
               size="small"
               status={isPwdStrong ? "success" : "active"}
-              strokeColor={!isPwdRegular ? gold[6] : undefined}
+              strokeColor={
+                !isPwdRegular ? getStatusColor("warning") : undefined
+              }
             />
           </div>
           <Typography.Text

@@ -1,6 +1,7 @@
 import * as colors from "@ant-design/colors";
 import { CheckCircleTwoTone } from "@ant-design/icons";
 import type { Na3UserAchievement } from "@modules/na3-types";
+import { getStatusColor } from "@utils";
 import type { PopoverProps } from "antd";
 import { Badge, Popover } from "antd";
 import React, { useMemo } from "react";
@@ -69,7 +70,7 @@ export function Achievement({
           ) : achievement.achieved ? (
             <CheckCircleTwoTone
               className={classes.AchievementBadgeIcon}
-              twoToneColor={colors.green.primary}
+              twoToneColor={getStatusColor("success")}
             />
           ) : (
             0
