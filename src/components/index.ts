@@ -1,3 +1,6 @@
+export type { AnimatedProps } from "./animations/Animated";
+export { Animated } from "./animations/Animated";
+export { ConditionalAnimated } from "./animations/ConditionalAnimated";
 export { AccountAchievements } from "./app/account/AccountAchievements";
 export { AccountLastSeen } from "./app/account/AccountLastSeen";
 export { AccountRegistrationId } from "./app/account/AccountRegistrationId";
@@ -48,6 +51,7 @@ export type {
 } from "./forms/fields/Select/Select";
 export type { HandleSubmit, HandleSubmitFailed } from "./forms/Form";
 export { Form } from "./forms/Form";
+export type { FieldStatus } from "./forms/FormField/FormField";
 export { FormField } from "./forms/FormField/FormField";
 export { SubmitButton } from "./forms/SubmitButton";
 export { ChangePwdModal } from "./global/ChangePwdModal/ChangePwdModal";
@@ -78,6 +82,7 @@ export { DataCard } from "./ui/DataCard/DataCard";
 export { DataItem } from "./ui/DataItem/DataItem";
 export { Divider } from "./ui/Divider/Divider";
 export { Empty } from "./ui/Empty/Empty";
+export { Icon } from "./ui/Icon/Icon";
 export type { InfoProps } from "./ui/Info/Info";
 export { Info } from "./ui/Info/Info";
 export { Logo } from "./ui/Logo/Logo";
