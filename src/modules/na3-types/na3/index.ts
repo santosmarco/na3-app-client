@@ -1,6 +1,9 @@
 export type { Na3MaintenancePerson } from "./maintenance/Na3MaintenancePerson";
 export type {
   Na3MaintenanceProject,
+  Na3MaintenanceProjectChange,
+  Na3MaintenanceProjectChangeKey,
+  Na3MaintenanceProjectEditEventChanges,
   Na3MaintenanceProjectEvent,
   Na3MaintenanceProjectStatus,
 } from "./maintenance/Na3MaintenanceProject";

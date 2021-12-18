@@ -14,7 +14,6 @@ import React, { useCallback } from "react";
 
 import classes from "./PdfViewerToolbar.module.css";
 import { PdfViewerToolbarButton } from "./PdfViewerToolbarButton/PdfViewerToolbarButton";
-import { PdfViewerToolbarHeader } from "./PdfViewerToolbarHeader/PdfViewerToolbarHeader";
 
 export type PdfViewerToolbarActionId =
   | "download"
@@ -31,14 +30,12 @@ export type PdfViewerToolbarActionId =
 
 export type PdfViewerToolbarProps = {
   slots: ToolbarSlot;
-  docTitle: string;
   disabledActions?: Array<PdfViewerToolbarActionId | undefined>;
   actionHandlers?: Partial<
     Record<PdfViewerToolbarActionId, (onClick: () => void) => void>
   >;
-  docVersion?: number;
-  onNavigateBack?: (() => void) | null;
-  hideHeader?: boolean;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
 };
 
 export function PdfViewerToolbar({
@@ -60,10 +57,8 @@ export function PdfViewerToolbar({
   },
   disabledActions,
   actionHandlers,
-  docTitle,
-  docVersion,
-  onNavigateBack,
-  hideHeader,
+  header,
+  footer,
 }: PdfViewerToolbarProps): JSX.Element {
   const checkActionIsEnabled = useCallback(
     (actionId: PdfViewerToolbarActionId) =>
@@ -86,14 +81,8 @@ export function PdfViewerToolbar({
   );
 
   return (
-    <>
-      {!hideHeader && (
-        <PdfViewerToolbarHeader
-          docTitle={docTitle}
-          docVersion={docVersion}
-          onNavigateBack={onNavigateBack}
-        />
-      )}
+    <div className={classes.ToolbarContainer}>
+      {header}
 
       <div className={classes.Toolbar}>
         <div className={classes.ToolbarActions}>
@@ -219,6 +208,8 @@ export function PdfViewerToolbar({
           )}
         </div>
       </div>
-    </>
+
+      {footer}
+    </div>
   );
 }

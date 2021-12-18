@@ -93,10 +93,7 @@ export function Na3AuthController(): null {
               );
 
               // Update user's lastSeenAt field.
-              const updatedUserLastSeenAt: Pick<Na3User, "lastSeenAt"> = {
-                lastSeenAt: timestamp(),
-              };
-              void updateDoc(userRef, updatedUserLastSeenAt);
+              void updateDoc(userRef, { lastSeenAt: timestamp() });
             } catch (err) {
               dispatch(
                 setAuthError(translateFirebaseError(err as FirebaseError))

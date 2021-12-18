@@ -1,5 +1,5 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Grid, Typography } from "antd";
+import { Button, Col, Grid, Row, Typography } from "antd";
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -40,27 +40,37 @@ export function PdfViewerToolbarHeader({
   }, [history]);
 
   return (
-    <div className={classes.ToolbarHeader}>
-      <Button
-        icon={<LeftOutlined />}
-        onClick={onNavigateBack || handleNavigateBackDefault}
-        size={breakpoint.md ? "middle" : "small"}
-        style={backBtnStyle}
-        type="link"
-      >
-        Voltar
-      </Button>
+    <Row
+      align="middle"
+      className={classes.ToolbarHeader}
+      justify="space-between"
+    >
+      <Col md={3} xs={6}>
+        <Button
+          icon={<LeftOutlined />}
+          onClick={onNavigateBack || handleNavigateBackDefault}
+          size={breakpoint.md ? "middle" : "small"}
+          style={backBtnStyle}
+          type="link"
+        >
+          Voltar
+        </Button>
+      </Col>
 
-      <Typography.Paragraph
-        className={classes.ToolbarDocTitle}
-        ellipsis={docTitleEllipsisConfig}
-      >
-        {docTitle}
-      </Typography.Paragraph>
+      <Col md={18} xs={12}>
+        <Typography.Paragraph
+          className={classes.ToolbarDocTitle}
+          ellipsis={docTitleEllipsisConfig}
+        >
+          {docTitle}
+        </Typography.Paragraph>
+      </Col>
 
-      <Typography.Text italic={true} style={docVersionStyle}>
-        v{docVersion || "—"}
-      </Typography.Text>
-    </div>
+      <Col className={classes.ToolbarHeaderRight} md={3} xs={6}>
+        <Typography.Text italic={true} style={docVersionStyle}>
+          v{docVersion || "—"}
+        </Typography.Text>
+      </Col>
+    </Row>
   );
 }

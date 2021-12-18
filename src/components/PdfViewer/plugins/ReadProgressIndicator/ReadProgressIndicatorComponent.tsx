@@ -68,14 +68,10 @@ export function ReadProgressIndicatorComponent({
       placement="bottomLeft"
       title={isComplete ? tooltipWhenComplete : tooltip}
     >
-      <div
-        className={`${classes.IndicatorContainer} ${
-          isComplete ? classes.IndicatorContainerComplete : ""
-        }`.trim()}
-      >
+      <div className={classes.IndicatorContainer}>
         <Progress
           percent={isComplete ? 100 : progressPercent}
-          showInfo={isComplete}
+          showInfo={false}
           size="small"
           status={isComplete ? "success" : "active"}
         />

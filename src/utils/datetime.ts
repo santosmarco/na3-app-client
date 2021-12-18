@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import type { Timestamp } from "firebase/firestore";
 
 const DAYJS_DURATION_UNITS = [
   "ms",
@@ -31,6 +32,9 @@ type DayjsDuration = plugin.Duration;
 type DayjsDurationUnit = typeof DAYJS_DURATION_UNITS[number];
 
 type TimestampToStrOptions = {
+  includeTime?: boolean;
+  includeHours?: boolean;
+  includeMinutes?: boolean;
   includeSeconds?: boolean;
 };
 
@@ -43,11 +47,27 @@ export function timestamp(): string {
 }
 
 export function timestampToStr(
-  timestamp: DayjsInput,
-  options?: TimestampToStrOptions
+  timestamp: DayjsInput | Timestamp,
+  options: TimestampToStrOptions = {
+    includeTime: true,
+    includeHours: true,
+    includeMinutes: true,
+    includeSeconds: false,
+  }
 ): string {
-  return dayjs(timestamp).format(
-    `DD/MM/YY [às] HH:mm${options?.includeSeconds ? ":ss" : ""}`
+  const dayjsInput =
+    typeof timestamp === "object" && timestamp !== null && "toDate" in timestamp
+      ? timestamp.toDate()
+      : timestamp;
+
+  return dayjs(dayjsInput).format(
+    `DD/MM/YY${
+      options.includeTime
+        ? ` [às] ${options.includeHours ? "hh" : ""}${
+            options.includeMinutes ? ":mm" : ""
+          }${options.includeSeconds ? ":ss" : ""}`
+        : ""
+    }`
   );
 }
 

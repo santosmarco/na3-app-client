@@ -41,7 +41,7 @@ export function MaintServiceOrderTimelineModal({
               postTitle: dayjs(ev.timestamp).format("DD/MM/YY HH:mm"),
               title: parseStringId(ev.type),
               info: ev.user && {
-                type: "popover",
+                variant: "popover",
                 title: "Origem do evento",
                 content: (
                   <UserTag

@@ -3,9 +3,12 @@ import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
 import type {
   Na3MaintenancePerson,
   Na3MaintenanceProject,
+  Na3MaintenanceProjectEditEventChanges,
   Na3MaintenanceProjectStatus,
 } from "@modules/na3-types";
+import { isMaintProjectEditEventChangeKey } from "@utils";
 import dayjs from "dayjs";
+import type { FieldValue } from "firebase/firestore";
 import { addDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useCallback, useRef } from "react";
 
@@ -14,6 +17,7 @@ import type { MaintProjectBuilderData } from "../utils";
 import {
   buildMaintProject,
   buildMaintProjectEvents,
+  buildNa3Error,
   getCollection,
 } from "../utils";
 import { useStateSlice } from "./useStateSlice";
@@ -175,11 +179,13 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       projectId: string,
       eventData: { author: Na3MaintenancePerson; message: string }
     ) => {
-      const ev = buildMaintProjectEvents({
-        author: eventData.author,
-        message: eventData.message,
-        type: "status",
-      });
+      const ev = buildMaintProjectEvents(
+        {
+          message: eventData.message,
+          type: "status",
+        },
+        { author: eventData.author }
+      );
 
       try {
         const docRef = doc(fbCollectionRef.current, projectId);
@@ -202,11 +208,10 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
       projectId: string,
       eventData: { author: Na3MaintenancePerson; message?: string | null }
     ) => {
-      const ev = buildMaintProjectEvents({
-        author: eventData.author,
-        message: eventData.message || null,
-        type: "complete",
-      });
+      const ev = buildMaintProjectEvents(
+        { message: eventData.message || null, type: "complete" },
+        { author: eventData.author }
+      );
 
       try {
         const docRef = doc(fbCollectionRef.current, projectId);
@@ -234,36 +239,95 @@ export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
         skipEvents: true,
       });
 
-      const ev = buildMaintProjectEvents({
-        author: updateData.author,
-        type: "edit",
-      });
-
       try {
         const docRef = doc(fbCollectionRef.current, projectId);
 
         const projectToUpdate = getById(projectId);
 
-        if (
-          projectToUpdate &&
-          projectToUpdate.events[0].author !== updateData.author
-        ) {
+        if (!projectToUpdate) {
+          return {
+            data: null,
+            error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+          };
+        }
+
+        const docChanges: Na3MaintenanceProjectEditEventChanges = {};
+        Object.keys(updateData).forEach((key) => {
+          if (!isMaintProjectEditEventChangeKey(key)) {
+            return;
+          }
+
+          switch (key) {
+            case "title":
+            case "description":
+              if (updateData[key] !== projectToUpdate[key]) {
+                docChanges[key] = {
+                  old: projectToUpdate[key],
+                  new: updateData[key],
+                };
+              }
+              break;
+            case "priority":
+              if (updateData[key] !== projectToUpdate[key]) {
+                docChanges[key] = {
+                  old: projectToUpdate[key],
+                  new: updateData[key],
+                };
+              }
+              break;
+            case "teamManager":
+              if (updateData.team.manager !== projectToUpdate.team.manager) {
+                docChanges.teamManager = {
+                  old: projectToUpdate.team.manager,
+                  new: updateData.team.manager,
+                };
+              }
+              break;
+            case "teamOthers":
+              if (updateData.team.members !== projectToUpdate.team.others) {
+                docChanges.teamOthers = {
+                  old: projectToUpdate.team.others,
+                  new: updateData.team.members,
+                };
+              }
+              break;
+            case "eta":
+              if (!updateData.eta.isSame(projectToUpdate.eta.toDate())) {
+                docChanges.teamOthers = {
+                  old: dayjs(projectToUpdate.eta.toDate()).format(),
+                  new: dayjs(updateData.eta).format(),
+                };
+              }
+              break;
+          }
+        });
+
+        const editEvent = buildMaintProjectEvents(
+          { type: "edit", changes: docChanges },
+          { author: updateData.author }
+        );
+
+        if (projectToUpdate.events[0].author !== updateData.author) {
           await updateDoc(docRef, {
             ...updated,
-            isPredPrev: updated.isPredPrev || undefined,
+            // For some reason, Firebase doesn't let us set isPredPrev to false,
+            // so we have to force it.
+            isPredPrev: (updated.isPredPrev || false) as unknown as FieldValue,
             events: [
-              buildMaintProjectEvents({
-                type: "create",
-                author: updateData.author,
-              }),
+              buildMaintProjectEvents(
+                { type: "create" },
+                { author: updateData.author }
+              ),
               ...projectToUpdate.events.slice(1),
             ],
           });
         } else {
           await updateDoc(docRef, {
             ...updated,
-            isPredPrev: updated.isPredPrev || undefined,
-            events: arrayUnion(ev),
+            // For some reason, Firebase doesn't let us set isPredPrev to false,
+            // so we have to force it.
+            isPredPrev: (updated.isPredPrev || false) as unknown as FieldValue,
+            events: arrayUnion(editEvent),
           });
         }
 

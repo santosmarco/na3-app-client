@@ -12,10 +12,7 @@ export function PdfViewerPageWatermark({
   scale,
 }: PdfViewerPageWatermarkProps): JSX.Element {
   const watermarkStyle = useMemo(
-    () => ({
-      zoom: scale,
-      "-moz-transform": `scale(${scale})`,
-    }),
+    () => ({ zoom: scale, MozTransform: `scale(${scale})` }),
     [scale]
   );
 

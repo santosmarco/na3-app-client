@@ -12,9 +12,13 @@ export function translateFirebaseErrorMessage(
 }
 
 export function translateFirebaseError(error: FirebaseError): FirebaseError {
+  if (process.env.NODE_ENV === "development") {
+    console.error("[FIREBASE ERROR]", error);
+  }
+
   return {
     ...error,
-    message: error.code in dictionary ? dictionary[error.code] : error.message,
+    message: translateFirebaseErrorMessage(error.code, error.message),
   };
 }
 

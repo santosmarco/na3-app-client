@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import type { Falsy } from "utility-types";
 
 import type { AppUserAttributes, AppUserScore } from "../../types";
-import { removeDuplicates, removeNullables } from "../../utils";
+import { handleFilterDuplicates, handleFilterFalsies } from "../../utils";
 
 type UserAttributeHelpers = {
   getUserAchievements: () => Na3UserAchievement[];
@@ -51,9 +51,11 @@ function getUserFormattedDisplayName({
 
   return `${
     firstNames.length > 1
-      ? `${firstNames[0]} ${removeNullables(
-          firstNames.slice(1).map((name) => name[0].toUpperCase())
-        ).join(" ")}`
+      ? `${firstNames[0]} ${firstNames
+          .slice(1)
+          .map((name) => name[0].toUpperCase())
+          .filter(handleFilterFalsies)
+          .join(" ")}`
       : firstNames[0]
   } ${lastName}`.trim();
 }
@@ -71,35 +73,34 @@ function getUserPositions(
   { positionIds }: Na3User,
   { departments }: UserAttrHelperDeps
 ): Na3Position[] {
-  return removeNullables(
-    removeDuplicates(positionIds).map((posId) =>
+  return positionIds
+    .filter(handleFilterDuplicates)
+    .map((posId) =>
       departments
         .flatMap((dpt) => dpt.positions)
         .find((pos) => pos.id === posId)
     )
-  );
+    .filter(handleFilterFalsies);
 }
 
 function getUserDepartments(
   user: Na3User,
   { departments, ...deps }: UserAttrHelperDeps
 ): Na3Department[] {
-  return removeNullables(
-    removeDuplicates(
-      getUserPositions(user, { departments, ...deps }).map(
-        (pos) => pos.departmentId
-      )
-    ).map((dptId) => departments.find((dpt) => dpt.id === dptId))
-  );
+  return getUserPositions(user, { departments, ...deps })
+    .map((pos) => pos.departmentId)
+    .filter(handleFilterDuplicates)
+    .map((dptId) => departments.find((dpt) => dpt.id === dptId))
+    .filter(handleFilterFalsies);
 }
 
 function getUserPrivileges(
   user: Na3User,
   dependencies: UserAttrHelperDeps
 ): Na3UserPrivilegeId[] {
-  return removeDuplicates(
-    getUserPositions(user, dependencies).flatMap((pos) => pos.privileges)
-  );
+  return getUserPositions(user, dependencies)
+    .flatMap((pos) => pos.privileges)
+    .filter(handleFilterDuplicates);
 }
 
 function getUserAchievements(

@@ -1,7 +1,12 @@
+.ToolbarContainer {
+  margin: -4px 0;
+}
+
 .Toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 6px 0;
 }
 
 .ToolbarActions {

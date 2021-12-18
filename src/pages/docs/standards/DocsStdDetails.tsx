@@ -1,4 +1,5 @@
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import type { PdfViewerDocLoadEvent } from "@components";
 import {
   Divider,
   DocsStdAccessDeniedResult,
@@ -140,6 +141,17 @@ export function DocsStdDetailsPage({
       });
     }
   }, [doc, currentUser, userAcknowledgment, registerAcknowledgment]);
+
+  const handlePdfDocLoad = useCallback(
+    ({ doc }: PdfViewerDocLoadEvent) => {
+      if (!userAcknowledgment && doc.numPages === 1) {
+        setTimeout(() => {
+          void handleAcknowledgment();
+        }, 2000);
+      }
+    },
+    [userAcknowledgment, handleAcknowledgment]
+  );
 
   const handlePdfDownload = useCallback(() => {
     const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
@@ -316,82 +328,91 @@ export function DocsStdDetailsPage({
 
   return doc && currentUser ? (
     userPermissions?.read ? (
-      isViewingPdf ? (
-        <PdfViewer
-          actionHandlers={{ download: handlePdfDownload }}
-          disabledActions={[
-            !userPermissions.download ? "download" : undefined,
-            !userPermissions.print ? "print" : undefined,
-          ]}
-          fullPage={true}
-          onNavigateBack={handlePdfViewerHide}
-          readProgressOptions={{
-            active: docStatus === "approved",
-            onComplete: handleAcknowledgment,
-            forceComplete: !!userAcknowledgment,
-            tooltip: "Progresso da leitura",
-            tooltipWhenComplete: (
-              <>
-                <div>
-                  <strong>Você já leu este documento!</strong>
-                </div>
-                {userAcknowledgment && (
-                  <em>em {timestampToStr(userAcknowledgment.timestamp)}</em>
-                )}
-              </>
-            ),
-          }}
-          title={doc.title}
-          url={handleGetPdfUrl}
-          version={docVersion?.number}
-        />
-      ) : (
-        <PrintPrevent disabled={userPermissions.print}>
-          <PageTitle>{doc.title}</PageTitle>
+      <PrintPrevent disabled={userPermissions.print}>
+        {isViewingPdf ? (
+          <PdfViewer
+            actionHandlers={{ download: handlePdfDownload }}
+            disabledActions={[
+              !userPermissions.download ? "download" : undefined,
+              !userPermissions.print ? "print" : undefined,
+            ]}
+            fullPage={true}
+            onDocumentLoad={handlePdfDocLoad}
+            onNavigateBack={handlePdfViewerHide}
+            readProgressOptions={{
+              active: docStatus === "approved",
+              onComplete: handleAcknowledgment,
+              forceComplete: !!userAcknowledgment,
+              tooltip: "Progresso da leitura",
+              tooltipWhenComplete: (
+                <>
+                  <div>
+                    <strong>Você já leu este documento!</strong>
+                  </div>
+                  {userAcknowledgment && (
+                    <em>em {timestampToStr(userAcknowledgment.timestamp)}</em>
+                  )}
+                </>
+              ),
+            }}
+            title={doc.title}
+            url={handleGetPdfUrl}
+            version={docVersion?.number}
+            watermark="default"
+          />
+        ) : (
+          <>
+            <PageTitle>{doc.title}</PageTitle>
 
-          {docStatus === "approved" && !userAcknowledgment && (
-            <DocsStdReadPendingAlert onViewPdf={handlePdfViewerShow} />
-          )}
+            {docStatus === "approved" && !userAcknowledgment && (
+              <DocsStdReadPendingAlert onViewPdf={handlePdfViewerShow} />
+            )}
 
-          <PageDescription>{doc.description}</PageDescription>
+            <PageDescription>{doc.description}</PageDescription>
 
-          {userPermissions.approve && docStatus === "pending" && (
-            <PageActionButtons>
-              <Button
-                icon={<CheckOutlined />}
-                onClick={handleDocApprove}
-                type="primary"
-              >
-                Aprovar documento
-              </Button>
+            {userPermissions.approve && docStatus === "pending" && (
+              <PageActionButtons>
+                <Button
+                  icon={<CheckOutlined />}
+                  onClick={handleDocApprove}
+                  type="primary"
+                >
+                  Aprovar documento
+                </Button>
 
-              <DocsStdRejectButton
-                icon={<CloseOutlined />}
-                modalTitle="Rejeitar documento"
-                onRejectSubmit={handleDocReject}
-              >
-                Rejeitar{breakpoint.lg && " documento"}
-              </DocsStdRejectButton>
-            </PageActionButtons>
-          )}
+                <DocsStdRejectButton
+                  icon={<CloseOutlined />}
+                  modalTitle="Rejeitar documento"
+                  onRejectSubmit={handleDocReject}
+                >
+                  Rejeitar{breakpoint.lg && " documento"}
+                </DocsStdRejectButton>
+              </PageActionButtons>
+            )}
 
-          <Divider marginBottom={12} />
+            <Divider marginBottom={12} />
 
-          <Page scrollTopOffset={12}>
-            <DocsStdInfo defaultOpen={breakpoint.lg} doc={doc} />
+            <Page scrollTopOffset={12}>
+              <DocsStdInfo
+                defaultOpen={breakpoint.lg}
+                doc={doc}
+                showPermissions={userPermissions.viewAdditionalInfo}
+              />
 
-            <Divider marginTop={12} />
+              <Divider marginTop={12} />
 
-            <DocsStdViewPdfButton
-              disabled={!userPermissions.view}
-              onClick={handlePdfViewerShow}
-              tooltip={
-                !userPermissions.view && "Esse documento ainda não foi aprovado"
-              }
-            />
-          </Page>
-        </PrintPrevent>
-      )
+              <DocsStdViewPdfButton
+                disabled={!userPermissions.view}
+                onClick={handlePdfViewerShow}
+                tooltip={
+                  !userPermissions.view &&
+                  "Esse documento ainda não foi aprovado"
+                }
+              />
+            </Page>
+          </>
+        )}
+      </PrintPrevent>
     ) : (
       <DocsStdAccessDeniedResult onNavigateBack={handleNavigateBack} />
     )

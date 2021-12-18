@@ -1,20 +1,6 @@
 .IndicatorContainer {
-  margin-left: 5px;
-  margin-right: 4px;
-}
-
-.IndicatorContainerComplete {
-  margin-right: -8px;
-}
-
-/* md and up */
-@media screen and (min-width: 768px) {
-  .IndicatorContainer {
-    margin-left: 8px;
-    margin-right: 7px;
-  }
-
-  .IndicatorContainerComplete {
-    margin-right: -5px;
-  }
+  display: flex;
+  align-items: center;
+  max-height: 6px;
+  margin: 0 4px 6px;
 }

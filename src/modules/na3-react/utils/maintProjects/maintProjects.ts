@@ -1,10 +1,13 @@
 import type {
   Na3MaintenancePerson,
   Na3MaintenanceProject,
+  Na3MaintenanceProjectEditEventChanges,
   Na3MaintenanceProjectEvent,
 } from "@modules/na3-types";
 import type { Dayjs } from "dayjs";
 import { Timestamp } from "firebase/firestore";
+
+import type { MaybeArray } from "../../types";
 
 export type MaintProjectBuilderData = Required<
   Omit<
@@ -20,10 +23,15 @@ export type MaintProjectBuilderData = Required<
   }
 >;
 
-export type MaintProjectEventBuilderData = Omit<
-  Na3MaintenanceProjectEvent,
-  "author" | "timestamp"
-> & { author: Na3MaintenancePerson };
+export type MaintProjectEventBuilderData =
+  | { type: "complete"; message: string | null }
+  | { type: "create" }
+  | { type: "edit"; changes: Na3MaintenanceProjectEditEventChanges }
+  | { type: "status"; message: string };
+
+export type MaintProjectEventBuilderPayload = {
+  author: Na3MaintenancePerson;
+};
 
 export function buildMaintProject(
   internalId: number,
@@ -42,10 +50,10 @@ export function buildMaintProject(
 ):
   | Omit<Na3MaintenanceProject, "events" | "id" | "ref">
   | Omit<Na3MaintenanceProject, "id" | "ref"> {
-  const creationEvent = buildMaintProjectEvents({
-    author: data.author,
-    type: "create",
-  });
+  const creationEvent = buildMaintProjectEvents(
+    { type: "create" },
+    { author: data.author }
+  );
 
   const teamMembersSanitized = data.team.members.map((member) =>
     typeof member === "string"
@@ -86,33 +94,26 @@ export function buildMaintProject(
   return { ...project, events: [creationEvent] };
 }
 
-export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
-  events: T
-): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T;
-export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
-  events: T[]
-): Array<Pick<Na3MaintenanceProjectEvent, "timestamp"> & T>;
-export function buildMaintProjectEvents<T extends MaintProjectEventBuilderData>(
-  events: T | T[]
-):
-  | Array<Pick<Na3MaintenanceProjectEvent, "timestamp"> & T>
-  | (Pick<Na3MaintenanceProjectEvent, "timestamp"> & T) {
+export function buildMaintProjectEvents(
+  event: MaintProjectEventBuilderData,
+  payload: MaintProjectEventBuilderPayload
+): Na3MaintenanceProjectEvent;
+export function buildMaintProjectEvents(
+  events: MaintProjectEventBuilderData[],
+  payload: MaintProjectEventBuilderPayload
+): Na3MaintenanceProjectEvent[];
+export function buildMaintProjectEvents(
+  eventOrEvents: MaybeArray<MaintProjectEventBuilderData>,
+  payload: MaintProjectEventBuilderPayload
+): MaybeArray<Na3MaintenanceProjectEvent> {
   function buildOneEvent(
-    config: T
-  ): Pick<Na3MaintenanceProjectEvent, "timestamp"> & T {
-    return {
-      ...config,
-      author: {
-        uid: config.author.uid,
-        displayName: config.author.displayName,
-      },
-      timestamp: Timestamp.now(),
-    };
+    config: MaintProjectEventBuilderData
+  ): Na3MaintenanceProjectEvent {
+    return { ...config, ...payload, timestamp: Timestamp.now() };
   }
 
-  if (!("length" in events)) {
-    return buildOneEvent(events);
-  } else {
-    return events.map(buildOneEvent);
+  if (!("length" in eventOrEvents)) {
+    return buildOneEvent(eventOrEvents);
   }
+  return eventOrEvents.map(buildOneEvent);
 }

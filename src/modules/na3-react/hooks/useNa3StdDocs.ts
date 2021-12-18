@@ -10,6 +10,7 @@ import type {
   Na3StdDocumentVersion,
 } from "@modules/na3-types";
 import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
+import dayjs from "dayjs";
 import { addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback, useRef } from "react";
@@ -27,7 +28,7 @@ import {
   buildStdDocumentEvents,
   buildStdDocumentUrl,
   getCollection,
-  removeNullables,
+  handleFilterFalsies,
 } from "../utils";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
@@ -52,6 +53,7 @@ type UseNa3StdDocsResult = StdDocsState & {
     getDocumentTypeFromTypeId: (
       typeId: Na3StdDocumentTypeId
     ) => Na3StdDocumentType;
+    checkDocumentIsOutdated: (doc: Na3StdDocument) => boolean;
     getDocumentAcknowledgedUsers: (
       doc: Na3StdDocument
     ) => Array<{ user: AppUser; event: Na3StdDocumentEvent }>;
@@ -77,7 +79,10 @@ type UseNa3StdDocsResult = StdDocsState & {
     getUserPermissionsForDocument: (
       doc: Na3StdDocument,
       user: AppUser
-    ) => Record<keyof Na3StdDocumentPermissions | "view", boolean>;
+    ) => Record<
+      keyof Na3StdDocumentPermissions | "view" | "viewAdditionalInfo" | "write",
+      boolean
+    >;
     registerAcknowledgment: (
       docId: string
     ) => Promise<
@@ -180,6 +185,13 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [getDocumentLatestVersion]
   );
 
+  const checkDocumentIsOutdated = useCallback(
+    (doc: Na3StdDocument): boolean => {
+      return dayjs(doc.nextRevisionAt).isBefore(dayjs());
+    },
+    []
+  );
+
   const getDocumentAcknowledgedUsers = useCallback(
     (
       doc: Na3StdDocument,
@@ -189,15 +201,17 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);
 
-      return removeNullables(
-        (version?.events || [])
-          .filter((ev) => ev.type === "acknowledge")
-          .map((ev) => {
-            const user = getUserByUid(ev.origin.uid);
-            if (!user) return undefined;
-            return { user, event: ev };
-          })
-      );
+      return (version?.events || [])
+        .filter((ev) => ev.type === "acknowledge")
+        .map((ev) => {
+          const user = getUserByUid(ev.origin.uid);
+
+          if (!user) {
+            return undefined;
+          }
+          return { user, event: ev };
+        })
+        .filter(handleFilterFalsies);
     },
     [getDocumentLatestVersion, getUserByUid]
   );
@@ -224,15 +238,17 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);
 
-      return removeNullables(
-        (version?.events || [])
-          .filter((ev) => ev.type === "download")
-          .map((ev) => {
-            const user = getUserByUid(ev.origin.uid);
-            if (!user) return undefined;
-            return { user, event: ev };
-          })
-      );
+      return (version?.events || [])
+        .filter((ev) => ev.type === "download")
+        .map((ev) => {
+          const user = getUserByUid(ev.origin.uid);
+
+          if (!user) {
+            return undefined;
+          }
+          return { user, event: ev };
+        })
+        .filter(handleFilterFalsies);
     },
     [getDocumentLatestVersion, getUserByUid]
   );
@@ -282,7 +298,10 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       user: AppUser,
       doc: Na3StdDocument,
       permissions: MaybeArray<
-        keyof Na3StdDocumentPermissions | "view" | "write"
+        | keyof Na3StdDocumentPermissions
+        | "view"
+        | "viewAdditionalInfo"
+        | "write"
       >
     ): boolean => {
       const permissionsArr =
@@ -303,6 +322,12 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
           // privilege have permission for all other actions.
           if (user.hasPrivileges("docs_std_read_all")) {
             return true;
+          }
+          // Only Super users or those with either the "docs_std_super" or
+          // "docs_std_read_all" privilege can view document's additional
+          // information.
+          if (permissionToCheck === "viewAdditionalInfo") {
+            return false;
           }
           // Only users with the "docs_std_write_new" privilege can write to
           // documents.
@@ -332,6 +357,12 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         download: userHasDocumentPermissions(user, doc, "download"),
         approve: userHasDocumentPermissions(user, doc, "approve"),
         view: userHasDocumentPermissions(user, doc, "view"),
+        write: userHasDocumentPermissions(user, doc, "write"),
+        viewAdditionalInfo: userHasDocumentPermissions(
+          user,
+          doc,
+          "viewAdditionalInfo"
+        ),
       };
     },
     [userHasDocumentPermissions]
@@ -515,6 +546,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       getDocumentLastEvent,
       getDocumentLatestVersion,
       getDocumentStatus,
+      checkDocumentIsOutdated,
       getDocumentAcknowledgedUsers,
       getUserAcknowledgment,
       getDocumentDownloads,

@@ -4,6 +4,7 @@ import type {
   Na3DepartmentId,
   Na3DepartmentType,
   Na3Machine,
+  Na3Position,
   Na3PositionId,
   Na3PositionIdBase,
 } from "@modules/na3-types";
@@ -12,7 +13,7 @@ import { useCallback } from "react";
 import type { LiteralUnion } from "type-fest";
 
 import type { MaybeArray } from "../types";
-import { removeNullables } from "../utils";
+import { handleFilterDuplicates, handleFilterFalsies } from "../utils";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3DepartmentsResult = {
@@ -39,6 +40,7 @@ export type UseNa3DepartmentsResult = {
     splitPositionId: (
       positionId: Na3PositionId
     ) => [Na3DepartmentId, Na3PositionIdBase];
+    getPositionsById: (positionIds: Na3PositionId[]) => Na3Position[];
     isDptType: (type: unknown) => type is Na3DepartmentType;
   };
   loading: boolean;
@@ -102,12 +104,9 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     (positionIds: MaybeArray<Na3PositionId>): Na3Department[] => {
       const positionIdsArr = isArray(positionIds) ? positionIds : [positionIds];
 
-      return removeNullables(
-        positionIdsArr.map((posId) => {
-          const [dptId] = posId.split(".");
-          return getById(dptId);
-        })
-      );
+      return positionIdsArr
+        .map((posId) => getById(posId.split(".")[0]))
+        .filter(handleFilterFalsies);
     },
     [getById]
   );
@@ -132,6 +131,26 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
     []
   );
 
+  const getPositionsById = useCallback(
+    (positionIds: Na3PositionId[]): Na3Position[] => {
+      const allPositions = [...(departments.data || [])].flatMap(
+        (dpt) => dpt.positions
+      );
+
+      function handleGetPosition(
+        posId: Na3PositionId
+      ): Na3Position | undefined {
+        return allPositions.find((pos) => pos.id === posId);
+      }
+
+      return [...positionIds]
+        .filter(handleFilterDuplicates)
+        .map(handleGetPosition)
+        .filter(handleFilterFalsies);
+    },
+    [departments.data]
+  );
+
   const isDptType = useCallback((type: unknown): type is Na3DepartmentType => {
     return (
       typeof type === "string" &&
@@ -149,6 +168,7 @@ export function useNa3Departments(): UseNa3DepartmentsResult {
       getByPositionIds,
       getDepartmentMachineById,
       splitPositionId,
+      getPositionsById,
       isDptType,
     },
   };

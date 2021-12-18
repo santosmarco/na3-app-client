@@ -8,9 +8,9 @@ export type Na3MaintenanceProjectEvent = {
   author: Na3MaintenancePerson | /* Legacy: */ string;
   timestamp: Timestamp;
 } & (
-  | { changes: Na3MaintenanceProjectEventEditChanges; type: "edit" }
+  | { changes: Na3MaintenanceProjectEditEventChanges; type: "edit" }
   | { message: string; type: "status" }
-  | { message?: string; type: "complete" }
+  | { message?: string | null; type: "complete" }
   | { type: "create" }
 );
 
@@ -40,29 +40,43 @@ export type Na3MaintenanceProject =
   | Na3MaintenanceProjectGeneral
   | Na3MaintenanceProjectPredPrev;
 
-type Na3MaintenanceProjectEventEditChanges = Partial<{
-  description: {
-    new: Na3MaintenanceProjectBase["description"];
-    old: Na3MaintenanceProjectBase["description"];
-  };
-  eta: {
-    new: Na3MaintenanceProjectBase["eta"];
-    old: Na3MaintenanceProjectBase["eta"];
-  };
-  priority: {
-    new: Na3MaintenanceProjectBase["priority"];
-    old: Na3MaintenanceProjectBase["priority"];
-  };
-  teamManager: {
-    new: Na3MaintenanceProjectBase["team"]["manager"];
-    old: Na3MaintenanceProjectBase["team"]["manager"];
-  };
-  teamOthers: {
-    new: Na3MaintenanceProjectBase["team"]["others"];
-    old: Na3MaintenanceProjectBase["team"]["others"];
-  };
-  title: {
-    new: Na3MaintenanceProjectBase["title"];
-    old: Na3MaintenanceProjectBase["title"];
-  };
+export type Na3MaintenanceProjectChangeKey =
+  | "description"
+  | "eta"
+  | "priority"
+  | "teamManager"
+  | "teamOthers"
+  | "title";
+
+type Na3MaintenanceProjectChangeBody<T> = {
+  old: T;
+  new: T;
+};
+
+export type Na3MaintenanceProjectChange<
+  Key extends Na3MaintenanceProjectChangeKey = Na3MaintenanceProjectChangeKey
+> = {
+  description: Na3MaintenanceProjectChangeBody<
+    Na3MaintenanceProjectBase["description"]
+  >;
+  eta: Na3MaintenanceProjectChangeBody<Na3MaintenanceProjectBase["eta"]>;
+  priority: Na3MaintenanceProjectChangeBody<
+    Na3MaintenanceProjectBase["priority"]
+  >;
+  teamManager: Na3MaintenanceProjectChangeBody<
+    Na3MaintenanceProjectBase["team"]["manager"]
+  >;
+  teamOthers: Na3MaintenanceProjectChangeBody<
+    Na3MaintenanceProjectBase["team"]["others"]
+  >;
+  title: Na3MaintenanceProjectChangeBody<Na3MaintenanceProjectBase["title"]>;
+}[Key];
+
+export type Na3MaintenanceProjectEditEventChanges = Partial<{
+  description: Na3MaintenanceProjectChange<"description">;
+  eta: Na3MaintenanceProjectChange<"eta">;
+  priority: Na3MaintenanceProjectChange<"priority">;
+  teamManager: Na3MaintenanceProjectChange<"teamManager">;
+  teamOthers: Na3MaintenanceProjectChange<"teamOthers">;
+  title: Na3MaintenanceProjectChange<"title">;
 }>;

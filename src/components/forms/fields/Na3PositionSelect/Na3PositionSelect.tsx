@@ -4,8 +4,8 @@ import { useNa3Departments, useNa3Users } from "@modules/na3-react";
 import type { Na3DepartmentId, Na3PositionId } from "@modules/na3-types";
 import {
   getDepartmentSelectOptions,
-  removeDuplicates,
-  removeNullables,
+  handleFilterDuplicates,
+  handleFilterFalsies,
 } from "@utils";
 import { Button, Col, Row } from "antd";
 import { nanoid } from "nanoid";
@@ -56,13 +56,11 @@ export function Na3PositionSelect({
     let dpts = departments.data;
 
     if (selectablePositions) {
-      dpts = removeNullables(
-        removeDuplicates(
-          selectablePositions.map(
-            (pos) => departments.helpers.splitPositionId(pos)[0]
-          )
-        ).map((dptId) => departments.helpers.getById(dptId))
-      );
+      dpts = selectablePositions
+        .map((pos) => departments.helpers.splitPositionId(pos)[0])
+        .filter(handleFilterDuplicates)
+        .map((dptId) => departments.helpers.getById(dptId))
+        .filter(handleFilterFalsies);
     }
 
     return getDepartmentSelectOptions(

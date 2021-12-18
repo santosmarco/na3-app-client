@@ -6,7 +6,7 @@ import { timestampToStr } from "@utils";
 import { Typography } from "antd";
 import React, { useCallback } from "react";
 
-type AvatarGroupData = { user: AppUser; event: Na3StdDocumentEvent };
+type AvatarGroupData = AppUser | { user: AppUser; event?: Na3StdDocumentEvent };
 
 type DocsStdAvatarGroupProps = {
   data: AvatarGroupData[];
@@ -16,17 +16,22 @@ export function DocsStdAvatarGroup({
   data,
 }: DocsStdAvatarGroupProps): JSX.Element {
   const handleTooltip = useCallback(
-    (data: AvatarGroupData): UserAvatarProps["tooltip"] => ({
+    (item: AvatarGroupData): UserAvatarProps["tooltip"] => ({
       content: (
         <>
           <div>
             <Typography.Text strong={true}>
-              {data.user.compactDisplayName}
+              {"user" in item
+                ? item.user.compactDisplayName
+                : item.compactDisplayName}
             </Typography.Text>
           </div>
-          <Typography.Text italic={true}>
-            em {timestampToStr(data.event.timestamp)}
-          </Typography.Text>
+
+          {"event" in item && item.event && (
+            <Typography.Text italic={true}>
+              em {timestampToStr(item.event.timestamp)}
+            </Typography.Text>
+          )}
         </>
       ),
       placement: "topLeft",

@@ -1,4 +1,5 @@
 import type { Na3MaintenanceProjectStatus } from "@modules/na3-types";
+import { parseStringId } from "@utils";
 import type { BadgeProps } from "antd";
 import { Badge } from "antd";
 import React, { useMemo } from "react";
@@ -12,26 +13,20 @@ export function MaintProjectStatusBadge({
   status: projectStatus,
   isPredPrev,
 }: MaintProjectStatusBadgeProps): JSX.Element {
-  const badgePropsMap: Record<Na3MaintenanceProjectStatus, BadgeProps> =
-    useMemo(
-      () => ({
-        finished: {
-          status: "success",
-          text: `${isPredPrev ? "Finalizada" : "Finalizado"}`,
-        },
-        late: {
-          status: "error",
-          text: `${isPredPrev ? "Atrasada" : "Atrasado"}`,
-        },
-        running: { status: "processing", text: "Em execução" },
-      }),
-      [isPredPrev]
-    );
+  const badgeStatusMap: Record<
+    Na3MaintenanceProjectStatus,
+    BadgeProps["status"]
+  > = useMemo(
+    () => ({ finished: "success", late: "error", running: "processing" }),
+    []
+  );
 
   return (
     <Badge
-      status={badgePropsMap[projectStatus].status}
-      text={badgePropsMap[projectStatus].text}
+      status={badgeStatusMap[projectStatus]}
+      text={parseStringId(
+        `${isPredPrev ? "maint-pred-prev-" : ""}${projectStatus}`
+      )}
     />
   );
 }

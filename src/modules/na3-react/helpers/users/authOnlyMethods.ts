@@ -1,10 +1,6 @@
 import type { FirebaseError } from "@modules/firebase-errors-pt-br";
 import { translateFirebaseError } from "@modules/firebase-errors-pt-br";
-import type {
-  Na3User,
-  Na3UserEventData,
-  Na3UserEventType,
-} from "@modules/na3-types";
+import type { Na3UserEventData, Na3UserEventType } from "@modules/na3-types";
 import { NA3_USER_EVENT_CATEGORY_MAP } from "@modules/na3-types";
 import { getAuth, signOut, updatePassword } from "firebase/auth";
 import type { CollectionReference } from "firebase/firestore";
@@ -85,11 +81,9 @@ function createUpdatePasswordMethod({
 
       await updatePassword(firebaseAppUser, newPassword);
 
-      const updatedUser: Pick<Na3User, "isPasswordDefault"> = {
+      await updateDoc(doc(fbCollectionRef, firebaseAppUser.uid), {
         isPasswordDefault: false,
-      };
-
-      await updateDoc(doc(fbCollectionRef, firebaseAppUser.uid), updatedUser);
+      });
 
       return { error: null, warning: null };
     } catch (err) {

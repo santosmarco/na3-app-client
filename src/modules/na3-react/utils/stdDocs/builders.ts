@@ -7,7 +7,8 @@ import type {
 import { nanoid } from "nanoid";
 
 import type { AppUser, MaybeArray } from "../../types";
-import { removeNullables, timestamp } from "../../utils";
+import { timestamp } from "../../utils";
+import { handleFilterFalsies } from "../arrays";
 
 export type StdDocBuilderData = Required<
   Omit<Na3StdDocument, "events" | "id" | "versions">
@@ -84,6 +85,6 @@ export function buildStdDocumentEvents(
   if (!("length" in eventOrEvents)) {
     return buildOneEvent(eventOrEvents);
   } else {
-    return removeNullables(eventOrEvents.map(buildOneEvent));
+    return eventOrEvents.map(buildOneEvent).filter(handleFilterFalsies);
   }
 }

@@ -1,0 +1,10 @@
+.Right {
+  margin-left: 16px;
+}
+
+/* md and up */
+@media screen and (min-width: 768px) {
+  .Right {
+    margin-left: 24px;
+  }
+}

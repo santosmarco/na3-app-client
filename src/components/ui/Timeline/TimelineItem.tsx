@@ -1,12 +1,12 @@
-import { InfoCircleOutlined } from "@ant-design/icons";
-import type {
-  TimelineItemProps as AntdTimelineItemProps,
-  TooltipProps,
-} from "antd";
-import { Grid, Popover, Space, Timeline, Tooltip, Typography } from "antd";
+import type { InfoProps } from "@components";
+import { Info } from "@components";
+import type { TimelineItemProps as AntdTimelineItemProps } from "antd";
+import { Timeline, Typography } from "antd";
 import React from "react";
 import type { LiteralUnion } from "type-fest";
 import type { Falsy } from "utility-types";
+
+import classes from "./TimelineItem.module.css";
 
 export type TimelineItemProps = Partial<
   Pick<AntdTimelineItemProps, "className">
@@ -24,12 +24,7 @@ export type TimelineItemProps = Partial<
     | "volcano",
     string
   > | null;
-  info?:
-    | Falsy
-    | ((Pick<TooltipProps, "arrowPointAtCenter" | "placement"> & {
-        content: React.ReactNode;
-      }) &
-        ({ title?: React.ReactNode; type: "popover" } | { type: "tooltip" }));
+  info?: Falsy | Omit<InfoProps, "children">;
   postTitle?: React.ReactNode;
   title: React.ReactNode;
 };
@@ -47,53 +42,38 @@ export function TimelineItem({
   isLast,
   info,
 }: TimelineItemPrivateProps): JSX.Element {
-  const breakpoint = Grid.useBreakpoint();
-
   return (
     <Timeline.Item
       className={`${isLast ? "ant-timeline-item-pending" : ""} ${className}`}
       color={color || undefined}
     >
       <div>
-        <Space size={breakpoint.lg ? "large" : "middle"}>
-          <Typography.Text>{title}</Typography.Text>
+        <Typography.Text>{title}</Typography.Text>
 
-          {(postTitle || info) && (
-            <Space>
-              {postTitle && (
-                <small>
-                  <Typography.Text italic={true} type="secondary">
-                    {postTitle}
-                  </Typography.Text>
-                </small>
-              )}
+        {(postTitle || info) && (
+          <>
+            {postTitle && (
+              <small className={classes.Right}>
+                <Typography.Text italic={true} type="secondary">
+                  {postTitle}
+                </Typography.Text>
+              </small>
+            )}
 
-              {info &&
-                (info.type === "popover" ? (
-                  <Popover
-                    arrowPointAtCenter={info.arrowPointAtCenter ?? true}
-                    content={info.content}
-                    placement={info.placement || "topLeft"}
-                    title={info.title}
-                  >
-                    <Typography.Text type="secondary">
-                      <InfoCircleOutlined />
-                    </Typography.Text>
-                  </Popover>
-                ) : (
-                  <Tooltip
-                    arrowPointAtCenter={info.arrowPointAtCenter ?? true}
-                    overlay={info.content}
-                    placement={info.placement || "topLeft"}
-                  >
-                    <Typography.Text type="secondary">
-                      <InfoCircleOutlined />
-                    </Typography.Text>
-                  </Tooltip>
-                ))}
-            </Space>
-          )}
-        </Space>
+            {info && (
+              <Info
+                arrowPointAtCenter={info.arrowPointAtCenter}
+                gapLeft={info.gapLeft || "small"}
+                icon={info.icon}
+                placement={info.placement}
+                title={info.title}
+                variant={info.variant}
+              >
+                {info.content}
+              </Info>
+            )}
+          </>
+        )}
       </div>
 
       {body && <Typography.Text type="secondary">{body}</Typography.Text>}

@@ -6,21 +6,24 @@ import { Space, Tag, Tooltip } from "antd";
 import { isArray } from "lodash";
 import { nanoid } from "nanoid";
 import React, { useMemo } from "react";
+import type { LiteralUnion } from "type-fest";
 
 import classes from "./UserPositionTag.module.css";
 
 type UserPositionTagProps = {
-  direction?: "horizontal" | "vertical";
-  noWrap?: boolean;
   position: MaybeArray<Na3Position>;
   tooltipPlacement?: TooltipProps["placement"];
+  direction?: "horizontal" | "vertical";
+  space?: LiteralUnion<"large" | "middle" | "small", number>;
+  noWrap?: boolean;
 };
 
 export function UserPositionTag({
   position,
-  tooltipPlacement,
-  direction,
-  noWrap,
+  tooltipPlacement = "topLeft",
+  direction = "horizontal",
+  space = 4,
+  noWrap = false,
 }: UserPositionTagProps): JSX.Element {
   const departments = useNa3Departments();
 
@@ -36,7 +39,7 @@ export function UserPositionTag({
   );
 
   return (
-    <Space direction={direction || "horizontal"} size={4} wrap={!noWrap}>
+    <Space direction={direction} size={space} wrap={!noWrap}>
       {positionsArr.map((position, idx) => (
         <Tooltip
           color={positionDpts[idx]?.style.colors.web}
@@ -46,7 +49,7 @@ export function UserPositionTag({
               {position.name} <em>({positionDpts[idx]?.displayName})</em>
             </>
           }
-          placement={tooltipPlacement || "topLeft"}
+          placement={tooltipPlacement}
         >
           <Tag
             className={classes.Tag}

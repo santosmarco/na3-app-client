@@ -137,7 +137,6 @@ export function UserProfilePage({
         {!breakpoint.lg && (
           <>
             <DataItem
-              hasColon={false}
               icon={<UserSwitchOutlined />}
               iconMarginRight={4}
               label={asAccountPage ? "Suas posições" : "Posições"}
@@ -151,7 +150,6 @@ export function UserProfilePage({
 
         <DataItem
           className={classes.DataItem}
-          hasColon={false}
           icon={<HeartOutlined />}
           iconMarginRight={4}
           label="Bio"
@@ -180,7 +178,6 @@ export function UserProfilePage({
         />
 
         <DataItem
-          hasColon={false}
           icon={<TrophyOutlined />}
           iconMarginRight={4}
           label={asAccountPage ? "Suas conquistas" : "Conquistas"}

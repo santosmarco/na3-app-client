@@ -272,13 +272,9 @@ export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
       const docRef = doc(fbCollectionRef.current, id);
 
       try {
-        const update: Required<Pick<Na3ServiceOrder, "closedAt" | "status">> = {
+        await updateDoc(docRef, {
           closedAt: timestamp(),
           status: "closed",
-        };
-
-        await updateDoc(docRef, {
-          ...update,
           events: arrayUnion(
             ...buildServiceOrderEvents(
               [

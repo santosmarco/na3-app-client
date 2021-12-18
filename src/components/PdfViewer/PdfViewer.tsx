@@ -9,7 +9,7 @@ import {
 import { Logo, Result, Spinner } from "@components";
 import { BREADCRUMB_MARGIN, PAGE_CONTAINER_PADDING } from "@constants";
 import { useTheme } from "@hooks";
-import type { LocalizationMap } from "@react-pdf-viewer/core";
+import type { LocalizationMap, PdfJs } from "@react-pdf-viewer/core";
 import { SpecialZoomLevel, Viewer } from "@react-pdf-viewer/core";
 import type { SidebarTab } from "@react-pdf-viewer/default-layout";
 import { defaultLayoutPlugin as createDefaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -22,9 +22,15 @@ import type { PdfViewerWatermarkOptions } from "./components/PdfViewerPage/PdfVi
 import { PdfViewerPage } from "./components/PdfViewerPage/PdfViewerPage";
 import type { PdfViewerToolbarProps } from "./components/PdfViewerToolbar/PdfViewerToolbar";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar/PdfViewerToolbar";
+import { PdfViewerToolbarHeader } from "./components/PdfViewerToolbar/PdfViewerToolbarHeader/PdfViewerToolbarHeader";
 import classes from "./PdfViewer.module.css";
 import type { ReadProgressIndicatorPluginOptions } from "./plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
 import { createReadProgressIndicatorPlugin } from "./plugins/ReadProgressIndicator/ReadProgressIndicatorPlugin";
+
+export type PdfViewerDocLoadEvent = {
+  doc: PdfJs.PdfDocument;
+  file: unknown;
+};
 
 type PdfViewerProps = Pick<
   PdfViewerToolbarProps,
@@ -33,6 +39,7 @@ type PdfViewerProps = Pick<
   url: Promise<string> | string | (() => Promise<string>);
   title: string;
   version?: number;
+  onDocumentLoad?: (ev: PdfViewerDocLoadEvent) => void;
   onNavigateBack?: (() => void) | null;
   fullPage?: boolean;
   watermark?: PdfViewerWatermarkOptions | "default";
@@ -47,6 +54,7 @@ export function PdfViewer({
   title,
   // Optional
   version,
+  onDocumentLoad,
   onNavigateBack,
   fullPage,
   watermark,
@@ -117,21 +125,23 @@ export function PdfViewer({
     renderToolbar: (Toolbar) => {
       const { ReadProgressIndicator } = readProgressIndicatorPlugin;
       return (
-        <>
-          <Toolbar>
-            {(slots): JSX.Element => (
-              <PdfViewerToolbar
-                actionHandlers={actionHandlers}
-                disabledActions={disabledActions}
-                docTitle={title}
-                docVersion={version}
-                onNavigateBack={onNavigateBack}
-                slots={slots}
-              />
-            )}
-          </Toolbar>
-          {readProgressOptions?.active && <ReadProgressIndicator />}
-        </>
+        <Toolbar>
+          {(slots): JSX.Element => (
+            <PdfViewerToolbar
+              actionHandlers={actionHandlers}
+              disabledActions={disabledActions}
+              footer={readProgressOptions?.active && <ReadProgressIndicator />}
+              header={
+                <PdfViewerToolbarHeader
+                  docTitle={title}
+                  docVersion={version}
+                  onNavigateBack={onNavigateBack}
+                />
+              }
+              slots={slots}
+            />
+          )}
+        </Toolbar>
       );
     },
     toolbarPlugin: {
@@ -155,6 +165,7 @@ export function PdfViewer({
             defaultScale={SpecialZoomLevel.PageFit}
             fileUrl={url}
             localization={pt_PT as unknown as LocalizationMap}
+            onDocumentLoad={onDocumentLoad}
             plugins={[defaultLayoutPlugin, readProgressIndicatorPlugin]}
             renderError={(loadError): JSX.Element => (
               <Result

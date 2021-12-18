@@ -1,13 +1,13 @@
 .ToolbarHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: -6px;
 }
 
 .ToolbarDocTitle {
-  flex-grow: 1;
   text-align: center;
-  padding-right: 8px;
+  width: 100%;
   margin: 0 !important;
+}
+
+.ToolbarHeaderRight {
+  text-align: right;
 }
