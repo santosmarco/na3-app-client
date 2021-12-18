@@ -248,9 +248,7 @@ export function LabelsTransfPrintForm({
               validate: handleBatchIdValidate,
             }}
             tooltip={{
-              arrowPointAtCenter: true,
-              placement: "topLeft",
-              title: (
+              content: (
                 <>
                   Formato:{" "}
                   <strong>
@@ -294,9 +292,7 @@ export function LabelsTransfPrintForm({
             }}
             suffix={template.productUnitName.toLowerCase()}
             tooltip={{
-              arrowPointAtCenter: true,
-              placement: "topLeft",
-              title: (
+              content: (
                 <>
                   Unidade:{" "}
                   <strong>{template.productUnitName.toUpperCase()}</strong>

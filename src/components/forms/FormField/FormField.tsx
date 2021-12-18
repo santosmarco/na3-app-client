@@ -2,11 +2,13 @@
 // type.
 /* eslint-disable react/destructuring-assignment */
 
+import { isTouchDevice, listStr, parseStringId } from "@utils";
 import type {
   FormItemProps,
   InputProps,
   RadioChangeEvent,
   SwitchProps,
+  TooltipProps,
 } from "antd";
 import { Form, Input, Radio, Switch } from "antd";
 import { isArray } from "lodash";
@@ -15,7 +17,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { UseControllerProps } from "react-hook-form";
 import { useController } from "react-hook-form";
 
-import { isTouchDevice } from "../../../utils";
 import { FieldHelp } from "../components/FieldHelp/FieldHelp";
 import { FieldLabel } from "../components/FieldLabel/FieldLabel";
 import { FieldPreSuffix } from "../components/FieldPreSuffix/FieldPreSuffix";
@@ -79,6 +80,7 @@ type SwitchOptionalProps = Partial<
 >;
 
 type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
+  defaultValue?: Value | undefined;
   autoFocus?: boolean;
   autoUpperCase?: boolean;
   defaultHelp?: React.ReactNode;
@@ -99,7 +101,12 @@ type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
   placeholder?: string;
   required?: boolean;
   sortValues?: Type extends "select" ? (a: string, b: string) => number : never;
-  tooltip?: FormItemProps["tooltip"];
+  tooltip?: {
+    content: React.ReactNode;
+    placement?: TooltipProps["placement"];
+    arrowPointAtCenter?: boolean;
+    icon?: React.ReactNode;
+  } | null;
   type: Type;
   wrapperCol?: FormItemProps["wrapperCol"];
 };
@@ -132,7 +139,7 @@ export type FormFieldProps<SelectValue extends string[] | string> = {
   | (FormFieldBaseProps<"textArea", string> & InputTextAreaOptionalProps)
 );
 
-const defaultProps: Omit<FormFieldBaseProps<FieldType, FieldValue>, "type"> = {
+const defaultProps = {
   autoFocus: false,
   autoUpperCase: false,
   defaultHelp: undefined,
@@ -160,6 +167,7 @@ export function FormField<SelectValue extends string = string>(
     type,
     rules,
     /* Common optional props */
+    defaultValue,
     autoFocus,
     autoUpperCase,
     defaultHelp,
@@ -205,6 +213,7 @@ export function FormField<SelectValue extends string = string>(
         }
       : undefined,
     shouldUnregister: true,
+    defaultValue,
   });
 
   const value = useMemo(
@@ -370,6 +379,38 @@ export function FormField<SelectValue extends string = string>(
       }
     }
   }, [placeholderProp, disabled, type]);
+
+  const handleTooltipFileExtensionTransform = useCallback(
+    (ext: string) => <strong>{parseStringId(ext)}</strong>,
+    []
+  );
+
+  const tooltipProps = useMemo((): TooltipProps | undefined => {
+    if (tooltip === null) {
+      return;
+    }
+    const defaultTooltip: Omit<TooltipProps, "overlay"> = {
+      arrowPointAtCenter: true,
+      placement: "topLeft",
+    };
+    if (tooltip) {
+      return { ...defaultTooltip, ...tooltip, title: tooltip.content };
+    }
+    if (type === "file" && "acceptOnly" in props && props.acceptOnly) {
+      return {
+        ...defaultTooltip,
+        title: (
+          <>
+            Arquivos suportados:{" "}
+            {listStr(props.acceptOnly, {
+              connective: "and",
+              itemTransform: handleTooltipFileExtensionTransform,
+            })}
+          </>
+        ),
+      };
+    }
+  }, [tooltip, type, handleTooltipFileExtensionTransform, props]);
 
   const labelComponent = useMemo(
     (): JSX.Element => <FieldLabel isOptional={!required} text={label} />,
@@ -617,7 +658,7 @@ export function FormField<SelectValue extends string = string>(
       labelAlign="left"
       labelCol={labelCol || { span: labelSpan || 24 }}
       required={required}
-      tooltip={tooltip}
+      tooltip={tooltipProps}
       validateStatus={
         status === "loading"
           ? "validating"

@@ -1,23 +1,25 @@
 import type { UploadFile } from "@components";
-import {
-  Divider,
-  Form,
-  FormField,
-  FormItem,
-  Na3PositionSelect,
-  SubmitButton,
-} from "@components";
+import { Divider, Form, FormField, SubmitButton } from "@components";
 import { DEFAULT_APPROVER_POS_IDS } from "@config";
 import { useForm } from "@hooks";
 import { useNa3StdDocs } from "@modules/na3-react";
-import type { Na3PositionId, Na3StdDocumentTypeId } from "@modules/na3-types";
+import type {
+  Na3PositionId,
+  Na3StdDocument,
+  Na3StdDocumentTypeId,
+  Na3StdDocumentVersion,
+} from "@modules/na3-types";
 import { createErrorNotifier, getStdDocTypeSelectOptions } from "@utils";
 import { Col, Modal, notification, Row } from "antd";
 import dayjs from "dayjs";
 import React, { useCallback, useState } from "react";
 
+import { DocsStdPermissionsSelect } from "./DocsStdPermissionsSelect";
+
 type DocsCreateStdFormProps = {
   onSubmit?: () => void;
+  editingDoc?: Na3StdDocument;
+  version?: Na3StdDocumentVersion;
 };
 
 type FormValues = {
@@ -31,15 +33,25 @@ type FormValues = {
   versionNumber: string;
 };
 
+const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
+
 export function DocsCreateStdForm({
   onSubmit,
+  editingDoc,
+  version,
 }: DocsCreateStdFormProps): JSX.Element {
-  const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>([]);
-  const [printerPosIds, setPrinterPosIds] = useState<Na3PositionId[]>([]);
-  const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>([]);
-
-  const [docTitle, setDocTitle] = useState("");
-  const [docVersion, setDocVersion] = useState("");
+  const [viewerPosIds, setViewerPosIds] = useState<Na3PositionId[]>(
+    editingDoc?.permissions.read || []
+  );
+  const [printerPosIds, setPrinterPosIds] = useState<Na3PositionId[]>(
+    editingDoc?.permissions.print || []
+  );
+  const [downloaderPosIds, setDownloaderPosIds] = useState<Na3PositionId[]>(
+    editingDoc?.permissions.download || []
+  );
+  const [approverPosIds, setApproverPosIds] = useState<Na3PositionId[]>(
+    editingDoc?.permissions.approve || DEFAULT_APPROVER_POS_IDS
+  );
 
   const {
     helpers: { createDocument },
@@ -47,13 +59,15 @@ export function DocsCreateStdForm({
 
   const form = useForm<FormValues>({
     defaultValues: {
-      code: "",
-      description: "",
-      timeBetweenRevisionsDays: "",
-      title: "",
-      type: "",
-      nextRevisionAt: "",
-      versionNumber: "",
+      code: editingDoc?.code || "",
+      description: editingDoc?.description || "",
+      timeBetweenRevisionsDays: (
+        (editingDoc?.timeBetweenRevisionsMs || 0) / MILLISECONDS_IN_A_DAY || ""
+      ).toString(),
+      title: editingDoc?.title || "",
+      type: editingDoc?.type || "",
+      nextRevisionAt: editingDoc?.nextRevisionAt || "",
+      versionNumber: version?.number ? (version.number + 1).toString() : "",
       fileList: [],
     },
   });
@@ -69,14 +83,6 @@ export function DocsCreateStdForm({
       );
     },
     [form]
-  );
-
-  const handleFileNameTransform = useCallback(
-    (file: UploadFile): UploadFile => ({
-      ...file,
-      fileName: `${docTitle}_v${docVersion}`,
-    }),
-    [docTitle, docVersion]
   );
 
   const handleSubmit = useCallback(
@@ -106,22 +112,27 @@ export function DocsCreateStdForm({
 
           confirmModal.update({ okText: "Enviando..." });
 
+          const titleTrimmed = formValues.title.trim();
+
           const operationRes = await createDocument({
             code: formValues.code,
-            title: formValues.title,
-            description: formValues.description,
+            title: titleTrimmed,
+            description: formValues.description.trim(),
             nextRevisionAt: formValues.nextRevisionAt,
             currentVersionNumber: +formValues.versionNumber,
             type: formValues.type,
             timeBetweenRevisionsMs:
-              +formValues.timeBetweenRevisionsDays * 24 * 60 * 60 * 1000,
+              +formValues.timeBetweenRevisionsDays * MILLISECONDS_IN_A_DAY,
             permissions: {
               read: viewerPosIds,
               print: printerPosIds,
               download: downloaderPosIds,
-              approve: DEFAULT_APPROVER_POS_IDS,
+              approve: approverPosIds,
             },
-            file: formValues.fileList[0].originFileObj,
+            file: {
+              ...formValues.fileList[0].originFileObj,
+              name: `${titleTrimmed}_v${formValues.versionNumber}`,
+            },
           });
 
           if (operationRes.error) {
@@ -149,6 +160,7 @@ export function DocsCreateStdForm({
       viewerPosIds,
       printerPosIds,
       downloaderPosIds,
+      approverPosIds,
       onSubmit,
       createDocument,
     ]
@@ -187,7 +199,6 @@ export function DocsCreateStdForm({
           <FormField
             label="Título"
             name={form.fieldNames.title}
-            onValueChange={setDocTitle}
             rules={{ required: "Atribua um título ao documento" }}
             type="input"
           />
@@ -195,10 +206,10 @@ export function DocsCreateStdForm({
 
         <Col lg={8} md={10} sm={12} xl={6} xs={24} xxl={4}>
           <FormField
+            disabled={!!editingDoc}
             label="Versão vigente"
             name={form.fieldNames.versionNumber}
             noDecimal={true}
-            onValueChange={setDocVersion}
             prefix="v."
             rules={{ required: "Defina a última versão vigente do documento" }}
             type="number"
@@ -244,90 +255,48 @@ export function DocsCreateStdForm({
 
       <Divider />
 
-      <Row gutter={16}>
-        <Col md={8} xs={24}>
-          <FormItem
-            description={
-              <>
-                Selecione as posições que poderão <strong>visualizar</strong> o
-                documento.
-              </>
-            }
-            label="Permissões de visualização"
-          />
-        </Col>
-        <Col md={16} xs={24}>
-          <Na3PositionSelect
-            errorMessage="Defina as posições com permissão de visualização"
-            onValueChange={setViewerPosIds}
-          />
-        </Col>
-      </Row>
+      <DocsStdPermissionsSelect
+        defaultValue={editingDoc?.permissions.read}
+        errorMessage="Defina as posições com permissão de visualização"
+        name="visualização"
+        onValueChange={setViewerPosIds}
+        verb="visualizar"
+      />
 
-      <Row gutter={16}>
-        <Col md={8} xs={24}>
-          <FormItem
-            description={
-              <>
-                Selecione as posições que poderão <strong>imprimir</strong> o
-                documento.
-              </>
-            }
-            label="Permissões de impressão"
-            required={false}
-          />
-        </Col>
-        <Col md={16} xs={24}>
-          <Na3PositionSelect
-            onValueChange={setPrinterPosIds}
-            required={false}
-            selectablePositions={viewerPosIds}
-          />
-        </Col>
-      </Row>
+      <DocsStdPermissionsSelect
+        defaultValue={editingDoc?.permissions.print}
+        name="impressão"
+        onValueChange={setPrinterPosIds}
+        selectablePositions={viewerPosIds}
+        verb="imprimir"
+      />
 
-      <Row gutter={16}>
-        <Col md={8} xs={24}>
-          <FormItem
-            description={
-              <>
-                Selecione as posições que poderão <strong>baixar</strong> o
-                documento.
-              </>
-            }
-            label="Permissões de download"
-            required={false}
-          />
-        </Col>
-        <Col md={16} xs={24}>
-          <Na3PositionSelect
-            onValueChange={setDownloaderPosIds}
-            required={false}
-            selectablePositions={printerPosIds}
-          />
-        </Col>
-      </Row>
+      <DocsStdPermissionsSelect
+        defaultValue={editingDoc?.permissions.download}
+        name="download"
+        onValueChange={setDownloaderPosIds}
+        selectablePositions={printerPosIds}
+        verb="baixar"
+      />
+
+      <DocsStdPermissionsSelect
+        defaultValue={
+          editingDoc?.permissions.approve || DEFAULT_APPROVER_POS_IDS
+        }
+        disabled={true}
+        name="aprovação"
+        onValueChange={setApproverPosIds}
+        verb="aprovar"
+      />
 
       <Divider />
 
       <FormField
         acceptOnly="application/pdf"
-        disabled={!docTitle || !docVersion}
-        fileTransform={handleFileNameTransform}
-        helpWhenDisabled="Defina o título e a versão do documento primeiro"
         hint={
-          <>
-            Anexe a última versão vigente
-            {docVersion ? (
-              <>
-                {" "}
-                <em>({docVersion})</em>
-              </>
-            ) : (
-              ""
-            )}{" "}
-            do documento{docTitle ? ` "${docTitle}"` : ""}
-          </>
+          editingDoc
+            ? "Anexe a versão atualizada do documento"
+            : "Anexe a última versão vigente do documento"
         }
         label="Arquivo"
         name={form.fieldNames.fileList}

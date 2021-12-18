@@ -12,6 +12,7 @@ export type SelectOptionBase<OptionValue extends string = string> = {
   label: React.ReactNode;
   labelWhenSelected?: React.ReactNode;
   value: OptionValue;
+  disabled?: boolean;
 };
 
 export type SelectOptionGroup<OptionValue extends string = string> = {

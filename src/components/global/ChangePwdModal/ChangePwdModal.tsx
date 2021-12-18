@@ -205,7 +205,7 @@ export function ChangePwdModal(): JSX.Element {
           prefix={<LockOutlined />}
           rules={{ required: true, validate: handlePwdValidate }}
           tooltip={{
-            title: (
+            content: (
               <>
                 <PwdChecklistItem isValid={pwdContains(pwdInput, "8+")}>
                   8+ caracteres
@@ -221,8 +221,6 @@ export function ChangePwdModal(): JSX.Element {
                 </PwdChecklistItem>
               </>
             ),
-            arrowPointAtCenter: true,
-            placement: "topLeft",
           }}
           type="password"
         />

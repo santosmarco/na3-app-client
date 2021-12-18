@@ -33,7 +33,7 @@ export function Tag({
   const style = useMemo(() => ({ color: textColor }), [textColor]);
 
   return (
-    <span>
+    <span className={classes.TagContainer}>
       <AntdTag
         className={marginRight === "default" ? undefined : classes.Tag}
         color={color}

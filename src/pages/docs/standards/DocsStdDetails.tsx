@@ -3,6 +3,7 @@ import type { PdfViewerDocLoadEvent } from "@components";
 import {
   Divider,
   DocsStdAccessDeniedResult,
+  DocsStdEditButton,
   DocsStdInfo,
   DocsStdReadPendingAlert,
   DocsStdRejectButton,
@@ -326,6 +327,8 @@ export function DocsStdDetailsPage({
     );
   }, [setBreadcrumbExtra, doc, docVersion]);
 
+  console.log(userPermissions);
+
   return doc && currentUser ? (
     userPermissions?.read ? (
       <PrintPrevent disabled={userPermissions.print}>
@@ -370,25 +373,31 @@ export function DocsStdDetailsPage({
 
             <PageDescription>{doc.description}</PageDescription>
 
-            {userPermissions.approve && docStatus === "pending" && (
-              <PageActionButtons>
-                <Button
-                  icon={<CheckOutlined />}
-                  onClick={handleDocApprove}
-                  type="primary"
-                >
-                  Aprovar documento
-                </Button>
+            <PageActionButtons>
+              {userPermissions.approve && docStatus === "pending" && (
+                <>
+                  <Button
+                    icon={<CheckOutlined />}
+                    onClick={handleDocApprove}
+                    type="primary"
+                  >
+                    Aprovar documento
+                  </Button>
 
-                <DocsStdRejectButton
-                  icon={<CloseOutlined />}
-                  modalTitle="Rejeitar documento"
-                  onRejectSubmit={handleDocReject}
-                >
-                  Rejeitar{breakpoint.lg && " documento"}
-                </DocsStdRejectButton>
-              </PageActionButtons>
-            )}
+                  <DocsStdRejectButton
+                    icon={<CloseOutlined />}
+                    modalTitle="Rejeitar documento"
+                    onRejectSubmit={handleDocReject}
+                  >
+                    Rejeitar{breakpoint.lg && " documento"}
+                  </DocsStdRejectButton>
+                </>
+              )}
+
+              {userPermissions.write && docStatus === "pending" && (
+                <DocsStdEditButton doc={doc} />
+              )}
+            </PageActionButtons>
 
             <Divider marginBottom={12} />
 

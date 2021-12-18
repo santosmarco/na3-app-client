@@ -1,4 +1,4 @@
-import { FileOutlined } from "@ant-design/icons";
+import { FileOutlined, FilePdfOutlined } from "@ant-design/icons";
 import { Overlay } from "@components";
 import type { MaybeArray } from "@types";
 import { Upload } from "antd";
@@ -103,7 +103,11 @@ export function FileUpload({
           onRemove={handleRemove}
         >
           <p className="ant-upload-drag-icon">
-            <FileOutlined />
+            {acceptOnly === "application/pdf" ? (
+              <FilePdfOutlined />
+            ) : (
+              <FileOutlined />
+            )}
           </p>
 
           <p className="ant-upload-text">{placeholder}</p>

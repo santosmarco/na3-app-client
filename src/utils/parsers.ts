@@ -8,6 +8,9 @@ const parserDictionary = {
   priority: "Prioridade",
   eta: "Previsão de entrega",
 
+  // General parsings
+  "application/pdf": ".pdf",
+
   // Levels of priority
   low: "Baixa",
   medium: "Média",

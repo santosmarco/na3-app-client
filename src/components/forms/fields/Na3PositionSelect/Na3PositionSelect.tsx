@@ -1,7 +1,11 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { FormField } from "@components";
 import { useNa3Departments, useNa3Users } from "@modules/na3-react";
-import type { Na3DepartmentId, Na3PositionId } from "@modules/na3-types";
+import type {
+  Na3DepartmentId,
+  Na3PositionId,
+  Na3PositionIdBase,
+} from "@modules/na3-types";
 import {
   getDepartmentSelectOptions,
   handleFilterDuplicates,
@@ -10,6 +14,7 @@ import {
 import { Button, Col, Row } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 import classes from "./Na3PositionSelect.module.css";
 
@@ -23,6 +28,7 @@ type PositionField = {
 type Na3PositionSelectProps = {
   errorMessage?: string;
   helpWhenEmpty?: React.ReactNode;
+  defaultValue?: Na3PositionId[];
   onValueChange?: (positionIds: Na3PositionId[]) => void;
   selectablePositions?: Na3PositionId[];
   required?: boolean;
@@ -34,9 +40,10 @@ const defaultProps = {
 };
 
 export function Na3PositionSelect({
+  defaultValue,
   onValueChange,
   errorMessage,
-  selectablePositions,
+  selectablePositions: selectablePosProp,
   helpWhenEmpty,
   required,
   disabled,
@@ -44,40 +51,52 @@ export function Na3PositionSelect({
   const departments = useNa3Departments();
   const users = useNa3Users();
 
-  const [positionFields, setPositionFields] = useState<PositionField[]>([
-    createBlankPositionField(),
-  ]);
+  const [positionFields, setPositionFields] = useState<PositionField[]>(
+    defaultValue
+      ? defaultValue.map(createPositionField)
+      : [createPositionField()]
+  );
+
+  const formCtx = useFormContext();
+
+  const selectablePositions = useMemo((): Na3PositionId[] => {
+    if (defaultValue || selectablePosProp) {
+      return [...(defaultValue || []), ...(selectablePosProp || [])];
+    }
+    return (departments.data || [])
+      .flatMap((dpt) => dpt.positions)
+      .map((pos) => pos.id)
+      .filter(handleFilterDuplicates);
+  }, [departments.data, defaultValue, selectablePosProp]);
 
   const selectableDepartmentOptions = useMemo(() => {
-    if (!departments.data) {
-      return [];
-    }
+    const dptIds = selectablePositions
+      .map((pos) => departments.helpers.splitPositionId(pos)[0])
+      .filter(handleFilterDuplicates);
 
-    let dpts = departments.data;
+    const dpts = dptIds
+      .map((dptId) => departments.helpers.getById(dptId))
+      .filter(handleFilterFalsies);
 
-    if (selectablePositions) {
-      dpts = selectablePositions
-        .map((pos) => departments.helpers.splitPositionId(pos)[0])
-        .filter(handleFilterDuplicates)
-        .map((dptId) => departments.helpers.getById(dptId))
-        .filter(handleFilterFalsies);
-    }
+    return getDepartmentSelectOptions(dpts).map((opt) => ({
+      ...opt,
+      options: opt.options.map((subOpt) => {
+        const dpt = departments.helpers.getById(subOpt.value);
+        const allDptPositionsAreSelected = (dpt?.positions || [])
+          .filter((pos) => {
+            const posIsSelectable = selectablePositions.includes(pos.id);
+            return posIsSelectable;
+          })
+          .every((pos) =>
+            positionFields
+              .map((posField) => posField.positionId)
+              .includes(pos.id)
+          );
 
-    return getDepartmentSelectOptions(
-      dpts.filter((dpt) => {
-        const allDptPositionsAreSelected = dpt.positions.every((pos) =>
-          positionFields.map((posField) => posField.positionId).includes(pos.id)
-        );
-
-        return !allDptPositionsAreSelected;
-      })
-    );
-  }, [
-    departments.data,
-    departments.helpers,
-    positionFields,
-    selectablePositions,
-  ]);
+        return { ...subOpt, disabled: allDptPositionsAreSelected };
+      }),
+    }));
+  }, [selectablePositions, positionFields, departments.helpers]);
 
   const getSelectablePositionOptions = useCallback(
     (departmentId: Na3DepartmentId) => {
@@ -89,16 +108,14 @@ export function Na3PositionSelect({
 
       return dpt.positions
         .filter((pos) => {
-          const posIsSelectable = selectablePositions
-            ? selectablePositions.includes(pos.id)
-            : true;
+          const posIsSelectable = selectablePositions.includes(pos.id);
+          return posIsSelectable;
+        })
+        .map((pos) => {
           const posIsAlreadySelected = positionFields
             .map((posField) => posField.positionId)
             .includes(pos.id);
 
-          return posIsSelectable && !posIsAlreadySelected;
-        })
-        .map((pos) => {
           const numOfUsersInPosition =
             users.helpers.getAllInPositions(pos).length;
 
@@ -121,6 +138,7 @@ export function Na3PositionSelect({
             ),
             labelWhenSelected: pos.shortName.trim().toUpperCase(),
             value: pos.id,
+            disabled: posIsAlreadySelected,
           };
         });
     },
@@ -128,7 +146,7 @@ export function Na3PositionSelect({
   );
 
   const handlePositionFieldAdd = useCallback(() => {
-    setPositionFields((curr) => [...curr, createBlankPositionField()]);
+    setPositionFields((curr) => [...curr, createPositionField()]);
   }, []);
 
   const handlePositionFieldRemove = useCallback((fieldId: string) => {
@@ -142,25 +160,30 @@ export function Na3PositionSelect({
     <T extends "departmentId" | "positionId">(
       fieldId: string,
       valueKey: T,
-      value: Exclude<PositionField[T], "">
+      value: Exclude<PositionField[T], ""> | undefined
     ) => {
       const fieldIdx = positionFields.findIndex(
         (field) => field.id === fieldId
       );
 
-      if (positionFields[fieldIdx][valueKey] !== value) {
+      const field = positionFields[fieldIdx];
+
+      if (field[valueKey] !== value) {
         setPositionFields((curr) => {
-          const updated = [...curr];
-          updated[fieldIdx] = {
-            ...updated[fieldIdx],
-            positionId: "",
-            [valueKey]: value,
-          };
-          return updated;
+          return [
+            ...curr.slice(0, fieldIdx),
+            { ...curr[fieldIdx], positionId: "", [valueKey]: value || "" },
+            ...curr.slice(fieldIdx + 1),
+          ];
         });
+
+        if (valueKey === "departmentId" && !value) {
+          const posIdFieldName = `${field.name}-positionId`;
+          formCtx.setValue(posIdFieldName, "");
+        }
       }
     },
-    [positionFields]
+    [positionFields, formCtx]
   );
 
   useEffect(() => {
@@ -182,6 +205,11 @@ export function Na3PositionSelect({
                 selectableDepartmentOptions.length === 0 &&
                 helpWhenEmpty
               }
+              defaultValue={
+                defaultValue?.map(
+                  (posId) => departments.helpers.splitPositionId(posId)[0]
+                )[idx]
+              }
               disabled={disabled}
               label="Setor"
               name={`${field.name}-departmentId`}
@@ -202,6 +230,7 @@ export function Na3PositionSelect({
 
           <Col span={idx === 0 ? 12 : 10}>
             <FormField
+              defaultValue={defaultValue?.[idx]}
               disabled={disabled || !field.departmentId}
               label="Função"
               name={`${field.name}-positionId`}
@@ -251,15 +280,20 @@ export function Na3PositionSelect({
   );
 }
 
-function createBlankPositionField(): PositionField {
+function createPositionField(positionId?: Na3PositionId): PositionField {
   const id = nanoid();
+  const name: `position-${string}` = `position-${id}`;
 
-  return {
-    departmentId: "",
-    id,
-    name: `position-${id}`,
-    positionId: "",
-  };
+  const baseField = { id, name };
+
+  if (positionId) {
+    const [departmentId] = positionId.split(".") as [
+      Na3DepartmentId,
+      Na3PositionIdBase
+    ];
+    return { ...baseField, departmentId, positionId };
+  }
+  return { ...baseField, departmentId: "", positionId: "" };
 }
 
 Na3PositionSelect.defaultProps = defaultProps;

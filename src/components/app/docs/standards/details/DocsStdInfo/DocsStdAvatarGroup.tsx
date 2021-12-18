@@ -6,6 +6,8 @@ import { timestampToStr } from "@utils";
 import { Typography } from "antd";
 import React, { useCallback } from "react";
 
+import classes from "./DocsStdAvatarGroup.module.css";
+
 type AvatarGroupData = AppUser | { user: AppUser; event?: Na3StdDocumentEvent };
 
 type DocsStdAvatarGroupProps = {
@@ -40,12 +42,16 @@ export function DocsStdAvatarGroup({
     []
   );
 
-  return (
+  return data.length > 0 ? (
     <UserAvatarGroup
       data={data}
       maxCount={5}
       onTooltipProps={handleTooltip}
       type="initials"
     />
+  ) : (
+    <Typography.Text className={classes.NoUsers} italic={true} type="secondary">
+      Nenhum usuário...
+    </Typography.Text>
   );
 }

@@ -31,8 +31,8 @@ export function DocsStdPermissionsData({
   } = useNa3Users();
 
   const positionsWithPermission = useMemo(
-    () => getPositionsById(doc.permissions.read),
-    [getPositionsById, doc.permissions.read]
+    () => getPositionsById(doc.permissions[permissionId]),
+    [getPositionsById, doc.permissions, permissionId]
   );
 
   const usersWithPermission = useMemo(

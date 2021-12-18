@@ -12,4 +12,5 @@ export * from "./notifications/push";
 export * from "./notifications/web";
 export * from "./parsers";
 export * from "./priority";
+export * from "./text/text";
 export * from "./transfLabels";

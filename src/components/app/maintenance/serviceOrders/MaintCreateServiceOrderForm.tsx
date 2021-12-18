@@ -244,14 +244,12 @@ export function MaintCreateServiceOrderForm({
         rules={{ required: "Descreva o problema" }}
         tooltip={{
           icon: <InfoCircleOutlined />,
-          title: (
+          content: (
             <>
               <strong>Lembre-se!</strong> Dê sempre preferência aos problemas
               pré-definidos
             </>
           ),
-          arrowPointAtCenter: true,
-          placement: "topLeft",
         }}
         type="autoComplete"
       />

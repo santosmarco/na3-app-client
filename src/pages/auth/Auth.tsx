@@ -93,9 +93,7 @@ export function AuthPage({ redirectUrl }: PageProps): JSX.Element {
             required: "Digite sua matrícula",
           }}
           tooltip={{
-            arrowPointAtCenter: true,
-            placement: "topLeft",
-            title:
+            content:
               "Para solicitar uma conta, entre em contato com o administrador do sistema",
           }}
           type="number"

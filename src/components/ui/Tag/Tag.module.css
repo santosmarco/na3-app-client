@@ -1,3 +1,9 @@
+.TagContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .Tag {
   margin-right: 0;
 }

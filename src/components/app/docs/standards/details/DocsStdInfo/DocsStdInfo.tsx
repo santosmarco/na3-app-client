@@ -9,7 +9,6 @@ import {
 import {
   Collapse,
   DataItem,
-  DocsStdAvatarGroup,
   DocsStdStatusBadge,
   DocsStdTypeTag,
 } from "@components";
@@ -20,6 +19,7 @@ import { Col, Grid, Row, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useMemo } from "react";
 
+import { DocsStdAvatarGroup } from "./DocsStdAvatarGroup";
 import classes from "./DocsStdInfo.module.css";
 import { DocsStdPermissionsData } from "./DocsStdPermissionsData";
 
