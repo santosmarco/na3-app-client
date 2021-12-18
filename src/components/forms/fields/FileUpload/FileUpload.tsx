@@ -1,9 +1,17 @@
-import { FileOutlined, FilePdfOutlined } from "@ant-design/icons";
-import { Overlay } from "@components";
+import {
+  FileDoneOutlined,
+  FileExclamationOutlined,
+  FileOutlined,
+  FilePdfOutlined,
+} from "@ant-design/icons";
+import type { FieldStatus } from "@components";
+import { Icon, Overlay } from "@components";
 import type { MaybeArray } from "@types";
-import { Upload } from "antd";
+import { Typography, Upload } from "antd";
 import { isArray } from "lodash";
 import React, { useCallback } from "react";
+
+import classes from "./FileUpload.module.css";
 
 type UploadFileStatus = "done" | "error" | "removed" | "success" | "uploading";
 
@@ -37,6 +45,9 @@ export type FileUploadAsFieldProps = {
   hint?: React.ReactNode;
   maxCount?: number;
   multiple?: boolean;
+  status?: FieldStatus;
+  help?: React.ReactNode;
+  hideHintWhenValid?: boolean;
 };
 
 type FileUploadProps = Required<FileUploadAsFieldProps> & {
@@ -60,6 +71,9 @@ export function FileUpload({
   value,
   fileTransform,
   acceptOnly,
+  status,
+  help,
+  hideHintWhenValid,
 }: FileUploadProps): JSX.Element {
   const handleChange = useCallback(
     ({ fileList }: { fileList: UploadFile[] }) => {
@@ -102,19 +116,43 @@ export function FileUpload({
           onChange={handleChange}
           onRemove={handleRemove}
         >
-          <p className="ant-upload-drag-icon">
-            {acceptOnly === "application/pdf" ? (
-              <FilePdfOutlined />
-            ) : (
-              <FileOutlined />
-            )}
-          </p>
+          <Typography.Text className={classes.DraggerIcon}>
+            {/* Icon when input is valid */}
+            <Icon animated={true} color="success" visible={status === "valid"}>
+              <FileDoneOutlined />
+            </Icon>
+            {/* Icon when input is invalid */}
+            <Icon animated={true} color="error" visible={status === "invalid"}>
+              <FileExclamationOutlined />
+            </Icon>
+            {/* Default icon */}
+            <Icon
+              animated={true}
+              color="primary"
+              visible={status !== "valid" && status !== "invalid"}
+            >
+              {getDraggerIcon({ acceptableFileTypes: acceptOnly })}
+            </Icon>
+          </Typography.Text>
 
-          <p className="ant-upload-text">{placeholder}</p>
+          <p className="ant-upload-text">{help || placeholder}</p>
 
-          {hint && <p className="ant-upload-hint">{hint}</p>}
+          {hint && (status !== "valid" || !hideHintWhenValid) && (
+            <p className="ant-upload-hint">{hint}</p>
+          )}
         </Upload.Dragger>
       </Overlay>
     </div>
   );
+}
+
+function getDraggerIcon({
+  acceptableFileTypes,
+}: {
+  acceptableFileTypes: MaybeArray<FileUploadAccept> | null | undefined;
+}): JSX.Element {
+  if (acceptableFileTypes === "application/pdf") {
+    return <FilePdfOutlined />;
+  }
+  return <FileOutlined />;
 }

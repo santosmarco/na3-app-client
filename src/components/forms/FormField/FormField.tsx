@@ -427,7 +427,9 @@ export function FormField<SelectValue extends string = string>(
             ? (helpWhenValid(value as never) as React.ReactNode)
             : helpWhenValid
         }
-        defaultContent={defaultHelp}
+        defaultContent={
+          defaultHelp || (type === "file" && status !== "valid" && placeholder)
+        }
         error={error?.message}
         fieldStatus={status}
         isDisabled={disabled}
@@ -436,6 +438,7 @@ export function FormField<SelectValue extends string = string>(
       />
     ),
     [
+      type,
       defaultHelp,
       error?.message,
       status,
@@ -446,6 +449,7 @@ export function FormField<SelectValue extends string = string>(
       helpWhenValid,
       helpWhenDisabled,
       value,
+      placeholder,
     ]
   );
 
@@ -621,6 +625,8 @@ export function FormField<SelectValue extends string = string>(
             acceptOnly={props.acceptOnly || null}
             disabled={isSubmitting ? disabledProp || false : disabled}
             fileTransform={props.fileTransform || null}
+            help={helpComponent}
+            hideHintWhenValid={props.hideHintWhenValid ?? true}
             hint={props.hint || null}
             id={name}
             maxCount={props.maxCount || 1}
@@ -628,6 +634,7 @@ export function FormField<SelectValue extends string = string>(
             onBlur={handleBlur}
             onChange={handleChange}
             placeholder={placeholder}
+            status={status}
             value={isUploadFileArray(value) ? value : []}
           />
         );
@@ -636,6 +643,8 @@ export function FormField<SelectValue extends string = string>(
     name,
     type,
     value,
+    status,
+    helpComponent,
     handleChange,
     handleBlur,
     handleFilterSelectOptions,
@@ -650,8 +659,8 @@ export function FormField<SelectValue extends string = string>(
   return (
     <Form.Item
       colon={false}
-      hasFeedback={true}
-      help={helpComponent}
+      hasFeedback={type !== "file"}
+      help={type !== "file" && helpComponent}
       hidden={hidden}
       htmlFor={name}
       label={labelComponent}
