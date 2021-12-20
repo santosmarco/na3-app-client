@@ -95,7 +95,7 @@ export function DocsCreateStdForm({
     (formValues: FormValues) => {
       const notifyError = createErrorNotifier(
         `Erro ao ${
-          editingDoc ? "editar" : upgrade ? "atualizar" : "criar"
+          upgrade ? "atualizar" : editingDoc ? "editar" : "criar"
         } o documento`
       );
 
@@ -103,12 +103,12 @@ export function DocsCreateStdForm({
         content: (
           <>
             Confirma a{" "}
-            {editingDoc ? "edição" : upgrade ? "atualização" : "criação"} do
+            {upgrade ? "atualização" : editingDoc ? "edição" : "criação"} do
             documento {`"${formValues.title.trim()}"`}{" "}
             <em>(v.{formValues.versionNumber})</em>?
           </>
         ),
-        okText: editingDoc ? "Editar" : upgrade ? "Atualizar" : "Criar",
+        okText: upgrade ? "Atualizar" : editingDoc ? "Editar" : "Criar",
         onOk: async () => {
           if (formValues.type === "") {
             notifyError("Atribua um tipo ao documento.");
@@ -159,12 +159,12 @@ export function DocsCreateStdForm({
                 <>
                   Documento {`"${formValues.title.trim()}"`}{" "}
                   <em>(v.{formValues.versionNumber})</em>{" "}
-                  {editingDoc ? "editado" : upgrade ? "atualizado" : "criado"}{" "}
+                  {upgrade ? "atualizado" : editingDoc ? "editado" : "criado"}{" "}
                   com sucesso!
                 </>
               ),
               message: `Documento ${
-                editingDoc ? "editado" : upgrade ? "atualizado" : "criado"
+                upgrade ? "atualizado" : editingDoc ? "editado" : "criado"
               }`,
             });
 
@@ -173,7 +173,7 @@ export function DocsCreateStdForm({
           }
         },
         title: `${
-          editingDoc ? "Editar" : upgrade ? "Atualizar" : "Criar"
+          upgrade ? "Atualizar" : editingDoc ? "Editar" : "Criar"
         } documento?`,
       });
     },
@@ -372,10 +372,10 @@ export function DocsCreateStdForm({
 
       <SubmitButton
         label={
-          editingDoc
-            ? "Salvar alterações"
-            : upgrade
+          upgrade
             ? "Enviar atualização"
+            : editingDoc
+            ? "Salvar alterações"
             : "Criar documento"
         }
         labelWhenLoading="Enviando..."
