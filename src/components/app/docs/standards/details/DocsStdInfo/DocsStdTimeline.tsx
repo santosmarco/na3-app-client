@@ -1,4 +1,4 @@
-import { ModalWide, Timeline } from "@components";
+import { Divider, ModalWide, Timeline } from "@components";
 import { useModal } from "@hooks";
 import { useNa3Users } from "@modules/na3-react";
 import type { Na3StdDocument } from "@modules/na3-types";
@@ -33,58 +33,62 @@ export function DocsStdTimeline({ doc }: DocsStdTimelineProps): JSX.Element {
           )?.payload.comment;
 
           return (
-            <Row key={version.id}>
-              <Col span={12}>
-                <Typography.Title level={4}>
-                  v.{version.number}
-                </Typography.Title>
-                <Typography.Paragraph italic={true} type="secondary">
-                  {versionUpgradeComment ||
-                    "Esta foi a primeira versão desse documento."}
-                </Typography.Paragraph>
+            <>
+              <Row key={version.id}>
+                <Col span={12}>
+                  <Typography.Title level={4}>
+                    v.{version.number}
+                  </Typography.Title>
+                  <Typography.Paragraph italic={true} type="secondary">
+                    {versionUpgradeComment ||
+                      "Esta foi a primeira versão desse documento."}
+                  </Typography.Paragraph>
 
-                <Button>Acessar o arquivo dessa versão</Button>
-              </Col>
+                  <Button>Acessar o arquivo dessa versão</Button>
+                </Col>
 
-              <Col span={12}>
-                <Timeline
-                  items={[...version.events].reverse().map((ev) => {
-                    const originUser = getUserByUid(ev.origin.uid);
+                <Col span={12}>
+                  <Timeline
+                    items={version.events.map((ev) => {
+                      const originUser = getUserByUid(ev.origin.uid);
 
-                    return {
-                      body:
-                        ev.type === "create"
-                          ? `em ${timestampToStr(ev.timestamp)}`
-                          : (ev.type === "acknowledge" ||
-                              ev.type === "download") &&
-                            originUser
-                          ? `por ${originUser.displayName}`
-                          : ev.payload.comment,
-                      color:
-                        ev.type === "create"
-                          ? "cyan"
-                          : ev.type === "approve"
-                          ? "lime"
-                          : ev.type === "reject"
-                          ? "red"
-                          : ev.type === "acknowledge"
-                          ? "green"
-                          : undefined,
-                      postTitle:
-                        ev.type !== "create" &&
-                        dayjs(ev.timestamp).format("DD/MM/YY HH:mm"),
-                      title: parseStringId(ev.type),
-                      info: ev.type !== "acknowledge" &&
-                        ev.type !== "download" &&
-                        originUser && {
-                          type: "tooltip",
-                          content: originUser.displayName,
-                        },
-                    };
-                  })}
-                />
-              </Col>
-            </Row>
+                      return {
+                        body:
+                          ev.type === "create"
+                            ? `em ${timestampToStr(ev.timestamp)}`
+                            : (ev.type === "acknowledge" ||
+                                ev.type === "download") &&
+                              originUser
+                            ? `por ${originUser.displayName}`
+                            : ev.payload.comment,
+                        color:
+                          ev.type === "create"
+                            ? "cyan"
+                            : ev.type === "approve"
+                            ? "lime"
+                            : ev.type === "reject"
+                            ? "red"
+                            : ev.type === "acknowledge"
+                            ? "green"
+                            : undefined,
+                        postTitle:
+                          ev.type !== "create" &&
+                          dayjs(ev.timestamp).format("DD/MM/YY HH:mm"),
+                        title: parseStringId(ev.type),
+                        info: ev.type !== "acknowledge" &&
+                          ev.type !== "download" &&
+                          originUser && {
+                            type: "tooltip",
+                            content: originUser.displayName,
+                          },
+                      };
+                    })}
+                  />
+                </Col>
+              </Row>
+
+              {idx !== arr.length - 1 && <Divider />}
+            </>
           );
         })}
       </ModalWide>
