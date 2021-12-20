@@ -165,10 +165,11 @@ export function Na3PositionSelect({
       const fieldIdx = positionFields.findIndex(
         (field) => field.id === fieldId
       );
-
       const field = positionFields[fieldIdx];
 
+      // If current field value differs from new value, update field.
       if (field[valueKey] !== value) {
+        // Update field in state.
         setPositionFields((curr) => {
           return [
             ...curr.slice(0, fieldIdx),
@@ -176,14 +177,46 @@ export function Na3PositionSelect({
             ...curr.slice(fieldIdx + 1),
           ];
         });
-
-        if (valueKey === "departmentId" && !value) {
-          const posIdFieldName = `${field.name}-positionId`;
-          formCtx.setValue(posIdFieldName, "");
+        // If the change comes from a dptId field, also clear the
+        // positionId value in form to prevent selecting an
+        // invalid position.
+        if (valueKey === "departmentId") {
+          formCtx.setValue(`${field.name}-positionId`, "");
         }
       }
     },
     [positionFields, formCtx]
+  );
+
+  const checkFieldIsRequired = useCallback(
+    (rowIdx: number): boolean => {
+      // If the entire component is set to be disabled, all fields
+      // should be marked as required.
+      if (disabled) {
+        return true;
+      }
+      // Otherwise, only mark the field as required if the component itself
+      // is marked as required and we're checking on the first row of fields.
+      if (required && rowIdx === 0) {
+        return true;
+      }
+      // Else, no field should be marked as required.
+      return false;
+    },
+    [disabled, required]
+  );
+
+  const checkRemoveBtnIsVisible = useCallback(
+    (rowIdx: number): boolean => {
+      // If the entire component is set to be disabled, there's no remove btn.
+      if (disabled) {
+        return false;
+      }
+      // Otherwise, there will be always a remove btn for any row except
+      // for the first one.
+      return rowIdx > 0;
+    },
+    [disabled]
   );
 
   useEffect(() => {
@@ -217,18 +250,17 @@ export function Na3PositionSelect({
                 handlePositionFieldChange(field.id, "departmentId", value);
               }}
               options={selectableDepartmentOptions}
-              required={required && idx === 0}
+              required={checkFieldIsRequired(idx)}
               rules={{
                 required:
-                  required &&
-                  idx === 0 &&
+                  checkFieldIsRequired(idx) &&
                   (errorMessage || "Atribua uma posição ao colaborador"),
               }}
               type="select"
             />
           </Col>
 
-          <Col span={idx === 0 ? 12 : 10}>
+          <Col span={checkRemoveBtnIsVisible(idx) ? 10 : 12}>
             <FormField
               defaultValue={defaultValue?.[idx]}
               disabled={disabled || !field.departmentId}
@@ -245,17 +277,18 @@ export function Na3PositionSelect({
               placeholder={
                 !field.departmentId ? "Selecione o setor primeiro" : undefined
               }
-              required={required && idx === 0}
-              rules={{ required: required && idx === 0 }}
+              required={checkFieldIsRequired(idx)}
+              rules={{ required: checkFieldIsRequired(idx) }}
               type="select"
             />
           </Col>
 
-          {idx !== 0 && (
+          {checkRemoveBtnIsVisible(idx) && (
             <Col className={classes.RemovePositionBtn} span={2}>
               <Button
                 block={true}
                 danger={true}
+                disabled={disabled}
                 icon={<DeleteOutlined />}
                 onClick={(): void => {
                   handlePositionFieldRemove(field.id);
@@ -270,6 +303,7 @@ export function Na3PositionSelect({
       <Button
         block={true}
         className={classes.AddPositionBtn}
+        disabled={disabled}
         icon={<PlusOutlined />}
         onClick={handlePositionFieldAdd}
         type="dashed"
