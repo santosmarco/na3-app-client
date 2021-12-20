@@ -378,47 +378,6 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [userHasDocumentPermissions]
   );
 
-  const createDocument = useCallback(
-    async (
-      data: StdDocBuilderData & { file: File }
-    ): Promise<FirebaseOperationResult<Na3StdDocument>> => {
-      if (!currentUser) {
-        return {
-          data: null,
-          error: buildNa3Error("na3/firestore/generic/user-not-found"),
-        };
-      }
-
-      const document = buildStdDocument(data, { device, user: currentUser });
-
-      try {
-        const docRef = await addDoc(fbCollectionRef.current, document);
-
-        const addedDocument = { ...document, id: docRef.id };
-
-        await uploadBytes(
-          ref(
-            fbStorageRef.current,
-            buildStdDocumentUrl(addedDocument, addedDocument.versions[0])
-          ),
-          data.file
-        );
-
-        void currentUser.registerEvents({
-          DOCS_STD_CREATE: { docId: docRef.id },
-        });
-
-        return { data: addedDocument, error: null };
-      } catch (err) {
-        return {
-          data: null,
-          error: translateFirebaseError(err as FirebaseError),
-        };
-      }
-    },
-    [currentUser, device]
-  );
-
   const pushVersionEvent = useCallback(
     async (
       docId: string,
@@ -462,6 +421,47 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         });
 
         return { data: { ...event, version: lastVersion }, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
+      }
+    },
+    [currentUser, device]
+  );
+
+  const createDocument = useCallback(
+    async (
+      data: StdDocBuilderData & { file: File }
+    ): Promise<FirebaseOperationResult<Na3StdDocument>> => {
+      if (!currentUser) {
+        return {
+          data: null,
+          error: buildNa3Error("na3/firestore/generic/user-not-found"),
+        };
+      }
+
+      const document = buildStdDocument(data, { device, user: currentUser });
+
+      try {
+        const docRef = await addDoc(fbCollectionRef.current, document);
+
+        const addedDocument = { ...document, id: docRef.id };
+
+        await uploadBytes(
+          ref(
+            fbStorageRef.current,
+            buildStdDocumentUrl(addedDocument, addedDocument.versions[0])
+          ),
+          data.file
+        );
+
+        void currentUser.registerEvents({
+          DOCS_STD_CREATE: { docId: docRef.id },
+        });
+
+        return { data: addedDocument, error: null };
       } catch (err) {
         return {
           data: null,
@@ -559,29 +559,35 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         };
       }
 
-      const docToModify = getDocumentById(docId);
-      if (!docToModify) {
-        return {
-          data: null,
-          error: buildNa3Error("na3/firestore/generic/doc-not-found"),
-        };
-      }
-
-      const docOverwrite = buildStdDocument(
-        data,
-        { device, user: currentUser },
-        { versions: docToModify.versions, upgrade: options?.upgrade }
-      );
-
       const trimmedComment = data.comment.trim();
 
       try {
-        await pushVersionEvent(docId, {
+        const eventPushRes = await pushVersionEvent(docId, {
           type: options?.upgrade ? "upgrade" : "edit",
           payload: { comment: trimmedComment },
         });
 
-        await updateDoc(doc(fbCollectionRef.current, docId), docOverwrite);
+        if (eventPushRes.error) {
+          return eventPushRes;
+        }
+
+        const docRef = doc(fbCollectionRef.current, docId);
+        const docToModify = await getDoc(docRef);
+        const currDocData = docToModify.data();
+        if (!currDocData) {
+          return {
+            data: null,
+            error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+          };
+        }
+
+        const docOverwrite = buildStdDocument(
+          data,
+          { device, user: currentUser },
+          { versions: currDocData.versions, upgrade: options?.upgrade }
+        );
+
+        await updateDoc(docRef, docOverwrite);
 
         const updatedDoc = { ...docOverwrite, id: docId };
 
@@ -616,13 +622,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         };
       }
     },
-    [
-      currentUser,
-      device,
-      getDocumentById,
-      getDocumentLatestVersion,
-      pushVersionEvent,
-    ]
+    [currentUser, device, getDocumentLatestVersion, pushVersionEvent]
   );
 
   const editDocumentVersion = useCallback(
