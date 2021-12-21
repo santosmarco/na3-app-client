@@ -51,7 +51,7 @@ export type {
 } from "./forms/fields/Select/Select";
 export type { HandleSubmit, HandleSubmitFailed } from "./forms/Form";
 export { Form } from "./forms/Form";
-export type { FieldStatus } from "./forms/FormField/FormField";
+export type { FieldStatus, FieldTooltip } from "./forms/FormField/FormField";
 export { FormField } from "./forms/FormField/FormField";
 export { SubmitButton } from "./forms/SubmitButton";
 export { ChangePwdModal } from "./global/ChangePwdModal/ChangePwdModal";

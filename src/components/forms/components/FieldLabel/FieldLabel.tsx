@@ -4,16 +4,21 @@ import React from "react";
 import classes from "./FieldLabel.module.css";
 
 type FieldLabelProps = {
+  children: React.ReactNode;
+  hideOptionalMark: boolean;
   isOptional: boolean;
-  text: string;
 };
 
-export function FieldLabel({ isOptional, text }: FieldLabelProps): JSX.Element {
+export function FieldLabel({
+  isOptional,
+  hideOptionalMark,
+  children,
+}: FieldLabelProps): JSX.Element {
   return (
     <Typography.Text className={classes.Label}>
-      {text}
+      {children}
 
-      {isOptional && (
+      {isOptional && !hideOptionalMark && (
         <small className={classes.OptionalMark}>
           <Typography.Text italic={true} type="secondary">
             (opcional)

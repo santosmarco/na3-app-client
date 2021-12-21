@@ -2,13 +2,13 @@ import { Grid, Modal } from "antd";
 import React from "react";
 
 type ModalWideProps = {
-  visible: boolean;
+  centered?: boolean;
+  children: React.ReactNode;
+  destroyOnClose?: boolean;
+  footer?: React.ReactNode;
   onClose: () => void;
   title: React.ReactNode;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  destroyOnClose?: boolean;
-  centered?: boolean;
+  visible: boolean;
 };
 
 const defaultProps = {

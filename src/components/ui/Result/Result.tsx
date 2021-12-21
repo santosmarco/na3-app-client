@@ -16,8 +16,8 @@ type ResultProps = Omit<
 > &
   ResultPropsRequired & {
     children?: React.ReactNode;
-    paddingTop?: number;
     paddingBottom?: number;
+    paddingTop?: number;
   };
 
 export function Result({

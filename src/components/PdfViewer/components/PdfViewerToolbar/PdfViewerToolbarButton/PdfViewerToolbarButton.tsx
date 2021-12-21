@@ -2,11 +2,11 @@ import { Button, Grid, Tooltip } from "antd";
 import React from "react";
 
 type PdfViewerToolbarButtonProps = {
-  label: string;
-  icon: React.ReactNode;
-  onClick: () => void;
-  labelPlacement?: "center" | "left" | "right";
   disabled?: boolean;
+  icon: React.ReactNode;
+  label: string;
+  labelPlacement?: "center" | "left" | "right";
+  onClick: () => void;
 };
 
 export function PdfViewerToolbarButton({

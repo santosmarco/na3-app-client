@@ -6,11 +6,11 @@ import classes from "./Page.module.css";
 type PageProps = {
   additionalPaddingBottom?: number;
   children?: React.ReactNode;
+  forceNoPaddingBottom?: boolean;
+  marginBottom?: number;
   preventScroll?: boolean;
   scrollTopOffset?: number;
   style?: React.CSSProperties;
-  forceNoPaddingBottom?: boolean;
-  marginBottom?: number;
 };
 
 export function Page({

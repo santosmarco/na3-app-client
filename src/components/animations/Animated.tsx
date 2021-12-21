@@ -3,11 +3,11 @@ import React from "react";
 import classes from "./Animated.module.css";
 
 export type AnimatedProps = {
-  visible: boolean;
-  children: React.ReactNode;
   animationIn?: "fadeIn";
   animationOut?: "fadeOut";
+  children: React.ReactNode;
   style?: React.CSSProperties;
+  visible: boolean;
 };
 
 export function Animated({

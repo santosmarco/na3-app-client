@@ -42,12 +42,12 @@ export type FileUploadAsFieldProps = {
     | ((file: UploadFile, index: number, files: UploadFile[]) => UploadFile)
     | null
     | undefined;
+  help?: React.ReactNode;
+  hideHintWhenValid?: boolean;
   hint?: React.ReactNode;
   maxCount?: number;
   multiple?: boolean;
   status?: FieldStatus;
-  help?: React.ReactNode;
-  hideHintWhenValid?: boolean;
 };
 
 type FileUploadProps = Required<FileUploadAsFieldProps> & {

@@ -8,8 +8,8 @@ import React, { useMemo } from "react";
 type LogoProps = {
   className?: string;
   height?: number;
-  theme?: ThemeMode;
   opacity?: number;
+  theme?: ThemeMode;
 };
 
 export function Logo({

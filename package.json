@@ -102,6 +102,9 @@
         "parserOptions": {
           "project": "./tsconfig.json"
         },
+        "plugins": [
+          "typescript-sort-keys"
+        ],
         "extends": [
           "plugin:@typescript-eslint/recommended",
           "plugin:@typescript-eslint/recommended-requiring-type-checking"
@@ -154,7 +157,9 @@
           "@typescript-eslint/return-await": "error",
           "@typescript-eslint/sort-type-union-intersection-members": "warn",
           "@typescript-eslint/switch-exhaustiveness-check": "error",
-          "@typescript-eslint/unified-signatures": "warn"
+          "@typescript-eslint/unified-signatures": "warn",
+          "typescript-sort-keys/interface": "warn",
+          "typescript-sort-keys/string-enum": "warn"
         }
       }
     ]
@@ -217,6 +222,7 @@
     "@types/validator": "^13.7.0",
     "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-typescript-sort-keys": "^2.1.0",
     "prettier": "^2.5.1",
     "pwa-asset-generator": "^6.0.5",
     "react-app-rewire-alias": "^1.1.5",

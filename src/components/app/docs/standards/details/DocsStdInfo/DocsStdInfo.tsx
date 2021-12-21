@@ -26,8 +26,8 @@ import classes from "./DocsStdInfo.module.css";
 import { DocsStdPermissionsData } from "./DocsStdPermissionsData";
 
 type DocsStdInfoProps = {
-  doc: Na3StdDocument;
   defaultOpen?: boolean;
+  doc: Na3StdDocument;
   showPermissions?: boolean;
   showTimeline?: boolean;
 };

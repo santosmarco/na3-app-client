@@ -6,8 +6,8 @@ import { Button } from "antd";
 import React, { useCallback, useMemo, useState } from "react";
 
 type DocsStdModifyButtonProps = {
-  doc: Na3StdDocument;
   children: React.ReactNode;
+  doc: Na3StdDocument;
   icon?: React.ReactNode;
   upgrade?: boolean;
 };

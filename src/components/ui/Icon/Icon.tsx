@@ -11,8 +11,8 @@ type AnimatedIconProps = Pick<
 >;
 
 type IconProps = {
-  color?: WebColor | "error" | "primary" | "success" | "warning";
   children: React.ReactNode;
+  color?: WebColor | "error" | "primary" | "success" | "warning";
 } & (
   | (Partial<AnimatedIconProps> & {
       animated: true;

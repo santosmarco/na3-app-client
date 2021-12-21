@@ -1,17 +1,19 @@
+import type { FieldTooltip } from "@components";
 import { FormItem, Na3PositionSelect } from "@components";
 import type { Na3PositionId } from "@modules/na3-types";
 import { Col, Row } from "antd";
 import React from "react";
 
 type DocsStdPermissionsSelectProps = {
-  name: string;
-  verb: string;
-  onValueChange: (positionIds: Na3PositionId[]) => void;
-  required?: boolean;
-  selectablePositions?: Na3PositionId[];
   defaultValue?: Na3PositionId[];
   disabled?: boolean;
   errorMessage?: string;
+  name: string;
+  onValueChange: (positionIds: Na3PositionId[]) => void;
+  required?: boolean;
+  selectablePositions?: Na3PositionId[];
+  tooltip?: FieldTooltip;
+  verb: string;
 };
 
 const defaultProps = {
@@ -27,6 +29,7 @@ export function DocsStdPermissionsSelect({
   defaultValue,
   disabled,
   errorMessage,
+  tooltip,
 }: DocsStdPermissionsSelectProps): JSX.Element {
   return (
     <Row gutter={16}>
@@ -38,10 +41,13 @@ export function DocsStdPermissionsSelect({
               <strong>{verb.trim().toLowerCase()}</strong> o documento.
             </>
           }
+          hideOptionalMark={true}
           label={`Permissões de ${name.trim().toLowerCase()}`}
           required={required}
+          tooltip={tooltip}
         />
       </Col>
+
       <Col md={16} xs={24}>
         <Na3PositionSelect
           defaultValue={defaultValue}

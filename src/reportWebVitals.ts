@@ -8,8 +8,8 @@ type GetReportFn = (
 
 type WebVitals = {
   readonly getCLS: GetReportFn;
-  readonly getFID: GetReportFn;
   readonly getFCP: GetReportFn;
+  readonly getFID: GetReportFn;
   readonly getLCP: GetReportFn;
   readonly getTTFB: GetReportFn;
 };

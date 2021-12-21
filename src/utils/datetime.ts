@@ -32,10 +32,10 @@ type DayjsDuration = plugin.Duration;
 type DayjsDurationUnit = typeof DAYJS_DURATION_UNITS[number];
 
 type TimestampToStrOptions = {
-  includeTime?: boolean;
   includeHours?: boolean;
   includeMinutes?: boolean;
   includeSeconds?: boolean;
+  includeTime?: boolean;
 };
 
 type HumanizeDurationOptions = {

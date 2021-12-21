@@ -10,13 +10,13 @@ import React, {
 import classes from "./ReadProgressIndicatorComponent.module.css";
 
 export type ReadProgressIndicatorCompInternalProps = {
+  forceComplete: boolean;
+  onComplete: (() => void) | undefined;
   store: PluginStore<{
     getPagesContainer?: () => HTMLElement | null;
   }>;
   tooltip: React.ReactNode;
   tooltipWhenComplete: React.ReactNode;
-  onComplete: (() => void) | undefined;
-  forceComplete: boolean;
 };
 
 export function ReadProgressIndicatorComponent({

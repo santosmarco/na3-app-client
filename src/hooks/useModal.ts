@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
 type UseModalReturn = {
-  isVisible: boolean;
-  handleOpen: () => void;
   handleClose: () => void;
+  handleOpen: () => void;
+  isVisible: boolean;
 };
 
 export function useModal(): UseModalReturn {

@@ -20,14 +20,14 @@ export type Na3MaintenanceProject = {
   events: Na3MaintenanceProjectEvent[];
   id: string;
   internalId: number;
+  isPredPrev?: boolean | null;
   priority: "high" | "low" | "medium";
   team: {
     manager: Na3MaintenancePerson | /* Legacy: */ string;
     others: Array<Na3MaintenancePerson | string> | /* Legacy: */ string;
   };
-  title: string;
 
-  isPredPrev?: boolean | null;
+  title: string;
 };
 
 export type Na3MaintenanceProjectChangeKey =
@@ -39,8 +39,8 @@ export type Na3MaintenanceProjectChangeKey =
   | "title";
 
 type Na3MaintenanceProjectChangeBody<T> = {
-  old: T;
   new: T;
+  old: T;
 };
 
 export type Na3MaintenanceProjectChange<

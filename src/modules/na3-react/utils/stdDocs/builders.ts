@@ -17,7 +17,7 @@ export type StdDocBuilderData = Required<
 export function buildStdDocument(
   data: StdDocBuilderData,
   origin: { device: Na3AppDevice; user: AppUser },
-  options?: { versions?: Na3StdDocumentVersion[]; upgrade?: boolean }
+  options?: { upgrade?: boolean; versions?: Na3StdDocumentVersion[] }
 ): Omit<Na3StdDocument, "id"> {
   const creationEvent = buildStdDocumentEvents(
     { type: "create", payload: { comment: null } },

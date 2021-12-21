@@ -22,10 +22,10 @@ type DispatchHandler<T extends StateKey, U extends keyof RootState[T]> = (
 
 type Na3ControllerProps<T extends CollectionId, U extends StateKey> = {
   collectionId: T;
-  stateKey: U;
   onDataDispatch: DispatchHandler<U, "data">;
-  onLoadingDispatch: DispatchHandler<U, "loading">;
   onErrorDispatch: DispatchHandler<U, "error">;
+  onLoadingDispatch: DispatchHandler<U, "loading">;
+  stateKey: U;
 };
 
 export function Na3Controller<T extends CollectionId, U extends StateKey>({

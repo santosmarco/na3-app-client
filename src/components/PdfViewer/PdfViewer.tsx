@@ -36,16 +36,16 @@ type PdfViewerProps = Pick<
   PdfViewerToolbarProps,
   "actionHandlers" | "disabledActions"
 > & {
-  url: Promise<string> | string | (() => Promise<string>);
-  title: string;
-  version?: number;
+  fullPage?: boolean;
   onDocumentLoad?: (ev: PdfViewerDocLoadEvent) => void;
   onNavigateBack?: (() => void) | null;
-  fullPage?: boolean;
-  watermark?: PdfViewerWatermarkOptions | "default";
   readProgressOptions?: ReadProgressIndicatorPluginOptions & {
     active?: boolean;
   };
+  title: string;
+  url: Promise<string> | string | (() => Promise<string>);
+  version?: number;
+  watermark?: PdfViewerWatermarkOptions | "default";
 };
 
 export function PdfViewer({

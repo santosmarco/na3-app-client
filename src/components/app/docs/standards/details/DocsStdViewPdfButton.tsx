@@ -3,9 +3,9 @@ import { Button, Tooltip } from "antd";
 import React from "react";
 
 type DocsStdViewPdfButtonProps = {
+  disabled?: boolean;
   onClick: () => void;
   tooltip?: React.ReactNode;
-  disabled?: boolean;
 };
 
 export function DocsStdViewPdfButton({

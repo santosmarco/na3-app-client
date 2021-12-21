@@ -11,9 +11,9 @@ import { DocsStdAvatarGroup } from "./DocsStdAvatarGroup";
 
 type DocsStdPermissionsDataProps = {
   doc: Na3StdDocument;
-  permissionId: keyof Na3StdDocumentPermissions;
-  label: string;
   icon: React.ReactNode;
+  label: string;
+  permissionId: keyof Na3StdDocumentPermissions;
   wrapperClassName?: string;
 };
 

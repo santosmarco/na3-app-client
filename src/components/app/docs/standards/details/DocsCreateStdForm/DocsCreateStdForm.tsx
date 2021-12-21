@@ -1,3 +1,4 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
 import type { UploadFile } from "@components";
 import { Divider, Form, FormField, PageAlert, SubmitButton } from "@components";
 import { DEFAULT_APPROVER_POS_IDS } from "@config";
@@ -17,14 +18,15 @@ import React, { useCallback, useState } from "react";
 import { DocsStdPermissionsSelect } from "./DocsStdPermissionsSelect";
 
 type DocsCreateStdFormProps = {
-  onSubmit?: () => void;
   editingDoc?: Na3StdDocument;
-  version?: Na3StdDocumentVersion;
+  onSubmit?: () => void;
   upgrade?: boolean;
+  version?: Na3StdDocumentVersion;
 };
 
 type FormValues = {
   code: string;
+  comment: string;
   description: string;
   fileList: UploadFile[];
   nextRevisionAt: string;
@@ -32,7 +34,6 @@ type FormValues = {
   title: string;
   type: Na3StdDocumentTypeId | "";
   versionNumber: string;
-  comment: string;
 };
 
 const MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
@@ -312,6 +313,7 @@ export function DocsCreateStdForm({
             disabled={true}
             label="Data da próxima revisão"
             name={form.fieldNames.nextRevisionAt}
+            placeholder="Defina o período entre revisões primeiro"
             rules={{ required: "Defina o período mínimo entre revisões" }}
             type="date"
           />
@@ -353,6 +355,11 @@ export function DocsCreateStdForm({
         name="aprovação"
         onValueChange={setApproverPosIds}
         required={true}
+        tooltip={{
+          icon: <InfoCircleOutlined />,
+          content:
+            "Por enquanto, apenas a Diretoria pode aprovar novos documentos",
+        }}
         verb="aprovar"
       />
 

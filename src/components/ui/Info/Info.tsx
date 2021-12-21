@@ -8,15 +8,15 @@ import classes from "./Info.module.css";
 type InfoVariant = "popover" | "tooltip";
 
 export type InfoProps<Variant extends InfoVariant = InfoVariant> = {
-  variant?: Variant;
+  arrowPointAtCenter?: boolean;
   children?: React.ReactNode;
   content?: React.ReactNode;
-  title?: Variant extends "popover" ? React.ReactNode : never;
+  gapLeft?: "default" | "large" | "medium" | "none" | "small";
   icon?: React.ReactNode;
   placement?: TooltipProps["placement"];
-  arrowPointAtCenter?: boolean;
-  gapLeft?: "default" | "large" | "medium" | "none" | "small";
   status?: "danger" | "default" | "primary" | "success" | "warning";
+  title?: Variant extends "popover" ? React.ReactNode : never;
+  variant?: Variant;
 };
 
 export function Info<T extends InfoVariant = "tooltip">({

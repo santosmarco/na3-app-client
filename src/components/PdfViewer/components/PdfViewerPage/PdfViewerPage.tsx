@@ -9,12 +9,12 @@ export type PdfViewerWatermarkOptions = {
 };
 
 type PdfViewerPageProps = {
+  scale?: number;
   viewLayers: {
-    canvas: Slot;
     annotation: Slot;
+    canvas: Slot;
     text: Slot;
   };
-  scale?: number;
   watermarkOptions?: PdfViewerWatermarkOptions;
 };
 

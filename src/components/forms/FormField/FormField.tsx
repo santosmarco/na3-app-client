@@ -51,6 +51,15 @@ type FieldValue = string[] | UploadFile[] | boolean | string;
 
 export type FieldStatus = "invalid" | "loading" | "untouched" | "valid";
 
+export type FieldTooltip =
+  | string
+  | {
+      arrowPointAtCenter?: boolean;
+      content: React.ReactNode;
+      icon?: React.ReactNode;
+      placement?: TooltipProps["placement"];
+    };
+
 type InputBaseOptionalProps = Partial<
   Pick<
     InputProps,
@@ -80,16 +89,17 @@ type SwitchOptionalProps = Partial<
 >;
 
 type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
-  defaultValue?: Value | undefined;
   autoFocus?: boolean;
   autoUpperCase?: boolean;
   defaultHelp?: React.ReactNode;
+  defaultValue?: Value | undefined;
   disabled?: boolean;
   helpWhenDisabled?: React.ReactNode;
   helpWhenLoading?: React.ReactNode;
   helpWhenValid?: React.ReactNode | ((value: Value) => React.ReactNode);
   hidden?: boolean;
   hideHelpWhenValid?: boolean;
+  hideOptionalMark?: boolean;
   isLoading?: boolean;
   labelCol?: FormItemProps["labelCol"];
   labelSpan?: number;
@@ -101,12 +111,7 @@ type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
   placeholder?: string;
   required?: boolean;
   sortValues?: Type extends "select" ? (a: string, b: string) => number : never;
-  tooltip?: {
-    content: React.ReactNode;
-    placement?: TooltipProps["placement"];
-    arrowPointAtCenter?: boolean;
-    icon?: React.ReactNode;
-  } | null;
+  tooltip?: FieldTooltip | null;
   type: Type;
   wrapperCol?: FormItemProps["wrapperCol"];
 };
@@ -174,6 +179,7 @@ export function FormField<SelectValue extends string = string>(
     disabled: disabledProp,
     hidden,
     hideHelpWhenValid,
+    hideOptionalMark,
     isLoading,
     labelCol,
     labelSpan,
@@ -182,7 +188,7 @@ export function FormField<SelectValue extends string = string>(
     helpWhenDisabled,
     required,
     placeholder: placeholderProp,
-    tooltip,
+    tooltip: tooltipProp,
     wrapperCol,
     /* Type-based props */
     // number
@@ -385,17 +391,23 @@ export function FormField<SelectValue extends string = string>(
     []
   );
 
-  const tooltipProps = useMemo((): TooltipProps | undefined => {
-    if (tooltip === null) {
+  const tooltip = useMemo((): TooltipProps | undefined => {
+    if (tooltipProp === null) {
       return;
     }
+
     const defaultTooltip: Omit<TooltipProps, "overlay"> = {
       arrowPointAtCenter: true,
       placement: "topLeft",
     };
-    if (tooltip) {
-      return { ...defaultTooltip, ...tooltip, title: tooltip.content };
+
+    if (typeof tooltipProp === "string") {
+      return { ...defaultTooltip, title: tooltipProp };
     }
+    if (typeof tooltipProp === "object") {
+      return { ...defaultTooltip, ...tooltipProp, title: tooltipProp.content };
+    }
+
     if (type === "file" && "acceptOnly" in props && props.acceptOnly) {
       return {
         ...defaultTooltip,
@@ -410,11 +422,15 @@ export function FormField<SelectValue extends string = string>(
         ),
       };
     }
-  }, [tooltip, type, handleTooltipFileExtensionTransform, props]);
+  }, [tooltipProp, type, handleTooltipFileExtensionTransform, props]);
 
   const labelComponent = useMemo(
-    (): JSX.Element => <FieldLabel isOptional={!required} text={label} />,
-    [required, label]
+    (): JSX.Element => (
+      <FieldLabel hideOptionalMark={!!hideOptionalMark} isOptional={!required}>
+        {label}
+      </FieldLabel>
+    ),
+    [required, label, hideOptionalMark]
   );
 
   const helpComponent = useMemo(
@@ -667,7 +683,7 @@ export function FormField<SelectValue extends string = string>(
       labelAlign="left"
       labelCol={labelCol || { span: labelSpan || 24 }}
       required={required}
-      tooltip={tooltipProps}
+      tooltip={tooltip}
       validateStatus={
         status === "loading"
           ? "validating"
@@ -690,11 +706,5 @@ function isUploadFileArray(value: FieldValue): value is UploadFile[] {
   if (!isArray(value)) {
     return false;
   }
-  let hasString = false;
-  value.forEach((v) => {
-    if (typeof v === "string") {
-      hasString = true;
-    }
-  });
-  return !hasString;
+  return !value.some((v) => typeof v === "string");
 }

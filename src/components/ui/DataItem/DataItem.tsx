@@ -10,14 +10,14 @@ type DataItemProps = {
   className?: string;
   icon?: React.ReactNode;
   iconMarginRight?: number;
-  label: React.ReactNode;
   info?:
     | React.ReactNode
     | {
-        variant?: "popover" | "tooltip";
-        title?: React.ReactNode;
         content: React.ReactNode;
+        title?: React.ReactNode;
+        variant?: "popover" | "tooltip";
       };
+  label: React.ReactNode;
   right?: React.ReactNode;
 };
 

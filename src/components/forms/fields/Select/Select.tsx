@@ -10,10 +10,10 @@ import classes from "./Select.module.css";
 export type SelectValue = string[] | string;
 
 export type SelectOptionBase<OptionValue extends string = string> = {
+  disabled?: boolean;
   label: React.ReactNode;
   labelWhenSelected?: React.ReactNode;
   value: OptionValue;
-  disabled?: boolean;
 };
 
 export type SelectOptionGroup<OptionValue extends string = string> = {

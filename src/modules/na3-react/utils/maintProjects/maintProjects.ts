@@ -24,10 +24,10 @@ export type MaintProjectBuilderData = Required<
 >;
 
 export type MaintProjectEventBuilderData =
-  | { type: "complete"; message: string | null }
-  | { type: "create" }
-  | { type: "edit"; changes: Na3MaintenanceProjectEditEventChanges }
-  | { type: "status"; message: string };
+  | { changes: Na3MaintenanceProjectEditEventChanges; type: "edit" }
+  | { message: string | null; type: "complete" }
+  | { message: string; type: "status" }
+  | { type: "create" };
 
 export type MaintProjectEventBuilderPayload = {
   author: Na3MaintenancePerson;

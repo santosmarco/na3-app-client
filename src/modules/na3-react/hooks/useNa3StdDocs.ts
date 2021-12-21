@@ -37,17 +37,32 @@ import { useStateSlice } from "./useStateSlice";
 
 type UseNa3StdDocsResult = StdDocsState & {
   helpers: {
+    approveDocumentVersion: (
+      docId: string
+    ) => Promise<
+      FirebaseOperationResult<
+        Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
+      >
+    >;
+    checkDocumentIsOutdated: (doc: Na3StdDocument) => boolean;
     createDocument: (
       data: StdDocBuilderData & { file: File }
     ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
+    editDocumentVersion: (
+      docId: string,
+      data: StdDocBuilderData & { comment: string; file: File }
+    ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
+    getDocumentAcknowledgedUsers: (
+      doc: Na3StdDocument
+    ) => Array<{ event: Na3StdDocumentEvent; user: AppUser }>;
     getDocumentById: (docId: string) => Na3StdDocument | undefined;
-    getDocumentVersionDownloadUrl: (
-      doc: Na3StdDocument,
-      version: Na3StdDocumentVersion
-    ) => Promise<FirebaseOperationResult<string>>;
     getDocumentDownloadUrl: (
       doc: Na3StdDocument
     ) => Promise<FirebaseOperationResult<string>>;
+    getDocumentDownloads: (
+      doc: Na3StdDocument,
+      versionId?: string
+    ) => Array<{ event: Na3StdDocumentEvent; user: AppUser }>;
     getDocumentEvents: (doc: Na3StdDocument) => Na3StdDocumentEvent[];
     getDocumentLastEvent: (
       doc: Na3StdDocument
@@ -56,36 +71,27 @@ type UseNa3StdDocsResult = StdDocsState & {
       doc: Na3StdDocument,
       options?: { onlyApproved?: boolean }
     ) => Na3StdDocumentVersion | undefined;
-    getDocumentVersionStatus: (
-      docVersion: Na3StdDocumentVersion
-    ) => Na3StdDocumentStatus;
     getDocumentStatus: (doc: Na3StdDocument) => Na3StdDocumentStatus;
     getDocumentTypeFromTypeId: (
       typeId: Na3StdDocumentTypeId
     ) => Na3StdDocumentType;
-    checkDocumentIsOutdated: (doc: Na3StdDocument) => boolean;
-    getDocumentAcknowledgedUsers: (
-      doc: Na3StdDocument
-    ) => Array<{ user: AppUser; event: Na3StdDocumentEvent }>;
+    getDocumentVersionDownloadUrl: (
+      doc: Na3StdDocument,
+      version: Na3StdDocumentVersion
+    ) => Promise<FirebaseOperationResult<string>>;
+    getDocumentVersionStatus: (
+      docVersion: Na3StdDocumentVersion
+    ) => Na3StdDocumentStatus;
     getUserAcknowledgment: (
       doc: Na3StdDocument,
       user: AppUser,
       versionId?: string
     ) => Na3StdDocumentEvent | undefined;
-    getDocumentDownloads: (
-      doc: Na3StdDocument,
-      versionId?: string
-    ) => Array<{ user: AppUser; event: Na3StdDocumentEvent }>;
     getUserDownloads: (
       doc: Na3StdDocument,
       user: AppUser,
       versionId?: string
     ) => Na3StdDocumentEvent[];
-    userHasDocumentPermissions: (
-      user: AppUser,
-      doc: Na3StdDocument,
-      permissions: MaybeArray<keyof Na3StdDocumentPermissions>
-    ) => boolean;
     getUserPermissionsForDocument: (
       doc: Na3StdDocument,
       user: AppUser
@@ -107,13 +113,6 @@ type UseNa3StdDocsResult = StdDocsState & {
         Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
       >
     >;
-    approveDocumentVersion: (
-      docId: string
-    ) => Promise<
-      FirebaseOperationResult<
-        Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
-      >
-    >;
     rejectDocumentVersion: (
       docId: string,
       payload: { comment: string }
@@ -122,14 +121,15 @@ type UseNa3StdDocsResult = StdDocsState & {
         Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
       >
     >;
-    editDocumentVersion: (
-      docId: string,
-      data: StdDocBuilderData & { file: File; comment: string }
-    ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
     upgradeDocument: (
       docId: string,
-      data: StdDocBuilderData & { file: File; comment: string }
+      data: StdDocBuilderData & { comment: string; file: File }
     ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
+    userHasDocumentPermissions: (
+      user: AppUser,
+      doc: Na3StdDocument,
+      permissions: MaybeArray<keyof Na3StdDocumentPermissions>
+    ) => boolean;
   };
 };
 
@@ -230,7 +230,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     (
       doc: Na3StdDocument,
       versionId?: string
-    ): Array<{ user: AppUser; event: Na3StdDocumentEvent }> => {
+    ): Array<{ event: Na3StdDocumentEvent; user: AppUser }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);
@@ -267,7 +267,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     (
       doc: Na3StdDocument,
       versionId?: string
-    ): Array<{ user: AppUser; event: Na3StdDocumentEvent }> => {
+    ): Array<{ event: Na3StdDocumentEvent; user: AppUser }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
         : getDocumentLatestVersion(doc);
@@ -582,7 +582,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   const modifyDocument = useCallback(
     async (
       docId: string,
-      data: StdDocBuilderData & { file: File; comment: string },
+      data: StdDocBuilderData & { comment: string; file: File },
       options?: { upgrade?: boolean }
     ): Promise<FirebaseOperationResult<Na3StdDocument>> => {
       if (!currentUser) {
@@ -661,7 +661,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   const editDocumentVersion = useCallback(
     async (
       docId: string,
-      data: StdDocBuilderData & { file: File; comment: string }
+      data: StdDocBuilderData & { comment: string; file: File }
     ) => modifyDocument(docId, data, { upgrade: false }),
     [modifyDocument]
   );
@@ -669,7 +669,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   const upgradeDocument = useCallback(
     async (
       docId: string,
-      data: StdDocBuilderData & { file: File; comment: string }
+      data: StdDocBuilderData & { comment: string; file: File }
     ) => modifyDocument(docId, data, { upgrade: true }),
     [modifyDocument]
   );

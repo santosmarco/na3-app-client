@@ -8,19 +8,19 @@ import type { Falsy } from "utility-types";
 import classes from "./Collapse.module.css";
 
 export type CollapseProps = {
+  defaultOpen?: boolean;
+  expandIconPosition?: "left" | "right";
+  ghost?: boolean;
   panels: Array<
     | Falsy
     | {
-        header: React.ReactNode;
         content: React.ReactNode;
+        header: React.ReactNode;
         icon?: React.ReactNode;
         withMarginLeft?: boolean;
         withMarginRight?: boolean;
       }
   >;
-  ghost?: boolean;
-  defaultOpen?: boolean;
-  expandIconPosition?: "left" | "right";
 };
 
 const defaultProps = {

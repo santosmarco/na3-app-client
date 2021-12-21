@@ -8,17 +8,17 @@ import React, { useMemo } from "react";
 import classes from "./UserAvatar.module.css";
 
 export type UserAvatarProps = {
-  size?: AvatarProps["size"];
-  type?: "icon" | "initials";
-  user: AppUser;
-  wrapperClassName?: string;
   plain?: boolean;
+  size?: AvatarProps["size"];
   tooltip?: {
+    arrowPointAtCenter?: boolean;
     content: React.ReactNode;
     placement?: TooltipProps["placement"];
     small?: boolean;
-    arrowPointAtCenter?: boolean;
   };
+  type?: "icon" | "initials";
+  user: AppUser;
+  wrapperClassName?: string;
 };
 
 export function UserAvatar({

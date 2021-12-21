@@ -3,8 +3,8 @@ import { Grid } from "antd";
 import React, { useMemo } from "react";
 
 export type FormCollapseProps = {
-  title: string;
   children?: React.ReactNode;
+  title: string;
 };
 
 export function FormCollapse({

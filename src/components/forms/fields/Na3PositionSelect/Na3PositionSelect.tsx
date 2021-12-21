@@ -26,13 +26,13 @@ type PositionField = {
 };
 
 type Na3PositionSelectProps = {
+  defaultValue?: Na3PositionId[];
+  disabled?: boolean;
   errorMessage?: string;
   helpWhenEmpty?: React.ReactNode;
-  defaultValue?: Na3PositionId[];
   onValueChange?: (positionIds: Na3PositionId[]) => void;
-  selectablePositions?: Na3PositionId[];
   required?: boolean;
-  disabled?: boolean;
+  selectablePositions?: Na3PositionId[];
 };
 
 const defaultProps = {

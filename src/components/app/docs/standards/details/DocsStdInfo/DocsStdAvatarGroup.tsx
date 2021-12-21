@@ -8,7 +8,7 @@ import React, { useCallback } from "react";
 
 import classes from "./DocsStdAvatarGroup.module.css";
 
-type AvatarGroupData = AppUser | { user: AppUser; event?: Na3StdDocumentEvent };
+type AvatarGroupData = AppUser | { event?: Na3StdDocumentEvent; user: AppUser };
 
 type DocsStdAvatarGroupProps = {
   data: AvatarGroupData[];

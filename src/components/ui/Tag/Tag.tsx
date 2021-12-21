@@ -15,16 +15,16 @@ import classes from "./Tag.module.css";
 
 export type TagProps = {
   children: React.ReactNode;
+  closable?: boolean;
   color?: LiteralUnion<AntdTagProps["color"] | "stop" | "waiting", string>;
   icon?: React.ReactNode;
   marginRight?: "default";
+  mode?: "select";
   noStatusIcon?: boolean;
-  textColor?: string;
-  closable?: boolean;
   onClose?: () => void;
   style?: React.CSSProperties;
+  textColor?: string;
   wrapperClassName?: string;
-  mode?: "select";
 };
 
 export function Tag({

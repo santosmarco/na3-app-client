@@ -37,11 +37,11 @@ export type UseNa3DepartmentsResult = {
       dptId: LiteralUnion<Na3DepartmentId<"shop-floor">, string>,
       machineId: string
     ) => Na3Machine | undefined;
+    getPositionsById: (positionIds: Na3PositionId[]) => Na3Position[];
+    isDptType: (type: unknown) => type is Na3DepartmentType;
     splitPositionId: (
       positionId: Na3PositionId
     ) => [Na3DepartmentId, Na3PositionIdBase];
-    getPositionsById: (positionIds: Na3PositionId[]) => Na3Position[];
-    isDptType: (type: unknown) => type is Na3DepartmentType;
   };
   loading: boolean;
 };

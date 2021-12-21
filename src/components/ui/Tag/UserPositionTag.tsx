@@ -11,11 +11,11 @@ import type { LiteralUnion } from "type-fest";
 import classes from "./UserPositionTag.module.css";
 
 type UserPositionTagProps = {
-  position: MaybeArray<Na3Position>;
-  tooltipPlacement?: TooltipProps["placement"];
   direction?: "horizontal" | "vertical";
-  space?: LiteralUnion<"large" | "middle" | "small", number>;
   noWrap?: boolean;
+  position: MaybeArray<Na3Position>;
+  space?: LiteralUnion<"large" | "middle" | "small", number>;
+  tooltipPlacement?: TooltipProps["placement"];
 };
 
 export function UserPositionTag({

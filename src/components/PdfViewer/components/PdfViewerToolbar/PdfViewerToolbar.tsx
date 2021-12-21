@@ -29,13 +29,13 @@ export type PdfViewerToolbarActionId =
   | "zoomOut";
 
 export type PdfViewerToolbarProps = {
-  slots: ToolbarSlot;
-  disabledActions?: Array<PdfViewerToolbarActionId | undefined>;
   actionHandlers?: Partial<
     Record<PdfViewerToolbarActionId, (onClick: () => void) => void>
   >;
-  header?: React.ReactNode;
+  disabledActions?: Array<PdfViewerToolbarActionId | undefined>;
   footer?: React.ReactNode;
+  header?: React.ReactNode;
+  slots: ToolbarSlot;
 };
 
 export function PdfViewerToolbar({

@@ -9,8 +9,8 @@ export type UserAvatarGroupProps<
   T extends AppUser | (Record<PropertyKey, unknown> & { user: AppUser })
 > = Pick<UserAvatarProps, "size" | "type" | "wrapperClassName"> & {
   data: T[];
-  onTooltipProps?: ((data: T) => UserAvatarProps["tooltip"]) | null;
   maxCount?: number;
+  onTooltipProps?: ((data: T) => UserAvatarProps["tooltip"]) | null;
 };
 
 export function UserAvatarGroup<
