@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
-import { useStateSlice } from "../../hooks";
+import { useEnv, useStateSlice } from "../../hooks";
 import {
   setStdDocsData,
   setStdDocsError,
@@ -13,7 +13,7 @@ import {
 import { getCollection } from "../../utils";
 
 export function Na3StdDocsController(): null {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();
@@ -26,9 +26,7 @@ export function Na3StdDocsController(): null {
   const [fbStdDocs, fbStdDocsLoading, fbStdDocsError] = useCollectionData<
     Na3StdDocument,
     "id"
-  >(fbCollectionRef, {
-    idField: "id",
-  });
+  >(fbCollectionRef, { idField: "id" });
 
   /* StdDocs state management hooks */
 

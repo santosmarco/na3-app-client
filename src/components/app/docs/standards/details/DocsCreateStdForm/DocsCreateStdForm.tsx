@@ -105,7 +105,14 @@ export function DocsCreateStdForm({
             Confirma a{" "}
             {upgrade ? "atualização" : editingDoc ? "edição" : "criação"} do
             documento {`"${formValues.title.trim()}"`}{" "}
-            <em>(v.{formValues.versionNumber})</em>?
+            <em>
+              (
+              {editingDoc && upgrade && version?.number
+                ? `v.${version.number} → `
+                : ""}
+              v.{formValues.versionNumber})
+            </em>
+            ?
           </>
         ),
         okText: upgrade ? "Atualizar" : editingDoc ? "Editar" : "Criar",
@@ -185,6 +192,7 @@ export function DocsCreateStdForm({
       approverPosIds,
       editingDoc,
       upgrade,
+      version?.number,
       onSubmit,
       createDocument,
       editDocumentVersion,
@@ -198,13 +206,21 @@ export function DocsCreateStdForm({
       onSubmit={handleSubmit}
       requiredPrivileges={["docs_std_write_new"]}
     >
-      {editingDoc && (
-        <PageAlert>
+      {editingDoc && version?.number && (
+        <PageAlert title={`Modo ${upgrade ? "atualização" : "edição"}`}>
           {upgrade ? (
             <>
-              <strong>Atenção!</strong> Ao salvar suas alterações, uma nova
-              versão para esse documento será criada. A versão atual continuará
-              sendo mostrada aos usuários até que esta seja aprovada.
+              <div>
+                <strong>Atenção!</strong> Ao clicar em &quot;Enviar
+                atualização&quot;, uma nova versão para este documento{" "}
+                <em>(v.{form.getValues("versionNumber")}</em>) será criada e
+                enviada para aprovação.
+              </div>
+              <div>
+                Até que esta seja aprovada, a versão atual{" "}
+                <em>(v.{version.number}</em>) continuará sendo apresentada aos
+                usuários.
+              </div>
             </>
           ) : (
             <>

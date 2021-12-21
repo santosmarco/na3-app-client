@@ -1,5 +1,7 @@
+export type ConfigEnvironment = "development" | "production" | "test";
+
 export type ConfigState = {
-  environment: "development" | "production" | "test";
+  environment: ConfigEnvironment;
   messagingTokensStorageKey: string;
 };
 

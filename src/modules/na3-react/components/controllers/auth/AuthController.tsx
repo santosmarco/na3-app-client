@@ -13,7 +13,7 @@ import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import useLocalStorage from "react-use-localstorage";
 
-import { useStateSlice } from "../../../hooks";
+import { useEnv, useStateSlice } from "../../../hooks";
 import {
   setAuthError,
   setAuthFirebaseUser,
@@ -23,7 +23,8 @@ import {
 import { getCollection, timestamp } from "../../../utils";
 
 export function Na3AuthController(): null {
-  const { environment, messagingTokensStorageKey } = useStateSlice("config");
+  const environment = useEnv();
+  const { messagingTokensStorageKey } = useStateSlice("config");
   const { user } = useStateSlice("auth");
 
   const dispatch = useDispatch();

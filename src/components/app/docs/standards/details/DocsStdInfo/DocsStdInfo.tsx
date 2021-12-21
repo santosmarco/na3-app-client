@@ -20,10 +20,10 @@ import { Col, Grid, Row, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useMemo } from "react";
 
+import { DocsStdTimeline } from "../DocsStdTimeline/DocsStdTimeline";
 import { DocsStdAvatarGroup } from "./DocsStdAvatarGroup";
 import classes from "./DocsStdInfo.module.css";
 import { DocsStdPermissionsData } from "./DocsStdPermissionsData";
-import { DocsStdTimeline } from "./DocsStdTimeline";
 
 type DocsStdInfoProps = {
   doc: Na3StdDocument;

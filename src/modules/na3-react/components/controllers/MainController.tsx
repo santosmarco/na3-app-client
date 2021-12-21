@@ -12,12 +12,12 @@ import {
   setGlobalDevice,
   setGlobalLoading,
 } from "../../store/actions";
-import type { ConfigState } from "../../types";
+import type { ConfigEnvironment } from "../../types";
 import { getCollection, getDevice } from "../../utils";
 
 type Na3MainControllerProps = {
   appVersion: string;
-  env: ConfigState["environment"];
+  env: ConfigEnvironment;
   messagingTokensStorageKey: string | undefined;
 };
 

@@ -10,6 +10,7 @@ import type {
 } from "../types";
 import { getCollection } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
+import { useEnv } from "./useEnv";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3TransfLabelTemplatesResult = {
@@ -35,7 +36,7 @@ export type UseNa3TransfLabelTemplatesResult = {
 };
 
 export function useNa3TransfLabelTemplates(): UseNa3TransfLabelTemplatesResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { transf: transfLabelTemplates } = useStateSlice("labelTemplates");
 
   const user = useCurrentUser();

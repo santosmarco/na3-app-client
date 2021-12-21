@@ -2,7 +2,7 @@ import React from "react";
 import { Provider as StoreProvider } from "react-redux";
 
 import { store } from "../store";
-import type { ConfigState } from "../types";
+import type { ConfigEnvironment } from "../types";
 import { Na3AuthController } from "./controllers/auth/AuthController";
 import { Na3MainController } from "./controllers/MainController";
 import { Na3MaintenanceProjectsController } from "./controllers/MaintProjectsController";
@@ -16,7 +16,7 @@ import { Na3UsersController } from "./controllers/UsersController";
 type Na3ProviderProps = {
   appVersion: string;
   children?: React.ReactNode;
-  env?: ConfigState["environment"];
+  env?: ConfigEnvironment;
   messagingTokensStorageKey?: string;
 };
 

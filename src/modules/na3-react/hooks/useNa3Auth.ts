@@ -18,6 +18,7 @@ import {
   getCollection,
   timestamp,
 } from "../utils";
+import { useEnv } from "./useEnv";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
 
@@ -47,7 +48,7 @@ export type UseNa3AuthResult = {
 };
 
 export function useNa3Auth(): UseNa3AuthResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { error, loading } = useStateSlice("auth");
 
   const {

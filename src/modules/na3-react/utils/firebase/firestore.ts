@@ -13,7 +13,7 @@ import type { CollectionReference } from "firebase/firestore";
 import { collection, getFirestore } from "firebase/firestore";
 import type { ConditionalKeys, Primitive } from "type-fest";
 
-import type { AppUser, ConfigState } from "../../types";
+import type { AppUser, ConfigEnvironment } from "../../types";
 
 type CollectionIdDataMap = {
   "API-PEOPLE": Na3ApiPerson;
@@ -26,15 +26,15 @@ type CollectionIdDataMap = {
   users: Na3User;
 };
 
-type CollectionId = keyof CollectionIdDataMap;
+export type CollectionId = keyof CollectionIdDataMap;
 
-type CollectionData<T extends CollectionId> = CollectionIdDataMap[T];
+export type CollectionData<T extends CollectionId> = CollectionIdDataMap[T];
 
 type CollectionOptions = { forceProduction?: boolean };
 
 export function resolveCollectionId(
   collectionId: CollectionId,
-  environment: ConfigState["environment"],
+  environment: ConfigEnvironment,
   options?: CollectionOptions
 ): string {
   return environment === "production" || options?.forceProduction
@@ -44,7 +44,7 @@ export function resolveCollectionId(
 
 export function getCollection<T extends CollectionId>(
   collectionId: T,
-  environment: ConfigState["environment"],
+  environment: ConfigEnvironment,
   options?: CollectionOptions
 ): CollectionReference<CollectionData<T>> {
   return collection(

@@ -408,7 +408,7 @@ export function DocsStdDetailsPage({
                   icon={
                     docStatus === "pending" ? <EditOutlined /> : <UpOutlined />
                   }
-                  upgrade={docStatus === "approved"}
+                  upgrade={docStatus === "approved" || docStatus === "rejected"}
                 >
                   {docStatus === "pending"
                     ? "Editar documento"

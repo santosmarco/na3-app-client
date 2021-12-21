@@ -31,6 +31,7 @@ import {
   getFolder,
   handleFilterFalsies,
 } from "../utils";
+import { useEnv } from "./useEnv";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
 
@@ -40,6 +41,10 @@ type UseNa3StdDocsResult = StdDocsState & {
       data: StdDocBuilderData & { file: File }
     ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
     getDocumentById: (docId: string) => Na3StdDocument | undefined;
+    getDocumentVersionDownloadUrl: (
+      doc: Na3StdDocument,
+      version: Na3StdDocumentVersion
+    ) => Promise<FirebaseOperationResult<string>>;
     getDocumentDownloadUrl: (
       doc: Na3StdDocument
     ) => Promise<FirebaseOperationResult<string>>;
@@ -48,8 +53,12 @@ type UseNa3StdDocsResult = StdDocsState & {
       doc: Na3StdDocument
     ) => Na3StdDocumentEvent | undefined;
     getDocumentLatestVersion: (
-      doc: Na3StdDocument
+      doc: Na3StdDocument,
+      options?: { onlyApproved?: boolean }
     ) => Na3StdDocumentVersion | undefined;
+    getDocumentVersionStatus: (
+      docVersion: Na3StdDocumentVersion
+    ) => Na3StdDocumentStatus;
     getDocumentStatus: (doc: Na3StdDocument) => Na3StdDocumentStatus;
     getDocumentTypeFromTypeId: (
       typeId: Na3StdDocumentTypeId
@@ -125,7 +134,7 @@ type UseNa3StdDocsResult = StdDocsState & {
 };
 
 export function useNa3StdDocs(): UseNa3StdDocsResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { device } = useStateSlice("global");
   const stdDocs = useStateSlice("stdDocs");
 
@@ -165,25 +174,11 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [getDocumentEvents]
   );
 
-  const getDocumentLatestVersion = useCallback(
-    (doc: Na3StdDocument): Na3StdDocumentVersion | undefined => {
-      return [...doc.versions].pop();
-    },
-    []
-  );
+  const getDocumentVersionStatus = useCallback(
+    (docVersion: Na3StdDocumentVersion): Na3StdDocumentStatus => {
+      const approvals = docVersion.events.filter((ev) => ev.type === "approve");
+      const rejections = docVersion.events.filter((ev) => ev.type === "reject");
 
-  const getDocumentStatus = useCallback(
-    (doc: Na3StdDocument): Na3StdDocumentStatus => {
-      const latestVersion = getDocumentLatestVersion(doc);
-      if (!latestVersion) {
-        return "draft";
-      }
-      const approvals = latestVersion.events.filter(
-        (ev) => ev.type === "approve"
-      );
-      const rejections = latestVersion.events.filter(
-        (ev) => ev.type === "reject"
-      );
       if (approvals.length >= 1) {
         return "approved";
       }
@@ -192,7 +187,36 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       }
       return "pending";
     },
-    [getDocumentLatestVersion]
+    []
+  );
+
+  const getDocumentLatestVersion = useCallback(
+    (
+      doc: Na3StdDocument,
+      options?: { onlyApproved?: boolean }
+    ): Na3StdDocumentVersion | undefined => {
+      return [...doc.versions]
+        .filter((version) =>
+          options?.onlyApproved
+            ? getDocumentVersionStatus(version) === "approved"
+            : true
+        )
+        .pop();
+    },
+    [getDocumentVersionStatus]
+  );
+
+  const getDocumentStatus = useCallback(
+    (doc: Na3StdDocument): Na3StdDocumentStatus => {
+      const latestVersion = getDocumentLatestVersion(doc);
+
+      if (!latestVersion) {
+        return "draft";
+      }
+
+      return getDocumentVersionStatus(latestVersion);
+    },
+    [getDocumentLatestVersion, getDocumentVersionStatus]
   );
 
   const checkDocumentIsOutdated = useCallback(
@@ -276,6 +300,26 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [getDocumentDownloads]
   );
 
+  const getDocumentVersionDownloadUrl = useCallback(
+    async (
+      doc: Na3StdDocument,
+      version: Na3StdDocumentVersion
+    ): Promise<FirebaseOperationResult<string>> => {
+      try {
+        const url = await getDownloadURL(
+          ref(fbStorageRef.current, buildStdDocumentUrl(doc, version))
+        );
+        return { error: null, data: url };
+      } catch (err) {
+        return {
+          data: null,
+          error: translateFirebaseError(err as FirebaseError),
+        };
+      }
+    },
+    []
+  );
+
   const getDocumentDownloadUrl = useCallback(
     async (doc: Na3StdDocument): Promise<FirebaseOperationResult<string>> => {
       const latestVersion = getDocumentLatestVersion(doc);
@@ -287,20 +331,9 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         };
       }
 
-      try {
-        const url = await getDownloadURL(
-          ref(fbStorageRef.current, buildStdDocumentUrl(doc, latestVersion))
-        );
-
-        return { error: null, data: url };
-      } catch (err) {
-        return {
-          data: null,
-          error: translateFirebaseError(err as FirebaseError),
-        };
-      }
+      return getDocumentVersionDownloadUrl(doc, latestVersion);
     },
-    [getDocumentLatestVersion]
+    [getDocumentLatestVersion, getDocumentVersionDownloadUrl]
   );
 
   const userHasDocumentPermissions = useCallback(
@@ -650,12 +683,14 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       getDocumentEvents,
       getDocumentLastEvent,
       getDocumentLatestVersion,
+      getDocumentVersionStatus,
       getDocumentStatus,
       checkDocumentIsOutdated,
       getDocumentAcknowledgedUsers,
       getUserAcknowledgment,
       getDocumentDownloads,
       getUserDownloads,
+      getDocumentVersionDownloadUrl,
       getDocumentDownloadUrl,
       userHasDocumentPermissions,
       getUserPermissionsForDocument,

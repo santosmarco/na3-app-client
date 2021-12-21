@@ -16,6 +16,7 @@ export type InfoProps<Variant extends InfoVariant = InfoVariant> = {
   placement?: TooltipProps["placement"];
   arrowPointAtCenter?: boolean;
   gapLeft?: "default" | "large" | "medium" | "none" | "small";
+  status?: "danger" | "default" | "primary" | "success" | "warning";
 };
 
 export function Info<T extends InfoVariant = "tooltip">({
@@ -27,6 +28,7 @@ export function Info<T extends InfoVariant = "tooltip">({
   placement = "topLeft",
   arrowPointAtCenter = true,
   gapLeft = "default",
+  status = "default",
 }: InfoProps<T>): JSX.Element {
   const Component = useMemo(
     () => (variant === "popover" ? Popover : Tooltip),
@@ -73,7 +75,13 @@ export function Info<T extends InfoVariant = "tooltip">({
       <Typography.Text
         className={classes.InfoIcon}
         style={iconStyle}
-        type="secondary"
+        type={
+          status === "primary"
+            ? undefined
+            : status === "default"
+            ? "secondary"
+            : status
+        }
       >
         {icon}
       </Typography.Text>

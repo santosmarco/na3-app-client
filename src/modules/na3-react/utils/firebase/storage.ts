@@ -1,7 +1,7 @@
 import type { StorageReference } from "firebase/storage";
 import { getStorage, ref } from "firebase/storage";
 
-import type { ConfigState } from "../../types";
+import type { ConfigEnvironment } from "../../types";
 
 type FolderId = "docs-std";
 
@@ -9,7 +9,7 @@ type FolderOptions = { forceProduction?: boolean };
 
 export function resolveFolderId(
   folderId: FolderId,
-  environment: ConfigState["environment"],
+  environment: ConfigEnvironment,
   options?: FolderOptions
 ): string {
   return environment === "production" || options?.forceProduction
@@ -19,7 +19,7 @@ export function resolveFolderId(
 
 export function getFolder(
   folderId: FolderId,
-  environment: ConfigState["environment"],
+  environment: ConfigEnvironment,
   options?: FolderOptions
 ): StorageReference {
   return ref(getStorage(), resolveFolderId(folderId, environment, options));

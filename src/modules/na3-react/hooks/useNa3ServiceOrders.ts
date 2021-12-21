@@ -22,6 +22,7 @@ import {
   timestamp,
 } from "../utils";
 import { useCurrentUser } from "./useCurrentUser";
+import { useEnv } from "./useEnv";
 import { useNa3Departments } from "./useNa3Departments";
 import { useStateSlice } from "./useStateSlice";
 
@@ -84,7 +85,7 @@ export type UseNa3ServiceOrdersResult = {
 };
 
 export function useNa3ServiceOrders(): UseNa3ServiceOrdersResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { device } = useStateSlice("global");
   const serviceOrders = useStateSlice("serviceOrders");
 

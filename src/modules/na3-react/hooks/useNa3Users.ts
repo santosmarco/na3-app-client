@@ -25,6 +25,7 @@ import type {
   MaybeArray,
 } from "../types";
 import { buildNa3Error, getCollection } from "../utils";
+import { useEnv } from "./useEnv";
 import { useNa3Departments } from "./useNa3Departments";
 import { useStateSlice } from "./useStateSlice";
 
@@ -54,7 +55,7 @@ export type UseNa3UsersResult = {
 };
 
 export function useNa3Users(): UseNa3UsersResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { _firebaseUser } = useStateSlice("auth");
   const na3Users = useStateSlice("na3Users");
 

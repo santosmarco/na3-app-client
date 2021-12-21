@@ -4,7 +4,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useDispatch } from "react-redux";
 
 import type { Na3MaintenanceProject } from "../../../na3-types";
-import { useStateSlice } from "../../hooks";
+import { useEnv, useStateSlice } from "../../hooks";
 import {
   setMaintProjectsData,
   setMaintProjectsError,
@@ -13,7 +13,7 @@ import {
 import { getCollection } from "../../utils";
 
 export function Na3MaintenanceProjectsController(): null {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const { _firebaseUser } = useStateSlice("auth");
 
   const dispatch = useDispatch();

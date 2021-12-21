@@ -24,6 +24,7 @@ import {
   buildNa3Error,
   getCollection,
 } from "../utils";
+import { useEnv } from "./useEnv";
 import { useStateSlice } from "./useStateSlice";
 
 export type UseNa3MaintProjectsResult = {
@@ -70,7 +71,7 @@ export type UseNa3MaintProjectsResult = {
 };
 
 export function useNa3MaintProjects(): UseNa3MaintProjectsResult {
-  const { environment } = useStateSlice("config");
+  const environment = useEnv();
   const maintProjects = useStateSlice("maintProjects");
 
   const fbCollectionRef = useRef(getCollection("manut-projects", environment));
