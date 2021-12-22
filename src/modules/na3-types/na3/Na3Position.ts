@@ -21,6 +21,7 @@ export type Na3PositionIdBase =
   | "extrusor-1"
   | "extrusor-2"
   | "gerente-comex"
+  | "gerente-ekoplasto"
   | "gerente-industrial"
   | "gerente-manutencao"
   | "impressor-flexo-1"
