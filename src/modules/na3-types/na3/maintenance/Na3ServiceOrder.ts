@@ -1,3 +1,4 @@
+import type { Na3AppDevice } from "../Na3App";
 import type { Na3MaintenancePerson } from "./Na3MaintenancePerson";
 
 export type Na3ServiceOrderStatus =
@@ -9,47 +10,50 @@ export type Na3ServiceOrderStatus =
 
 export type Na3ServiceOrderPriority = "high" | "low" | "medium";
 
-export type Na3ServiceOrderEvent = {
-  device: {
-    model: string | null;
-    name: string | null;
-    os: { name: string | null; version: string | null };
+export type Na3ServiceOrderEventType =
+  | "maintainerChanged"
+  | "poke"
+  | "priorityChanged"
+  | "solutionAccepted"
+  | "solutionRefused"
+  | "solutionStepAdded"
+  | "solutionTransmitted"
+  | "ticketClosed"
+  | "ticketConfirmed"
+  | "ticketCreated"
+  | "ticketEdited"
+  | "ticketReopened";
+
+export type Na3ServiceOrderEventPayload = {
+  assignedMaintainer?: Na3ServiceOrder["assignedMaintainer"];
+  changes?: Na3ServiceOrderEventEditChanges;
+  poke?: { from: string; to: string };
+  priority?: Na3ServiceOrder["priority"];
+  refusalReason?: Na3ServiceOrder["refusalReason"];
+  solution?:
+    | Na3ServiceOrder["solution"]
+    | { content?: string; who?: Na3MaintenancePerson | string };
+  solutionStep?: {
+    content?: string;
+    type:
+      | "solutionAccepted"
+      | "solutionRefused"
+      | "solutionTransmitted"
+      | "step";
+    who?: Na3MaintenancePerson | string;
   };
-  id: string;
-  payload: {
-    assignedMaintainer?: Na3ServiceOrder["assignedMaintainer"];
-    changes?: Na3ServiceOrderEventEditChanges;
-    poke?: { from: string; to: string };
-    priority?: Na3ServiceOrder["priority"];
-    refusalReason?: Na3ServiceOrder["refusalReason"];
-    solution?:
-      | Na3ServiceOrder["solution"]
-      | { content?: string; who?: Na3MaintenancePerson | string };
-    solutionStep?: {
-      content?: string;
-      type:
-        | "solutionAccepted"
-        | "solutionRefused"
-        | "solutionTransmitted"
-        | "step";
-      who?: Na3MaintenancePerson | string;
-    };
-  } | null;
-  timestamp: string;
-  type:
-    | "maintainerChanged"
-    | "poke"
-    | "priorityChanged"
-    | "solutionAccepted"
-    | "solutionRefused"
-    | "solutionStepAdded"
-    | "solutionTransmitted"
-    | "ticketClosed"
-    | "ticketConfirmed"
-    | "ticketCreated"
-    | "ticketEdited"
-    | "ticketReopened";
+} | null;
+
+export type Na3ServiceOrderEventOrigin = {
+  device: Na3AppDevice;
   user?: Na3MaintenancePerson;
+};
+
+export type Na3ServiceOrderEvent = Na3ServiceOrderEventOrigin & {
+  id: string;
+  payload: Na3ServiceOrderEventPayload;
+  timestamp: string;
+  type: Na3ServiceOrderEventType;
 };
 
 export type Na3ServiceOrder = {

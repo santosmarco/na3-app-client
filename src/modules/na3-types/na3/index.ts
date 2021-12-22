@@ -14,6 +14,9 @@ export type {
 export type {
   Na3ServiceOrder,
   Na3ServiceOrderEvent,
+  Na3ServiceOrderEventOrigin,
+  Na3ServiceOrderEventPayload,
+  Na3ServiceOrderEventType,
   Na3ServiceOrderPriority,
   Na3ServiceOrderStatus,
 } from "./maintenance/Na3ServiceOrder";
