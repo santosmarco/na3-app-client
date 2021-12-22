@@ -13,7 +13,11 @@ export function FieldLabel({
   isOptional,
   hideOptionalMark,
   children,
-}: FieldLabelProps): JSX.Element {
+}: FieldLabelProps): JSX.Element | null {
+  if (!children) {
+    return null;
+  }
+
   return (
     <Typography.Text className={classes.Label}>
       {children}

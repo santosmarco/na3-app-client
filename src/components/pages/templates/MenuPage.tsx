@@ -12,11 +12,6 @@ type MenuPageProps = {
   title: string;
 };
 
-const defaultProps: Omit<MenuPageProps, "items" | "title"> = {
-  description: undefined,
-  icon: null,
-};
-
 export function MenuPage({
   items,
   title,
@@ -32,5 +27,3 @@ export function MenuPage({
     </>
   );
 }
-
-MenuPage.defaultProps = defaultProps;

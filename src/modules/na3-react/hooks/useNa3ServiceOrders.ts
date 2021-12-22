@@ -30,6 +30,7 @@ export type UseNa3ServiceOrdersResult = {
   data: Na3ServiceOrder[] | null;
   error: FirebaseError | null;
   helpers: {
+    // Added to Transformer
     acceptSolution: (
       id: string
     ) => Promise<FirebaseDocOperationResult<Na3ServiceOrder>>;
@@ -42,6 +43,7 @@ export type UseNa3ServiceOrdersResult = {
       machine: number;
       production: number;
     };
+    // Added to Transformer
     confirm: (
       id: string,
       payload: {
@@ -65,6 +67,7 @@ export type UseNa3ServiceOrdersResult = {
     mapByStatus: (
       data?: Na3ServiceOrder[]
     ) => Record<Na3ServiceOrder["status"], Na3ServiceOrder[]>;
+    // Added to Transformer
     orderRequiresAction: (serviceOrder: Na3ServiceOrder) => boolean;
     rejectSolution: (
       id: string,

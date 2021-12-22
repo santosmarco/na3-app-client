@@ -17,4 +17,4 @@ export {
   useNa3TransfLabelTemplates,
   useNa3Users,
 } from "./hooks";
-export type { AppUser } from "./types";
+export type { AppUser, AppUserAuthenticated } from "./types";

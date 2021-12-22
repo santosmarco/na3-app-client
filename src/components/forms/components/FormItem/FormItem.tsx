@@ -56,12 +56,14 @@ export function FormItem({
       help={help}
       hidden={hidden}
       label={
-        <FieldLabel
-          hideOptionalMark={!!hideOptionalMark}
-          isOptional={!required}
-        >
-          {label}
-        </FieldLabel>
+        label && (
+          <FieldLabel
+            hideOptionalMark={!!hideOptionalMark}
+            isOptional={!required}
+          >
+            {label}
+          </FieldLabel>
+        )
       }
       labelAlign="left"
       labelCol={labelCol || { span: labelSpan || 24 }}

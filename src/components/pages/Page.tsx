@@ -1,10 +1,15 @@
-import { OVERFLOW_Y_SCROLL_MARGIN_BOTTOM, PAGE_OFFSET } from "@constants";
+import {
+  OVERFLOW_Y_SCROLL_MARGIN_BOTTOM,
+  PAGE_CONTAINER_PADDING,
+} from "@constants";
+import { Grid } from "antd";
 import React, { useMemo } from "react";
 
 import classes from "./Page.module.css";
 
 type PageProps = {
   additionalPaddingBottom?: number;
+  alignEdges?: "both" | "left" | "right";
   children?: React.ReactNode;
   forceNoPaddingBottom?: boolean;
   marginBottom?: number;
@@ -21,36 +26,47 @@ export function Page({
   forceNoPaddingBottom,
   marginBottom,
   style: styleProp,
+  alignEdges,
 }: PageProps): JSX.Element {
-  const style = useMemo(
-    (): React.CSSProperties => ({
+  const breakpoint = Grid.useBreakpoint();
+
+  const style = useMemo((): React.CSSProperties => {
+    const offsetX = breakpoint.md
+      ? PAGE_CONTAINER_PADDING.X.MD
+      : PAGE_CONTAINER_PADDING.X.XS;
+
+    const alignLeftEdge = alignEdges === "both" || alignEdges === "left";
+    const alignRightEdge = alignEdges === "both" || alignEdges === "right";
+
+    return {
       ...styleProp,
 
       marginTop: -(scrollTopOffset ?? 0),
-      marginRight: -PAGE_OFFSET,
+      marginRight: -offsetX,
       marginBottom:
         (preventScroll ? 0 : OVERFLOW_Y_SCROLL_MARGIN_BOTTOM) +
         (marginBottom ?? 0),
-      marginLeft: -PAGE_OFFSET,
+      marginLeft: -offsetX,
 
       paddingTop: scrollTopOffset ?? 0,
-      paddingRight: PAGE_OFFSET,
+      paddingRight: alignRightEdge ? undefined : offsetX,
       paddingBottom: forceNoPaddingBottom
         ? 0
         : 28 + (additionalPaddingBottom ?? 0),
-      paddingLeft: PAGE_OFFSET,
+      paddingLeft: alignLeftEdge ? undefined : offsetX,
 
       overflowY: preventScroll ? "hidden" : undefined,
-    }),
-    [
-      styleProp,
-      scrollTopOffset,
-      additionalPaddingBottom,
-      preventScroll,
-      forceNoPaddingBottom,
-      marginBottom,
-    ]
-  );
+    };
+  }, [
+    breakpoint.md,
+    styleProp,
+    scrollTopOffset,
+    additionalPaddingBottom,
+    preventScroll,
+    forceNoPaddingBottom,
+    marginBottom,
+    alignEdges,
+  ]);
 
   return (
     <div className={classes.Page} style={style}>

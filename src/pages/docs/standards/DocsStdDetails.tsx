@@ -30,15 +30,17 @@ import { useHistory } from "react-router-dom";
 
 type DocsStdDetailsPageProps = {
   docId: string;
+  openViewer: boolean;
 };
 
 export function DocsStdDetailsPage({
   docId,
+  openViewer,
 }: DocsStdDetailsPageProps): JSX.Element {
   const history = useHistory();
   const breakpoint = Grid.useBreakpoint();
 
-  const [isViewingPdf, setIsViewingPdf] = useState(false);
+  const [isViewingPdf, setIsViewingPdf] = useState(openViewer);
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
   const { download } = useFileDownload();

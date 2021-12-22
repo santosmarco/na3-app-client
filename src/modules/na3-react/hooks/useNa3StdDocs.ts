@@ -67,9 +67,11 @@ type UseNa3StdDocsResult = StdDocsState & {
     getDocumentLastEvent: (
       doc: Na3StdDocument
     ) => Na3StdDocumentEvent | undefined;
+    getDocumentLatestApprovedVersion: (
+      doc: Na3StdDocument
+    ) => Na3StdDocumentVersion | undefined;
     getDocumentLatestVersion: (
-      doc: Na3StdDocument,
-      options?: { onlyApproved?: boolean }
+      doc: Na3StdDocument
     ) => Na3StdDocumentVersion | undefined;
     getDocumentStatus: (doc: Na3StdDocument) => Na3StdDocumentStatus;
     getDocumentTypeFromTypeId: (
@@ -191,16 +193,19 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   );
 
   const getDocumentLatestVersion = useCallback(
+    (doc: Na3StdDocument): Na3StdDocumentVersion | undefined => {
+      return [...doc.versions].pop();
+    },
+    []
+  );
+
+  const getDocumentLatestApprovedVersion = useCallback(
     (
       doc: Na3StdDocument,
       options?: { onlyApproved?: boolean }
     ): Na3StdDocumentVersion | undefined => {
       return [...doc.versions]
-        .filter((version) =>
-          options?.onlyApproved
-            ? getDocumentVersionStatus(version) === "approved"
-            : true
-        )
+        .filter((version) => getDocumentVersionStatus(version) === "approved")
         .pop();
     },
     [getDocumentVersionStatus]
@@ -683,6 +688,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       getDocumentEvents,
       getDocumentLastEvent,
       getDocumentLatestVersion,
+      getDocumentLatestApprovedVersion,
       getDocumentVersionStatus,
       getDocumentStatus,
       checkDocumentIsOutdated,

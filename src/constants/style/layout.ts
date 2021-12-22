@@ -16,3 +16,5 @@ export const PAGE_CONTAINER_PADDING = {
 };
 
 export const PAGE_OFFSET = 28;
+
+export const PARAGRAPH_MARGIN_BOTTOM = 14;

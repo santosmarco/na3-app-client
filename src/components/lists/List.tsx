@@ -1,5 +1,6 @@
 import { Empty, Spinner } from "@components";
 import { useId } from "@hooks";
+import { compareArrays } from "@utils";
 import { Input } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,6 +10,8 @@ import { ListEnd } from "./components/ListEnd";
 import { ListError } from "./components/ListError";
 import { ListLoader } from "./components/ListLoader";
 import classes from "./List.module.css";
+
+export type ListRenderItem<T> = (item: T) => JSX.Element;
 
 export type ListProps<
   Item,
@@ -58,10 +61,23 @@ export function List<Item extends Record<string, unknown>>({
     []
   );
 
-  const filteredData = useMemo(
-    () => (searchInput ? filterItem?.(searchInput) : loadedData),
-    [filterItem, searchInput, loadedData]
-  );
+  const filteredData = useMemo((): Item[] | undefined => {
+    if (!searchInput) {
+      return loadedData;
+    }
+
+    const filtered = filterItem?.(searchInput);
+
+    if (!filtered) {
+      return;
+    }
+
+    if (compareArrays(filtered, loadedData)) {
+      return loadedData;
+    }
+
+    return filtered;
+  }, [filterItem, searchInput, loadedData]);
 
   useEffect(() => {
     if (data) {
@@ -140,5 +156,3 @@ export function List<Item extends Record<string, unknown>>({
     );
   }
 }
-
-export type ListRenderItem<T> = (item: T) => JSX.Element;

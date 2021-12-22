@@ -166,12 +166,12 @@ export function FormField<SelectValue extends string = string>(
   props: FormFieldProps<SelectValue>
 ): JSX.Element {
   const {
-    /* Required props */
+    // Required props
     label,
     name: nameProp,
     type,
     rules,
-    /* Common optional props */
+    // Common optional props
     defaultValue,
     autoFocus,
     autoUpperCase,
@@ -190,14 +190,14 @@ export function FormField<SelectValue extends string = string>(
     placeholder: placeholderProp,
     tooltip: tooltipProp,
     wrapperCol,
-    /* Type-based props */
+    // Type-based props
     // number
     max,
     min,
     noDecimal,
     // select
     sortValues,
-    /* Value-based props */
+    // Value-based props
     onBlur,
     onValueChange,
   } = props;

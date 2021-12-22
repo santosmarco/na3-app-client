@@ -41,7 +41,6 @@ export function DocsStdPermissionsSelect({
               <strong>{verb.trim().toLowerCase()}</strong> o documento.
             </>
           }
-          hideOptionalMark={true}
           label={`Permissões de ${name.trim().toLowerCase()}`}
           required={required}
           tooltip={tooltip}

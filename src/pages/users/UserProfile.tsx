@@ -13,6 +13,7 @@ import {
   Divider,
   Page,
   Result404,
+  ResultSignIn,
   UserAvatar,
   UserDisplayName,
   UserPositionTag,
@@ -193,15 +194,11 @@ export function UserProfilePage({
         </DataItem>
       </Page>
     </>
+  ) : asAccountPage ? (
+    <ResultSignIn />
   ) : (
-    <Result404
-      backBtnLabel={asAccountPage ? "Entrar" : undefined}
-      backUrl={asAccountPage ? "/entrar" : "/"}
-      isLoading={loading}
-    >
-      {asAccountPage
-        ? "Você precisa entrar primeiro."
-        : "O usuário requisitado não existe ou foi desabilitado."}
+    <Result404 backUrl="/" isLoading={loading}>
+      O usuário requisitado não existe ou foi desabilitado.
     </Result404>
   );
 }

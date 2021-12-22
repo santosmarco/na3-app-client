@@ -1,17 +1,25 @@
-import { DocsCreateStdForm, DocsStdList, ListFormPage } from "@components";
+import {
+  DocsCreateStdForm,
+  DocsStdList,
+  DocsStdTableList,
+  ListFormPage,
+  TablePage,
+} from "@components";
 import { useQuery } from "@hooks";
 import { useCurrentUser, useNa3StdDocs } from "@modules/na3-react";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router";
 
 import { DocsStdDetailsPage } from "./DocsStdDetails";
 
 export function DocsStdHomePage(): JSX.Element {
   const history = useHistory();
-  const query = useQuery("id");
+  const query = useQuery(["id", "view"]);
 
   const currentUser = useCurrentUser();
   const stdDocs = useNa3StdDocs();
+
+  const pageTitle = useMemo(() => "Docs • Normas/Procedimentos", []);
 
   const handleStdDocCreateClick = useCallback(() => {
     history.push("/docs/normas/novo");
@@ -25,7 +33,7 @@ export function DocsStdHomePage(): JSX.Element {
   );
 
   return query.id ? (
-    <DocsStdDetailsPage docId={query.id} />
+    <DocsStdDetailsPage docId={query.id} openViewer={!!query.view} />
   ) : currentUser?.hasPrivileges("docs_std_write_new") ? (
     <ListFormPage
       actions={[{ label: "Novo documento", onClick: handleStdDocCreateClick }]}
@@ -40,9 +48,11 @@ export function DocsStdHomePage(): JSX.Element {
         />
       }
       listTitle="Seus Documentos"
-      title="Docs • Normas/Procedimentos"
+      title={pageTitle}
     />
   ) : (
-    <div>TABLE PAGE</div>
+    <TablePage title={pageTitle}>
+      <DocsStdTableList data={stdDocs.data} />
+    </TablePage>
   );
 }

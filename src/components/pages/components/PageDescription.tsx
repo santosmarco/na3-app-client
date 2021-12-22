@@ -1,5 +1,6 @@
-import { Typography } from "antd";
-import React, { useMemo } from "react";
+import { Text } from "@components";
+import type { Typography } from "antd";
+import React from "react";
 
 type EllipsisConfig = Exclude<
   React.ComponentProps<typeof Typography["Paragraph"]>["ellipsis"],
@@ -17,19 +18,17 @@ export function PageDescription({
   className,
   ellipsis,
 }: PageDescriptionProps): JSX.Element {
-  const ellipsisConfig = useMemo(
-    () => (ellipsis ? ellipsis : { rows: 1, expandable: true, symbol: "mais" }),
-    [ellipsis]
-  );
-
   return (
-    <Typography.Paragraph
+    <Text
+      block={true}
       className={className}
-      ellipsis={ellipsisConfig}
+      ellipsis={ellipsis}
       italic={true}
+      maxLines={1}
       type="secondary"
+      variant="paragraph"
     >
       {children}
-    </Typography.Paragraph>
+    </Text>
   );
 }
