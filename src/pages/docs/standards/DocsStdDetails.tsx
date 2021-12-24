@@ -21,43 +21,49 @@ import {
   PrintPrevent,
   Result404,
 } from "@components";
-import { useBreadcrumb, useFileDownload } from "@hooks";
+import { useBreadcrumb } from "@hooks";
 import { useNa3Auth, useNa3StdDocs } from "@modules/na3-react";
-import { createErrorNotifier, numberToWords, timestampToStr } from "@utils";
-import { Button, Grid, message, Modal, notification, Typography } from "antd";
+import type { Na3StdDocument } from "@modules/na3-types";
+import { createErrorNotifier, timestampToStr } from "@utils";
+import { Button, Grid, Modal, notification, Typography } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 type DocsStdDetailsPageProps = {
   docId: string;
-  openViewer: boolean;
+  onDocFileDownload: (doc: Na3StdDocument | undefined) => void;
+  onDocFileUrl: (doc: Na3StdDocument | undefined) => Promise<string>;
+  viewerIsOpen: boolean;
 };
 
 export function DocsStdDetailsPage({
   docId,
-  openViewer,
+  viewerIsOpen,
+  onDocFileDownload,
+  onDocFileUrl,
 }: DocsStdDetailsPageProps): JSX.Element {
   const history = useHistory();
   const breakpoint = Grid.useBreakpoint();
 
-  const [isViewingPdf, setIsViewingPdf] = useState(openViewer);
+  const [isViewingPdf, setIsViewingPdf] = useState(viewerIsOpen);
 
   const { setExtra: setBreadcrumbExtra } = useBreadcrumb();
-  const { download } = useFileDownload();
 
   const { loading: userLoading, currentUser } = useNa3Auth();
   const {
     loading: docLoading,
     helpers: {
       getDocumentById,
-      getDocumentLatestVersion,
+      getDocumentLatestVersionForUser,
       getUserPermissionsForDocument,
       getUserAcknowledgment,
-      getUserDownloads,
-      getDocumentDownloadUrl,
-      getDocumentStatus,
+      getDocumentVersionStatus,
+      getDocumentActions,
+      getDocumentAcknowledgedUsers,
+      getDocumentDownloads,
+      checkDocumentRequiresAcknowledgement,
+      checkDocumentIsOutdated,
       registerAcknowledgment,
-      registerDownload,
       approveDocumentVersion,
       rejectDocumentVersion,
     },
@@ -66,21 +72,40 @@ export function DocsStdDetailsPage({
   const doc = useMemo(() => getDocumentById(docId), [getDocumentById, docId]);
 
   const docVersion = useMemo(
-    () => (doc ? getDocumentLatestVersion(doc) : undefined),
-    [getDocumentLatestVersion, doc]
+    () =>
+      doc && currentUser
+        ? getDocumentLatestVersionForUser(doc, currentUser)
+        : undefined,
+    [getDocumentLatestVersionForUser, doc, currentUser]
   );
 
   const docStatus = useMemo(
-    () => (doc ? getDocumentStatus(doc) : undefined),
-    [getDocumentStatus, doc]
+    () => (docVersion ? getDocumentVersionStatus(docVersion) : undefined),
+    [docVersion, getDocumentVersionStatus]
+  );
+
+  const docRequiresAck = useMemo(
+    () =>
+      doc && docVersion && currentUser
+        ? checkDocumentRequiresAcknowledgement(doc, docVersion, currentUser)
+        : undefined,
+    [checkDocumentRequiresAcknowledgement, doc, docVersion, currentUser]
+  );
+
+  const docActions = useMemo(
+    () =>
+      doc && docVersion && currentUser
+        ? getDocumentActions(doc, docVersion, currentUser)
+        : undefined,
+    [doc, currentUser, docVersion, getDocumentActions]
   );
 
   const userPermissions = useMemo(
     () =>
-      doc && currentUser
-        ? getUserPermissionsForDocument(doc, currentUser)
+      doc && docVersion && currentUser
+        ? getUserPermissionsForDocument(doc, docVersion, currentUser)
         : undefined,
-    [getUserPermissionsForDocument, doc, currentUser]
+    [getUserPermissionsForDocument, doc, docVersion, currentUser]
   );
 
   const userAcknowledgment = useMemo(
@@ -97,22 +122,14 @@ export function DocsStdDetailsPage({
     setIsViewingPdf(false);
   }, []);
 
-  const handleGetPdfUrl = useCallback(async (): Promise<string> => {
-    if (!doc) {
-      throw new Error(
-        "Não foi encontrado nenhum documento válido para o ID requisitado."
-      );
-    }
-    const downloadUrlRes = await getDocumentDownloadUrl(doc);
-    if (downloadUrlRes.error) {
-      notification.error({
-        description: downloadUrlRes.error.message,
-        message: "Erro ao obter o documento",
-      });
-      throw new Error(downloadUrlRes.error.message);
-    }
-    return downloadUrlRes.data;
-  }, [doc, getDocumentDownloadUrl]);
+  const handleDocFileUrl = useCallback(
+    async (): Promise<string> => onDocFileUrl(doc),
+    [doc, onDocFileUrl]
+  );
+
+  const handleDocFileDownload = useCallback((): void => {
+    onDocFileDownload(doc);
+  }, [doc, onDocFileDownload]);
 
   const handleAcknowledgment = useCallback(async () => {
     if (!doc || !currentUser || userAcknowledgment) {
@@ -166,81 +183,6 @@ export function DocsStdDetailsPage({
     [docStatus, userAcknowledgment, handleAcknowledgment]
   );
 
-  const handlePdfDownload = useCallback(() => {
-    const notifyError = createErrorNotifier("Erro ao baixar o arquivo");
-
-    if (!doc) {
-      notifyError(
-        "Não foi possivel obter o documento. Tente novamente mais tarde."
-      );
-      return;
-    }
-    if (!currentUser) {
-      notifyError("Você precisa entrar com a sua conta primeiro.");
-      return;
-    }
-
-    const userDownloadCount = getUserDownloads(doc, currentUser).length;
-
-    const confirmModal = Modal.confirm({
-      title: "Atenção!",
-      content: (
-        <>
-          Por motivos de segurança, baixe este documento apenas quando realmente
-          necessário.
-          {userDownloadCount > 0 && (
-            <>
-              <Divider />
-              Você já baixou este documento{" "}
-              <strong>
-                {numberToWords(userDownloadCount, { gender: "f" })}
-              </strong>{" "}
-              vez{userDownloadCount > 1 ? "es" : ""}.
-            </>
-          )}
-        </>
-      ),
-      okText: "Baixar mesmo assim",
-      onOk: async () => {
-        confirmModal.update({ okText: "Baixando..." });
-
-        try {
-          const registerRes = await registerDownload(doc.id);
-
-          if (registerRes.error) {
-            notifyError(registerRes.error.message);
-            return;
-          }
-
-          const pdfDownloadUrl = await handleGetPdfUrl();
-
-          await download(
-            pdfDownloadUrl,
-            `${doc.title}${docVersion ? `_v${docVersion.number}` : ""}.pdf`
-          );
-
-          void message.success("Download concluído");
-        } catch (err) {
-          if (err instanceof Error) {
-            notifyError(err.message);
-          } else {
-            notifyError(
-              "Um erro desconhecido ocorreu. Por favor, entre em contato com o administrador do sistema."
-            );
-          }
-        }
-      },
-    });
-  }, [
-    doc,
-    docVersion,
-    currentUser,
-    getUserDownloads,
-    handleGetPdfUrl,
-    registerDownload,
-    download,
-  ]);
-
   const handleDocApprove = useCallback(() => {
     const confirmModal = Modal.confirm({
       title: "Aprovar documento?",
@@ -291,7 +233,7 @@ export function DocsStdDetailsPage({
 
       if (!doc || !docVersion) {
         notifyError(
-          "Não foi possivel vincular um documento à solicitação de recusa. Tente novamente mais tarde."
+          "Não foi possivel vincular um documento à sua rejeição. Tente novamente mais tarde."
         );
         return;
       }
@@ -301,7 +243,7 @@ export function DocsStdDetailsPage({
         content: `Confirma o rejeite desta versão (v.${docVersion.number}) do documento "${doc.title}"?`,
         okText: "Rejeitar",
         onOk: async () => {
-          confirmModal.update({ okText: "Enviando recusa..." });
+          confirmModal.update({ okText: "Enviando rejeição..." });
 
           const rejectionRes = await rejectDocumentVersion(doc.id, {
             comment: reason,
@@ -339,12 +281,14 @@ export function DocsStdDetailsPage({
     );
   }, [setBreadcrumbExtra, doc, docVersion]);
 
+  console.log(docVersion);
+
   return doc && currentUser ? (
     userPermissions?.read ? (
       <PrintPrevent disabled={userPermissions.print}>
         {isViewingPdf ? (
           <PdfViewer
-            actionHandlers={{ download: handlePdfDownload }}
+            actionHandlers={{ download: handleDocFileDownload }}
             disabledActions={[
               !userPermissions.download ? "download" : undefined,
               !userPermissions.print ? "print" : undefined,
@@ -353,7 +297,7 @@ export function DocsStdDetailsPage({
             onDocumentLoad={handlePdfDocLoad}
             onNavigateBack={handlePdfViewerHide}
             readProgressOptions={{
-              active: docStatus === "approved",
+              visible: docRequiresAck && docStatus === "approved",
               onComplete: handleAcknowledgment,
               forceComplete: !!userAcknowledgment,
               tooltip: "Progresso da leitura",
@@ -369,7 +313,7 @@ export function DocsStdDetailsPage({
               ),
             }}
             title={doc.title}
-            url={handleGetPdfUrl}
+            url={handleDocFileUrl}
             version={docVersion?.number}
             watermark="default"
           />
@@ -377,47 +321,59 @@ export function DocsStdDetailsPage({
           <>
             <PageTitle>{doc.title}</PageTitle>
 
-            {docStatus === "approved" && !userAcknowledgment && (
-              <DocsStdReadPendingAlert onViewPdf={handlePdfViewerShow} />
-            )}
+            {docStatus === "approved" &&
+              docRequiresAck &&
+              !userAcknowledgment && (
+                <DocsStdReadPendingAlert onViewPdf={handlePdfViewerShow} />
+              )}
 
             <PageDescription>{doc.description}</PageDescription>
 
-            <PageActionButtons>
-              {userPermissions.approve && docStatus === "pending" && (
-                <>
-                  <Button
-                    icon={<CheckOutlined />}
-                    onClick={handleDocApprove}
-                    type="primary"
-                  >
-                    Aprovar documento
-                  </Button>
-
-                  <DocsStdRejectButton
-                    icon={<CloseOutlined />}
-                    modalTitle="Rejeitar documento"
-                    onRejectSubmit={handleDocReject}
-                  >
-                    Rejeitar{breakpoint.lg && " documento"}
-                  </DocsStdRejectButton>
-                </>
-              )}
-
-              {userPermissions.write && (
-                <DocsStdModifyButton
-                  doc={doc}
-                  icon={
-                    docStatus === "pending" ? <EditOutlined /> : <UpOutlined />
+            {docActions && (
+              <PageActionButtons>
+                {/* eslint-disable-next-line array-callback-return */}
+                {docActions.map((action): React.ReactNode => {
+                  switch (action) {
+                    case "edit":
+                      return (
+                        <DocsStdModifyButton doc={doc} icon={<EditOutlined />}>
+                          Editar documento
+                        </DocsStdModifyButton>
+                      );
+                    case "upgrade":
+                      return (
+                        <DocsStdModifyButton
+                          doc={doc}
+                          icon={<UpOutlined />}
+                          upgrade={true}
+                        >
+                          Atualizar documento
+                        </DocsStdModifyButton>
+                      );
+                    case "approve":
+                      return (
+                        <Button
+                          icon={<CheckOutlined />}
+                          onClick={handleDocApprove}
+                          type="primary"
+                        >
+                          Aprovar documento
+                        </Button>
+                      );
+                    case "reject":
+                      return (
+                        <DocsStdRejectButton
+                          icon={<CloseOutlined />}
+                          modalTitle="Rejeitar documento"
+                          onRejectSubmit={handleDocReject}
+                        >
+                          Rejeitar{breakpoint.lg && " documento"}
+                        </DocsStdRejectButton>
+                      );
                   }
-                  upgrade={docStatus === "approved" || docStatus === "rejected"}
-                >
-                  {docStatus === "pending"
-                    ? "Editar documento"
-                    : "Atualizar documento"}
-                </DocsStdModifyButton>
-              )}
-            </PageActionButtons>
+                })}
+              </PageActionButtons>
+            )}
 
             <Divider marginBottom={12} />
 
@@ -425,6 +381,11 @@ export function DocsStdDetailsPage({
               <DocsStdInfo
                 defaultOpen={breakpoint.lg}
                 doc={doc}
+                docAcks={getDocumentAcknowledgedUsers(doc, docVersion?.id)}
+                docDownloads={getDocumentDownloads(doc, docVersion?.id)}
+                docIsOutdated={checkDocumentIsOutdated(doc)}
+                docStatus={docStatus}
+                docVersion={docVersion}
                 showPermissions={userPermissions.viewAdditionalInfo}
                 showTimeline={userPermissions.viewAdditionalInfo}
               />

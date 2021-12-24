@@ -35,6 +35,8 @@ import { useEnv } from "./useEnv";
 import { useNa3Users } from "./useNa3Users";
 import { useStateSlice } from "./useStateSlice";
 
+type Na3StdDocumentActionId = "approve" | "edit" | "reject" | "upgrade";
+
 type UseNa3StdDocsResult = StdDocsState & {
   helpers: {
     approveDocumentVersion: (
@@ -44,7 +46,14 @@ type UseNa3StdDocsResult = StdDocsState & {
         Na3StdDocumentEvent & { version: Na3StdDocumentVersion }
       >
     >;
+    checkDocumentHasBeenReleased: (doc: Na3StdDocument) => boolean;
     checkDocumentIsOutdated: (doc: Na3StdDocument) => boolean;
+    checkDocumentIsUpgrading: (doc: Na3StdDocument) => boolean;
+    checkDocumentRequiresAcknowledgement: (
+      doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
+      user: AppUser
+    ) => boolean;
     createDocument: (
       data: StdDocBuilderData & { file: File }
     ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
@@ -53,12 +62,15 @@ type UseNa3StdDocsResult = StdDocsState & {
       data: StdDocBuilderData & { comment: string; file: File }
     ) => Promise<FirebaseOperationResult<Na3StdDocument>>;
     getDocumentAcknowledgedUsers: (
-      doc: Na3StdDocument
+      doc: Na3StdDocument,
+      versionId?: string
     ) => Array<{ event: Na3StdDocumentEvent; user: AppUser }>;
+    getDocumentActions: (
+      doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
+      user: AppUser
+    ) => Na3StdDocumentActionId[] | undefined;
     getDocumentById: (docId: string) => Na3StdDocument | undefined;
-    getDocumentDownloadUrl: (
-      doc: Na3StdDocument
-    ) => Promise<FirebaseOperationResult<string>>;
     getDocumentDownloads: (
       doc: Na3StdDocument,
       versionId?: string
@@ -72,6 +84,10 @@ type UseNa3StdDocsResult = StdDocsState & {
     ) => Na3StdDocumentVersion | undefined;
     getDocumentLatestVersion: (
       doc: Na3StdDocument
+    ) => Na3StdDocumentVersion | undefined;
+    getDocumentLatestVersionForUser: (
+      doc: Na3StdDocument,
+      user: AppUser
     ) => Na3StdDocumentVersion | undefined;
     getDocumentStatus: (doc: Na3StdDocument) => Na3StdDocumentStatus;
     getDocumentTypeFromTypeId: (
@@ -96,6 +112,7 @@ type UseNa3StdDocsResult = StdDocsState & {
     ) => Na3StdDocumentEvent[];
     getUserPermissionsForDocument: (
       doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
       user: AppUser
     ) => Record<
       keyof Na3StdDocumentPermissions | "view" | "viewAdditionalInfo" | "write",
@@ -130,6 +147,7 @@ type UseNa3StdDocsResult = StdDocsState & {
     userHasDocumentPermissions: (
       user: AppUser,
       doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
       permissions: MaybeArray<keyof Na3StdDocumentPermissions>
     ) => boolean;
   };
@@ -200,15 +218,32 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
   );
 
   const getDocumentLatestApprovedVersion = useCallback(
-    (
-      doc: Na3StdDocument,
-      options?: { onlyApproved?: boolean }
-    ): Na3StdDocumentVersion | undefined => {
+    (doc: Na3StdDocument): Na3StdDocumentVersion | undefined => {
       return [...doc.versions]
         .filter((version) => getDocumentVersionStatus(version) === "approved")
         .pop();
     },
     [getDocumentVersionStatus]
+  );
+
+  const getDocumentLatestVersionForUser = useCallback(
+    (doc: Na3StdDocument, user: AppUser): Na3StdDocumentVersion | undefined => {
+      if (
+        user.isSuper ||
+        user.hasPrivileges(["docs_std_super", "docs_std_write_new"])
+      ) {
+        return getDocumentLatestVersion(doc);
+      }
+      return getDocumentLatestApprovedVersion(doc);
+    },
+    [getDocumentLatestVersion, getDocumentLatestApprovedVersion]
+  );
+
+  const getDocumentLatestVersionForCurrentUser = useCallback(
+    (doc: Na3StdDocument): Na3StdDocumentVersion | undefined => {
+      return currentUser && getDocumentLatestVersionForUser(doc, currentUser);
+    },
+    [currentUser, getDocumentLatestVersionForUser]
   );
 
   const getDocumentStatus = useCallback(
@@ -224,13 +259,6 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     [getDocumentLatestVersion, getDocumentVersionStatus]
   );
 
-  const checkDocumentIsOutdated = useCallback(
-    (doc: Na3StdDocument): boolean => {
-      return dayjs(doc.nextRevisionAt).isBefore(dayjs());
-    },
-    []
-  );
-
   const getDocumentAcknowledgedUsers = useCallback(
     (
       doc: Na3StdDocument,
@@ -238,7 +266,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     ): Array<{ event: Na3StdDocumentEvent; user: AppUser }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
-        : getDocumentLatestVersion(doc);
+        : getDocumentLatestVersionForCurrentUser(doc);
 
       return (version?.events || [])
         .filter((ev) => ev.type === "acknowledge")
@@ -252,7 +280,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         })
         .filter(handleFilterFalsies);
     },
-    [getDocumentLatestVersion, getUserByUid]
+    [getDocumentLatestVersionForCurrentUser, getUserByUid]
   );
 
   const getUserAcknowledgment = useCallback(
@@ -275,7 +303,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     ): Array<{ event: Na3StdDocumentEvent; user: AppUser }> => {
       const version = versionId
         ? doc.versions.find((v) => v.id === versionId)
-        : getDocumentLatestVersion(doc);
+        : getDocumentLatestVersionForCurrentUser(doc);
 
       return (version?.events || [])
         .filter((ev) => ev.type === "download")
@@ -289,7 +317,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         })
         .filter(handleFilterFalsies);
     },
-    [getDocumentLatestVersion, getUserByUid]
+    [getDocumentLatestVersionForCurrentUser, getUserByUid]
   );
 
   const getUserDownloads = useCallback(
@@ -325,26 +353,11 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
     []
   );
 
-  const getDocumentDownloadUrl = useCallback(
-    async (doc: Na3StdDocument): Promise<FirebaseOperationResult<string>> => {
-      const latestVersion = getDocumentLatestVersion(doc);
-
-      if (!latestVersion) {
-        return {
-          error: buildNa3Error("na3/storage/docs-std/doc-not-found"),
-          data: null,
-        };
-      }
-
-      return getDocumentVersionDownloadUrl(doc, latestVersion);
-    },
-    [getDocumentLatestVersion, getDocumentVersionDownloadUrl]
-  );
-
   const userHasDocumentPermissions = useCallback(
     (
       user: AppUser,
       doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
       permissions: MaybeArray<
         | keyof Na3StdDocumentPermissions
         | "view"
@@ -385,7 +398,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
           // Regular users can only view document's content if it has been
           // approved.
           if (permissionToCheck === "view") {
-            return getDocumentStatus(doc) === "approved";
+            return getDocumentVersionStatus(docVersion) === "approved";
           }
           // Check permission against document's.
           return doc.permissions[permissionToCheck].some((positionAllowed) =>
@@ -394,26 +407,111 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         })
       );
     },
-    [getDocumentStatus]
+    [getDocumentVersionStatus]
   );
 
   const getUserPermissionsForDocument = useCallback(
-    (doc: Na3StdDocument, user: AppUser) => {
+    (doc: Na3StdDocument, docVersion: Na3StdDocumentVersion, user: AppUser) => {
       return {
-        read: userHasDocumentPermissions(user, doc, "read"),
-        print: userHasDocumentPermissions(user, doc, "print"),
-        download: userHasDocumentPermissions(user, doc, "download"),
-        approve: userHasDocumentPermissions(user, doc, "approve"),
-        view: userHasDocumentPermissions(user, doc, "view"),
-        write: userHasDocumentPermissions(user, doc, "write"),
+        read: userHasDocumentPermissions(user, doc, docVersion, "read"),
+        print: userHasDocumentPermissions(user, doc, docVersion, "print"),
+        download: userHasDocumentPermissions(user, doc, docVersion, "download"),
+        approve: userHasDocumentPermissions(user, doc, docVersion, "approve"),
+        view: userHasDocumentPermissions(user, doc, docVersion, "view"),
+        write: userHasDocumentPermissions(user, doc, docVersion, "write"),
         viewAdditionalInfo: userHasDocumentPermissions(
           user,
           doc,
+          docVersion,
           "viewAdditionalInfo"
         ),
       };
     },
     [userHasDocumentPermissions]
+  );
+
+  const getDocumentActions = useCallback(
+    (
+      doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
+      user: AppUser
+    ): Na3StdDocumentActionId[] | undefined => {
+      if (user.isSuper) {
+        return ["edit", "upgrade", "approve", "reject"];
+      }
+
+      const docStatus = getDocumentStatus(doc);
+      const userPermissions = getUserPermissionsForDocument(
+        doc,
+        docVersion,
+        user
+      );
+
+      if (userPermissions.approve) {
+        if (docStatus === "pending") {
+          return ["approve", "reject"];
+        }
+        return;
+      }
+
+      if (userPermissions.write) {
+        if (docStatus === "pending" || docStatus === "draft") {
+          return ["edit"];
+        }
+        return ["upgrade"];
+      }
+
+      return;
+    },
+    [getDocumentStatus, getUserPermissionsForDocument]
+  );
+
+  const checkDocumentIsOutdated = useCallback(
+    (doc: Na3StdDocument): boolean => {
+      return dayjs(doc.nextRevisionAt).isBefore(dayjs());
+    },
+    []
+  );
+
+  const checkDocumentHasBeenReleased = useCallback(
+    (doc: Na3StdDocument): boolean => {
+      return !!getDocumentLatestApprovedVersion(doc);
+    },
+    [getDocumentLatestApprovedVersion]
+  );
+
+  const checkDocumentRequiresAcknowledgement = useCallback(
+    (
+      doc: Na3StdDocument,
+      docVersion: Na3StdDocumentVersion,
+      user: AppUser
+    ): boolean => {
+      if (user.isSuper) {
+        return true;
+      }
+
+      const userPermissions = getUserPermissionsForDocument(
+        doc,
+        docVersion,
+        user
+      );
+
+      if (userPermissions.approve || userPermissions.write) {
+        return false;
+      }
+      return true;
+    },
+    [getUserPermissionsForDocument]
+  );
+
+  const checkDocumentIsUpgrading = useCallback(
+    (doc: Na3StdDocument): boolean => {
+      const latestVersion = getDocumentLatestVersion(doc);
+      const latestApprovedVersion = getDocumentLatestApprovedVersion(doc);
+
+      return latestVersion?.number !== latestApprovedVersion?.number;
+    },
+    [getDocumentLatestVersion, getDocumentLatestApprovedVersion]
   );
 
   const pushVersionEvent = useCallback(
@@ -436,29 +534,40 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
 
       try {
         const docSnap = await getDoc(docRef);
-        const docData = docSnap.data();
 
-        if (!docData) {
+        if (!docSnap.exists()) {
           return {
             data: null,
             error: buildNa3Error("na3/firestore/generic/doc-not-found"),
           };
         }
 
+        const docData = { ...docSnap.data(), id: docSnap.id };
+
         const event = buildStdDocumentEvents(eventConfig, {
           device,
           user: currentUser,
         });
-        const lastVersion = docData.versions.slice(-1)[0];
+
+        const versionToModify = getDocumentLatestVersionForCurrentUser(docData);
+
+        if (!versionToModify) {
+          return {
+            data: null,
+            error: buildNa3Error("na3/firestore/generic/doc-not-found"),
+          };
+        }
 
         await updateDoc(docRef, {
-          versions: [
-            ...docData.versions.slice(0, -1),
-            { ...lastVersion, events: [...lastVersion.events, event] },
-          ],
+          versions: docData.versions.map((version) => {
+            if (version.id !== versionToModify.id) {
+              return version;
+            }
+            return { ...version, events: [...version.events, event] };
+          }),
         });
 
-        return { data: { ...event, version: lastVersion }, error: null };
+        return { data: { ...event, version: versionToModify }, error: null };
       } catch (err) {
         return {
           data: null,
@@ -466,7 +575,7 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
         };
       }
     },
-    [currentUser, device]
+    [currentUser, device, getDocumentLatestVersionForCurrentUser]
   );
 
   const createDocument = useCallback(
@@ -689,16 +798,20 @@ export function useNa3StdDocs(): UseNa3StdDocsResult {
       getDocumentLastEvent,
       getDocumentLatestVersion,
       getDocumentLatestApprovedVersion,
+      getDocumentLatestVersionForUser,
       getDocumentVersionStatus,
       getDocumentStatus,
       checkDocumentIsOutdated,
+      checkDocumentHasBeenReleased,
+      checkDocumentRequiresAcknowledgement,
+      checkDocumentIsUpgrading,
       getDocumentAcknowledgedUsers,
       getUserAcknowledgment,
       getDocumentDownloads,
       getUserDownloads,
       getDocumentVersionDownloadUrl,
-      getDocumentDownloadUrl,
       userHasDocumentPermissions,
+      getDocumentActions,
       getUserPermissionsForDocument,
       registerAcknowledgment,
       registerDownload,

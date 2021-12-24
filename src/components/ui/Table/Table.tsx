@@ -3,98 +3,86 @@ import { useId } from "@hooks";
 import type { MaybeArray } from "@types";
 import { handleFilterFalsies, isArray } from "@utils";
 import type { TableColumnsType, TableProps as AntdTableProps } from "antd";
-import { Space, Table as AntdTable } from "antd";
+import { Space, Table as AntdTable, Tooltip } from "antd";
 import { nanoid } from "nanoid";
 import React, { useCallback, useMemo } from "react";
 import type { Falsy } from "utility-types";
 
 import classes from "./Table.module.css";
-import type { TableActionProps } from "./TableAction";
-import { TableAction } from "./TableAction";
+import type { TableActionProps } from "./TableAction/TableAction";
+import { TableAction } from "./TableAction/TableAction";
 
-type AntdTableColumn<T> = TableColumnsType<T>[number];
+type AntdColumn<T> = TableColumnsType<T>[number];
 
-export type TableColumnPropsFn<
-  Data extends Record<PropertyKey, unknown>,
-  DataIndex extends number | undefined = number,
-  Return = React.ReactNode
-> = (data: Data, index: DataIndex) => Return;
+export type TableData = Record<PropertyKey, unknown>;
 
-type TableColumnFilter<
-  Data extends Record<PropertyKey, unknown>,
-  DataIndex extends Extract<keyof Data, string>
+type TableDataIndex<Data extends TableData> = Extract<keyof Data, string>;
+
+export type TableGetDataFn<
+  Data extends TableData,
+  Index extends number | undefined,
+  Return
+> = (data: Data, index: Index) => Return;
+
+type TableFilter<
+  Data extends TableData,
+  DataIndex extends TableDataIndex<Data>
 > = {
-  children?: Array<TableColumnFilter<Data, DataIndex>>;
+  children?: Array<TableFilter<Data, DataIndex>>;
   text: React.ReactNode;
   value: boolean | number | string;
 };
 
-type TableColumnFilterConfig<
-  Data extends Record<PropertyKey, unknown>,
-  DataIndex extends Extract<keyof Data, string>
-> = {
-  filters: Array<TableColumnFilter<Data, DataIndex>>;
-  onFilter: <T extends boolean | number | string>(
-    value: T,
-    data: Data
-  ) => boolean;
-};
-
-type TableColumnConfig<
-  Data extends Record<PropertyKey, unknown>,
-  DataIndex extends Extract<keyof Data, string>
+type TableColumn<
+  Data extends TableData,
+  DataIndex extends TableDataIndex<Data>
 > = {
   align?: "center" | "left" | "right";
   className?: string;
   dataIndex?: DataIndex;
+  hidden?: boolean;
+  onRender: TableGetDataFn<Data, number, React.ReactNode>;
   onSort?: (a: Data, b: Data) => number;
-  render: TableColumnPropsFn<Data>;
-  responsive?: AntdTableColumn<Data>["responsive"];
+  responsive?: AntdColumn<Data>["responsive"];
   title: React.ReactNode;
 } & (
-  | TableColumnFilterConfig<Data, DataIndex>
+  | {
+      filters: Array<TableFilter<Data, DataIndex>>;
+      onFilter: <T extends boolean | number | string>(
+        value: T,
+        data: Data
+      ) => boolean;
+    }
   | { filters?: never; onFilter?: never }
 );
 
+export type TableActions<Data extends TableData> = {
+  disabled?: boolean;
+  items: MaybeArray<TableActionProps<Data>>;
+  tooltip?: React.ReactNode;
+};
+
 export type TableProps<
-  Data extends Record<PropertyKey, unknown>,
-  DataIndex extends Extract<keyof Data, string>
+  Data extends TableData,
+  DataIndex extends TableDataIndex<Data>
 > = {
+  actions?: TableGetDataFn<Data, number, TableActions<Data>>;
   bordered?: boolean;
-  columns: Array<Falsy | TableColumnConfig<Data, DataIndex>>;
+  columns: Array<Falsy | TableColumn<Data, DataIndex>>;
   dataSource: Data[];
-  onActionsRender?: TableColumnPropsFn<
-    Data,
-    number,
-    MaybeArray<Falsy | TableActionProps<Data>>
-  >;
-  onRowClick?: TableColumnPropsFn<Data, number | undefined, void>;
+  onRowClick?: TableGetDataFn<Data, number | undefined, void>;
   size?: AntdTableProps<Data>["size"];
 };
 
-export function Table<
-  T extends Record<PropertyKey, unknown>,
-  U extends Extract<keyof T, string>
->({
+export function Table<T extends TableData, U extends TableDataIndex<T>>({
   columns: columnsProp,
   dataSource,
-  onActionsRender,
+  actions,
   bordered = true,
   size = "small",
   onRowClick,
 }: TableProps<T, U>): JSX.Element {
   const actionsColumnKey = useId();
-
-  const columns = useMemo(
-    (): Array<TableColumnConfig<T, U>> =>
-      [
-        ...columnsProp,
-        onActionsRender
-          ? { title: "Ações", key: actionsColumnKey, render: onActionsRender }
-          : undefined,
-      ].filter(handleFilterFalsies),
-    [columnsProp, actionsColumnKey, onActionsRender]
-  );
 
   const handleRow = useCallback(
     (data: T, dataIndex?: number) => {
@@ -113,65 +101,82 @@ export function Table<
   );
 
   const handleActionsRender = useCallback(
-    (
-      data: T,
-      dataIndex: number,
-      actions: MaybeArray<Falsy | TableActionProps<T>>
-    ): React.ReactNode => {
-      const actionsArr = isArray(actions) ? [...actions] : [actions];
+    (data: T, index: number): React.ReactNode => {
+      if (!actions) {
+        return;
+      }
+
+      const {
+        items,
+        tooltip,
+        disabled: allActionsDisabled,
+      } = actions(data, index);
+
+      const itemsArr = isArray(items) ? [...items] : [items];
 
       return (
-        <Space>
-          {actionsArr
-            .filter(handleFilterFalsies)
-            .map(({ title, label, icon, disabled, onClick }) => (
-              <TableAction
-                data={data}
-                dataIndex={dataIndex}
-                disabled={disabled ?? false}
-                icon={icon || null}
-                key={nanoid()}
-                label={label || null}
-                onClick={onClick}
-                title={title || null}
-              />
-            ))}
-        </Space>
+        <Tooltip
+          placement="topRight"
+          title={tooltip}
+          visible={tooltip ? undefined : false}
+        >
+          <Space>
+            {itemsArr
+              .filter(handleFilterFalsies)
+              .map(({ title, label, icon, disabled, onClick }) => (
+                <TableAction
+                  data={data}
+                  dataIndex={index}
+                  disabled={allActionsDisabled || (disabled ?? false)}
+                  icon={icon || null}
+                  key={nanoid()}
+                  label={label || null}
+                  onClick={onClick}
+                  title={(!tooltip && title) || null}
+                />
+              ))}
+          </Space>
+        </Tooltip>
       );
     },
-    []
+    [actions]
   );
+
+  const columns = useMemo(() => {
+    type Column = TableColumn<T, U> & { key: string };
+
+    const columns: Column[] = [...columnsProp]
+      .filter(handleFilterFalsies)
+      .filter((col) => !col.hidden)
+      .map((col) => ({ ...col, key: nanoid() }));
+
+    if (actions) {
+      const actionsColumn: Column = {
+        title: "Ações",
+        key: actionsColumnKey,
+        align: "center",
+        onRender: handleActionsRender,
+      };
+      columns.push(actionsColumn);
+    }
+
+    return columns;
+  }, [columnsProp, actions, actionsColumnKey, handleActionsRender]);
 
   return (
     <AntdTable<T>
       bordered={bordered}
-      columns={columns.map((column) => ({
-        key: nanoid(),
-
-        ...column,
-
-        render: (_, data, idx): React.ReactNode =>
-          isActionsColumn(column, actionsColumnKey) && onActionsRender
-            ? handleActionsRender(data, idx, onActionsRender(data, idx))
-            : column.render(data, idx),
-
-        sorter: column.onSort && ((a, b): number => column.onSort?.(a, b) || 0),
-
-        ...(isActionsColumn(column, actionsColumnKey)
-          ? { align: "center" }
-          : {}),
-      }))}
+      columns={columns.map(
+        (column): AntdColumn<T> => ({
+          ...column,
+          render: (_, data, idx): React.ReactNode => column.onRender(data, idx),
+          sorter: column.onSort,
+        })
+      )}
       dataSource={dataSource}
       locale={TABLE_LOCALE}
       onRow={handleRow}
       size={size}
     />
   );
-}
-
-function isActionsColumn(
-  column: Record<PropertyKey, unknown> | { key: string },
-  actionsColumnKey: string
-): boolean {
-  return "key" in column && column.key === actionsColumnKey;
 }

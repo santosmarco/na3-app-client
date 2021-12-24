@@ -63,7 +63,7 @@ export function timestampToStr(
   return dayjs(dayjsInput).format(
     `DD/MM/YY${
       options.includeTime
-        ? ` [às] ${options.includeHours ? "hh" : ""}${
+        ? ` [às] ${options.includeHours ? "HH" : ""}${
             options.includeMinutes ? ":mm" : ""
           }${options.includeSeconds ? ":ss" : ""}`
         : ""

@@ -13,52 +13,54 @@ import {
   DocsStdStatusBadge,
   DocsStdTypeTag,
 } from "@components";
-import { useNa3StdDocs } from "@modules/na3-react";
-import type { Na3StdDocument } from "@modules/na3-types";
+import type { AppUser } from "@modules/na3-react";
+import type {
+  Na3StdDocument,
+  Na3StdDocumentEvent,
+  Na3StdDocumentStatus,
+  Na3StdDocumentVersion,
+} from "@modules/na3-types";
 import { humanizeDuration } from "@utils";
 import { Col, Grid, Row, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
-import React, { useMemo } from "react";
+import React from "react";
 
 import { DocsStdTimeline } from "../DocsStdTimeline/DocsStdTimeline";
 import { DocsStdAvatarGroup } from "./DocsStdAvatarGroup";
 import classes from "./DocsStdInfo.module.css";
 import { DocsStdPermissionsData } from "./DocsStdPermissionsData";
 
+type DocEventRegistry = {
+  event: Na3StdDocumentEvent;
+  user: AppUser;
+};
+
 type DocsStdInfoProps = {
   defaultOpen?: boolean;
   doc: Na3StdDocument;
+  docAcks: DocEventRegistry[];
+  docDownloads: DocEventRegistry[];
+  docIsOutdated: boolean;
+  docStatus: Na3StdDocumentStatus | undefined;
+  docVersion: Na3StdDocumentVersion | undefined;
   showPermissions?: boolean;
   showTimeline?: boolean;
 };
 
 export function DocsStdInfo({
+  // Doc information
   doc,
+  docVersion,
+  docStatus,
+  docIsOutdated,
+  docAcks,
+  docDownloads,
+  // Options
   defaultOpen,
   showPermissions,
   showTimeline,
 }: DocsStdInfoProps): JSX.Element {
   const breakpoint = Grid.useBreakpoint();
-
-  const {
-    helpers: {
-      getDocumentLatestVersion,
-      getDocumentStatus,
-      getDocumentAcknowledgedUsers,
-      getDocumentDownloads,
-      checkDocumentIsOutdated,
-    },
-  } = useNa3StdDocs();
-
-  const docVersion = useMemo(
-    () => getDocumentLatestVersion(doc),
-    [getDocumentLatestVersion, doc]
-  );
-
-  const docIsOutdated = useMemo(
-    () => checkDocumentIsOutdated(doc),
-    [checkDocumentIsOutdated, doc]
-  );
 
   return (
     <Collapse
@@ -105,10 +107,11 @@ export function DocsStdInfo({
               <Col lg={3} xs={12}>
                 <DataItem label="Status">
                   <div className={classes.DocData}>
-                    <DocsStdStatusBadge
-                      status={getDocumentStatus(doc)}
-                      variant="tag"
-                    />
+                    {docStatus ? (
+                      <DocsStdStatusBadge status={docStatus} variant="tag" />
+                    ) : (
+                      "Indeterminado"
+                    )}
                   </div>
                 </DataItem>
               </Col>
@@ -141,9 +144,7 @@ export function DocsStdInfo({
               <Col lg={4} xs={12}>
                 <DataItem icon={<ReadOutlined />} label="Lido por">
                   <div className={classes.DocData}>
-                    <DocsStdAvatarGroup
-                      data={getDocumentAcknowledgedUsers(doc)}
-                    />
+                    <DocsStdAvatarGroup data={docAcks} />
                   </div>
                 </DataItem>
               </Col>
@@ -151,7 +152,7 @@ export function DocsStdInfo({
               <Col lg={4} xs={12}>
                 <DataItem icon={<DownloadOutlined />} label="Downloads">
                   <div className={classes.DocData}>
-                    <DocsStdAvatarGroup data={getDocumentDownloads(doc)} />
+                    <DocsStdAvatarGroup data={docDownloads} />
                   </div>
                 </DataItem>
               </Col>

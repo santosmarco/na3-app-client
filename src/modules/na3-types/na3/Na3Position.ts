@@ -8,6 +8,7 @@ export type Na3PositionIdBase =
   | "assistente-manutencao"
   | "assistente-pcp"
   | "assistente-reciclagem"
+  | "auxiliar-dobra"
   | "auxiliar-extrusao"
   | "auxiliar-producao"
   | "coordenador-manutencao"

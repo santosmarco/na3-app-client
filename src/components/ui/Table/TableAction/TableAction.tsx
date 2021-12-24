@@ -2,7 +2,9 @@ import { Icon, Text } from "@components";
 import { Tooltip } from "antd";
 import React, { useCallback } from "react";
 
-export type TableActionProps<Data extends Record<PropertyKey, unknown>> = {
+import type { TableData } from "../Table";
+
+export type TableActionProps<Data extends TableData> = {
   disabled?: boolean;
   icon?: React.ReactNode;
   label?: React.ReactNode;
@@ -10,13 +12,14 @@ export type TableActionProps<Data extends Record<PropertyKey, unknown>> = {
   title?: React.ReactNode;
 };
 
-type TableActionInternalProps<Data extends Record<PropertyKey, unknown>> =
-  Required<TableActionProps<Data>> & {
-    data: Data;
-    dataIndex: number;
-  };
+type TableActionInternalProps<Data extends TableData> = Required<
+  TableActionProps<Data>
+> & {
+  data: Data;
+  dataIndex: number;
+};
 
-export function TableAction<T extends Record<PropertyKey, unknown>>({
+export function TableAction<T extends TableData>({
   icon,
   label,
   title,

@@ -3,11 +3,15 @@ import {
   FilePdfOutlined,
   PrinterOutlined,
 } from "@ant-design/icons";
-import type { TableActionProps } from "@components";
+import type { TableActions } from "@components";
 import { DocsStdTypeTag, ResultSignIn, Table } from "@components";
 import { useCurrentUser, useNa3StdDocs } from "@modules/na3-react";
-import type { Na3StdDocument } from "@modules/na3-types";
+import type {
+  Na3StdDocument,
+  Na3StdDocumentPermissions,
+} from "@modules/na3-types";
 import { NA3_STD_DOCUMENT_TYPES } from "@modules/na3-types";
+import { capitalize } from "@utils";
 import { Grid } from "antd";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
@@ -19,10 +23,12 @@ import { DocsStdTableReadIndicator } from "./DocsStdTableReadIndicator";
 
 type DocsStdTableListProps = {
   data: Na3StdDocument[] | null | undefined;
+  onDocFileDownload: (doc: Na3StdDocument | undefined) => void;
 };
 
 export function DocsStdTableList({
   data: docs,
+  onDocFileDownload,
 }: DocsStdTableListProps): JSX.Element {
   const history = useHistory();
   const breakpoint = Grid.useBreakpoint();
@@ -33,7 +39,9 @@ export function DocsStdTableList({
       getUserAcknowledgment,
       getDocumentStatus,
       getDocumentLatestApprovedVersion,
+      getDocumentLatestVersionForUser,
       userHasDocumentPermissions,
+      checkDocumentHasBeenReleased,
     },
   } = useNa3StdDocs();
 
@@ -71,11 +79,9 @@ export function DocsStdTableList({
 
   const handleDocVersionRender = useCallback(
     (data: Na3StdDocument): React.ReactNode => (
-      <DocsStdTableItemVersion
-        docVersion={getDocumentLatestApprovedVersion(data)}
-      />
+      <DocsStdTableItemVersion doc={data} />
     ),
-    [getDocumentLatestApprovedVersion]
+    []
   );
 
   const handleDocTitleSort = useCallback(
@@ -112,43 +118,91 @@ export function DocsStdTableList({
   );
 
   const handleActionsRender = useCallback(
-    (data: Na3StdDocument): Array<TableActionProps<Na3StdDocument>> => {
-      return [
-        {
-          title: "Visualizar",
-          icon: <FilePdfOutlined />,
-          onClick: (data): void => {
-            handleNavigateToDocument(data, { openViewer: true });
+    (data: Na3StdDocument): TableActions<Na3StdDocument> => {
+      const docHasBeenReleased = checkDocumentHasBeenReleased(data);
+
+      function userHasDocPermission(
+        permissionId: keyof Na3StdDocumentPermissions
+      ): boolean {
+        if (!currentUser) {
+          return false;
+        }
+
+        const docVersionForUser = getDocumentLatestVersionForUser(
+          data,
+          currentUser
+        );
+
+        if (!docVersionForUser) {
+          return false;
+        }
+
+        return userHasDocumentPermissions(
+          currentUser,
+          data,
+          docVersionForUser,
+          permissionId
+        );
+      }
+
+      function checkActionIsAvailable(
+        actionPermission: keyof Na3StdDocumentPermissions
+      ): boolean {
+        if (!currentUser || !docHasBeenReleased) {
+          return false;
+        }
+        return userHasDocPermission(actionPermission);
+      }
+
+      function getActionTitle(
+        actionId: "download" | "print" | "read",
+        verb: string
+      ): string {
+        if (!userHasDocPermission(actionId)) {
+          return (
+            "Você não possui as permissões necessárias para " +
+            verb +
+            " esse documento"
+          );
+        }
+        return capitalize(verb);
+      }
+
+      return {
+        tooltip:
+          !docHasBeenReleased && "Esse documento ainda não está disponível",
+        disabled: !docHasBeenReleased,
+        items: [
+          {
+            title: getActionTitle("read", "visualizar"),
+            icon: <FilePdfOutlined />,
+            onClick: (data): void => {
+              handleNavigateToDocument(data, { openViewer: true });
+            },
+            disabled:
+              !checkActionIsAvailable("read") ||
+              getDocumentStatus(data) !== "approved",
           },
-          disabled:
-            !currentUser ||
-            !userHasDocumentPermissions(currentUser, data, "read") ||
-            getDocumentStatus(data) !== "approved",
-        },
-        {
-          title: "Imprimir",
-          icon: <PrinterOutlined />,
-          onClick: (data): void => {
-            console.log("Ver", data);
+          {
+            title: getActionTitle("print", "imprimir"),
+            icon: <PrinterOutlined />,
+            onClick: onDocFileDownload,
+            disabled: !checkActionIsAvailable("print"),
           },
-          disabled:
-            !currentUser ||
-            !userHasDocumentPermissions(currentUser, data, "print"),
-        },
-        {
-          title: "Baixar",
-          icon: <DownloadOutlined />,
-          onClick: (data): void => {
-            console.log("Ver", data);
+          {
+            title: getActionTitle("download", "baixar"),
+            icon: <DownloadOutlined />,
+            onClick: onDocFileDownload,
+            disabled: !checkActionIsAvailable("download"),
           },
-          disabled:
-            !currentUser ||
-            !userHasDocumentPermissions(currentUser, data, "download"),
-        },
-      ];
+        ],
+      };
     },
     [
       currentUser,
+      onDocFileDownload,
+      getDocumentLatestVersionForUser,
+      checkDocumentHasBeenReleased,
       userHasDocumentPermissions,
       getDocumentStatus,
       handleNavigateToDocument,
@@ -157,10 +211,11 @@ export function DocsStdTableList({
 
   return currentUser ? (
     <Table
+      actions={handleActionsRender}
       columns={[
         {
           title: "Lido",
-          render: handleDocReadIndicatorRender,
+          onRender: handleDocReadIndicatorRender,
           filters: [
             {
               text: (
@@ -188,7 +243,7 @@ export function DocsStdTableList({
         {
           title: "Tipo",
           dataIndex: "type",
-          render: handleDocTypeTagRender,
+          onRender: handleDocTypeTagRender,
           filters: Object.entries(NA3_STD_DOCUMENT_TYPES).map(
             ([typeId, type]) => ({
               text: <DocsStdTypeTag short={true} type={type} variant="dot" />,
@@ -201,12 +256,12 @@ export function DocsStdTableList({
         {
           title: "Título",
           dataIndex: "title",
-          render: handleDocTitleRender,
+          onRender: handleDocTitleRender,
           onSort: handleDocTitleSort,
         },
         {
           title: "Status",
-          render: handleDocStatusRender,
+          onRender: handleDocStatusRender,
           filters: [
             {
               text: <DocsStdStatusBadge status="approved" />,
@@ -231,13 +286,12 @@ export function DocsStdTableList({
         {
           title: "Versão",
           align: "center",
-          render: handleDocVersionRender,
+          onRender: handleDocVersionRender,
           onSort: handleDocVersionSort,
           responsive: ["lg"],
         },
       ]}
       dataSource={docs || []}
-      onActionsRender={handleActionsRender}
       onRowClick={handleRowClick}
     />
   ) : (

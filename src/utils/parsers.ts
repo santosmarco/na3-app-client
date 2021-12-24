@@ -24,7 +24,7 @@ const parserDictionary = {
   refused: "Recusada", // Service Orders
   draft: "Rascunho", // StdDocs
   approved: "Aprovado", // StdDocs
-  rejected: "Recusado", // StdDocs
+  rejected: "Rejeitado", // StdDocs
   finished: "Finalizado", // MaintProjects
   late: "Atrasado", // MaintProjects
   running: "Em execução", // MaintProjects

@@ -40,6 +40,8 @@ export type {
   Na3StdDocument,
   Na3StdDocumentEvent,
   Na3StdDocumentEventOrigin,
+  Na3StdDocumentEventPayload,
+  Na3StdDocumentEventType,
   Na3StdDocumentPermissions,
   Na3StdDocumentStatus,
   Na3StdDocumentType,

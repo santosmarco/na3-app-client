@@ -22,6 +22,19 @@ export type Na3StdDocumentPermissions = {
   read: Na3PositionId[];
 };
 
+export type Na3StdDocumentEventType =
+  | "acknowledge"
+  | "approve"
+  | "create"
+  | "download"
+  | "edit"
+  | "reject"
+  | "upgrade";
+
+export type Na3StdDocumentEventPayload = {
+  comment: string | null;
+};
+
 export type Na3StdDocumentEventOrigin = {
   device: Na3AppDevice;
   uid: string;
@@ -30,18 +43,9 @@ export type Na3StdDocumentEventOrigin = {
 export type Na3StdDocumentEvent = {
   id: string;
   origin: Na3StdDocumentEventOrigin;
-  payload: {
-    comment: string | null;
-  };
+  payload: Na3StdDocumentEventPayload;
   timestamp: string;
-  type:
-    | "acknowledge"
-    | "approve"
-    | "create"
-    | "download"
-    | "edit"
-    | "reject"
-    | "upgrade";
+  type: Na3StdDocumentEventType;
 };
 
 export type Na3StdDocumentVersion = {

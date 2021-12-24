@@ -97,9 +97,14 @@ export { Result } from "./ui/Result/Result";
 export { Result404 } from "./ui/Result/Result404";
 export { ResultSignIn } from "./ui/Result/ResultSignIn";
 export { Spinner } from "./ui/Spinner/Spinner";
-export type { TableColumnPropsFn, TableProps } from "./ui/Table/Table";
+export type {
+  TableActions,
+  TableData,
+  TableGetDataFn,
+  TableProps,
+} from "./ui/Table/Table";
 export { Table } from "./ui/Table/Table";
-export type { TableActionProps } from "./ui/Table/TableAction";
+export type { TableActionProps } from "./ui/Table/TableAction/TableAction";
 export { AchievementScoreTag } from "./ui/Tag/AchievementScoreTag";
 export { DocsStdTypeTag } from "./ui/Tag/DocsStdTypeTag";
 export { MaintEmployeeTag } from "./ui/Tag/MaintEmployeeTag";

@@ -40,7 +40,7 @@ type PdfViewerProps = Pick<
   onDocumentLoad?: (ev: PdfViewerDocLoadEvent) => void;
   onNavigateBack?: (() => void) | null;
   readProgressOptions?: ReadProgressIndicatorPluginOptions & {
-    active?: boolean;
+    visible?: boolean;
   };
   title: string;
   url: Promise<string> | string | (() => Promise<string>);
@@ -130,7 +130,7 @@ export function PdfViewer({
             <PdfViewerToolbar
               actionHandlers={actionHandlers}
               disabledActions={disabledActions}
-              footer={readProgressOptions?.active && <ReadProgressIndicator />}
+              footer={readProgressOptions?.visible && <ReadProgressIndicator />}
               header={
                 <PdfViewerToolbarHeader
                   docTitle={title}

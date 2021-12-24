@@ -45,12 +45,14 @@ export function DocsStdRejectButton({
           <FormField
             label="Comentários"
             name={form.fieldNames.reason}
-            rules={{ required: "Explique o motivo para a recusa do documento" }}
+            rules={{
+              required: "Explique o motivo para a rejeição do documento",
+            }}
             type="textArea"
           />
 
           <SubmitButton
-            label="Enviar recusa"
+            label="Enviar e rejeitar"
             labelWhenLoading="Aguardando confirmação..."
           />
         </Form>
