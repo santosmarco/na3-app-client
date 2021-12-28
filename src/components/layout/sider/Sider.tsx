@@ -1,4 +1,5 @@
 import { MenuOutlined } from "@ant-design/icons";
+import { Divider } from "@components";
 import { ROUTES } from "@config";
 import { SIDER_COLLAPSED_WIDTH } from "@constants";
 import { useTheme } from "@hooks";
@@ -119,6 +120,7 @@ export function Sider(): JSX.Element {
       zeroWidthTriggerStyle={zeroWidthTriggerStyle}
     >
       <SiderLogo isCollapsed={!!isCollapsed} onClick={handleLogoNavigation} />
+      <Divider marginY={0} />
       <SiderMenu
         items={siderItems.filter((item): item is SiderItem => !!item)}
         onNavigation={handleMenuNavigation}

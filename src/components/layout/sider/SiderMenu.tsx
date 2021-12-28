@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 import type { SiderItem, SiderItemChild } from "./Sider";
+import classes from "./SiderMenu.module.css";
 
 export type SiderMenuProps = {
   items: SiderItem[];
@@ -67,6 +68,7 @@ export function SiderMenu({
 
   return (
     <Menu
+      className={classes.SiderMenu}
       defaultOpenKeys={[location.pathname.split("/")[1]]}
       defaultSelectedKeys={[location.pathname.split("/").slice(0, 3).join("/")]}
       mode="inline"

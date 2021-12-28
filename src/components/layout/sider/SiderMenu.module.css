@@ -1,0 +1,5 @@
+.SiderMenu {
+  height: calc(100% - 48px);
+  overflow: scroll;
+  padding-bottom: 64px;
+}
