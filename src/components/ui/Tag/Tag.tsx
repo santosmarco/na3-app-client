@@ -6,6 +6,7 @@ import {
   MinusCircleOutlined,
   SyncOutlined,
 } from "@ant-design/icons";
+import type { SpanProps } from "@types";
 import type { TagProps as AntdTagProps } from "antd";
 import { Tag as AntdTag } from "antd";
 import React, { useMemo } from "react";
@@ -21,7 +22,11 @@ export type TagProps = {
   marginRight?: "default";
   mode?: "select";
   noStatusIcon?: boolean;
+  onClick?: SpanProps["onClick"];
   onClose?: () => void;
+  onFocus?: SpanProps["onFocus"];
+  onMouseEnter?: SpanProps["onMouseEnter"];
+  onMouseLeave?: SpanProps["onMouseLeave"];
   style?: React.CSSProperties;
   textColor?: string;
   wrapperClassName?: string;
@@ -39,6 +44,11 @@ export function Tag({
   style: styleProp,
   wrapperClassName,
   mode,
+  // Span props
+  onMouseEnter,
+  onMouseLeave,
+  onFocus,
+  onClick,
 }: TagProps): JSX.Element {
   const style = useMemo(
     () => ({ ...styleProp, color: textColor }),
@@ -50,11 +60,15 @@ export function Tag({
       className={`${mode === "select" ? classes.SelectMode : ""} ${
         wrapperClassName || ""
       }`.trim()}
+      onClick={onClick}
+      onFocus={onFocus}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <AntdTag
         className={marginRight === "default" ? undefined : classes.Tag}
         closable={closable}
-        color={color}
+        color={color === "default" ? "blue" : color}
         icon={icon || (!noStatusIcon && getTagIcon(color))}
         onClose={onClose}
         style={style}
