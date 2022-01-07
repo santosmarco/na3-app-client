@@ -7,9 +7,10 @@ import {
 import { useQuery } from "@hooks";
 import { useNa3ServiceOrders } from "@modules/na3-react";
 import type { Na3ServiceOrder } from "@modules/na3-types";
-import { Grid, Row } from "antd";
-import React, { useCallback, useMemo } from "react";
+import { Grid, Input, Row } from "antd";
+import React, { useCallback, useMemo, useState } from "react";
 import { useHistory } from "react-router";
+import { useDebouncedValue } from "rooks";
 
 import { MaintServiceOrderDetailsPage } from "../serviceOrders/MaintServiceOrderDetails";
 import classes from "./MaintDashboardHome.module.css";
@@ -20,12 +21,23 @@ export function MaintDashboardHomePage(): JSX.Element {
 
   const breakpoint = Grid.useBreakpoint();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500);
+
   const serviceOrders = useNa3ServiceOrders();
 
-  const serviceOrdersByStatus = useMemo(
-    () => serviceOrders.helpers.mapByStatus(),
-    [serviceOrders.helpers]
-  );
+  const serviceOrdersByStatus = useMemo(() => {
+    let searchFilteredData = serviceOrders.data || [];
+    if (debouncedSearchQuery) {
+      searchFilteredData = searchFilteredData.filter(
+        (order) =>
+          order.description.toLowerCase().includes(debouncedSearchQuery) ||
+          order.dpt.toLowerCase().includes(debouncedSearchQuery) ||
+          parseInt(order.id) === parseInt(debouncedSearchQuery)
+      );
+    }
+    return serviceOrders.helpers.mapByStatus(searchFilteredData);
+  }, [serviceOrders.data, serviceOrders.helpers, debouncedSearchQuery]);
 
   const mobileListData = useMemo(
     () => [
@@ -44,6 +56,18 @@ export function MaintDashboardHomePage(): JSX.Element {
     [history]
   );
 
+  const handleSearchChange = useCallback(
+    (eventOrValue: React.ChangeEvent<HTMLInputElement> | string): void => {
+      const input =
+        typeof eventOrValue === "string"
+          ? eventOrValue
+          : eventOrValue.target.value;
+      const query = input.trim().toLowerCase();
+      setSearchQuery(query);
+    },
+    []
+  );
+
   return query.numero ? (
     <MaintServiceOrderDetailsPage
       hasCameFromDashboard={true}
@@ -60,6 +84,14 @@ export function MaintDashboardHomePage(): JSX.Element {
           Esta página é melhor visualizada no computador.
         </PageAlert>
       )}
+
+      <Input.Search
+        className={classes.Search}
+        enterButton={true}
+        onChange={handleSearchChange}
+        onSearch={handleSearchChange}
+        placeholder="Pesquisar OS..."
+      />
 
       {breakpoint.lg ? (
         <Row className={classes.DashboardRow} gutter={16}>

@@ -57,6 +57,8 @@ export function MaintServiceOrdersList({
       serviceOrders.helpers,
       cardRenderOptions?.hideStatus,
       cardRenderOptions?.hideUrgencyRibbon,
+      cardRenderOptions?.showDepartment,
+      cardRenderOptions?.showMachine,
     ]
   );
 

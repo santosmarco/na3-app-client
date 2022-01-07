@@ -8,3 +8,7 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+.Search {
+  margin-bottom: 12px;
+}
