@@ -38,6 +38,7 @@ export { ServiceOrderStatusBadge } from "./app/maintenance/serviceOrders/card/Se
 export { MaintDashboardColumn } from "./app/maintenance/serviceOrders/dashboard/MaintDashboardColumn";
 export { MaintServiceOrderTimelineModal } from "./app/maintenance/serviceOrders/details/MaintServiceOrderTimelineModal";
 export { MaintCreateServiceOrderForm } from "./app/maintenance/serviceOrders/MaintCreateServiceOrderForm";
+export type { MaintServiceOrderCardRenderOptions } from "./app/maintenance/serviceOrders/MaintServiceOrdersList";
 export { MaintServiceOrdersList } from "./app/maintenance/serviceOrders/MaintServiceOrdersList";
 export { FormCollapse } from "./forms/components/FormCollapse/FormCollapse";
 export { FormItem } from "./forms/components/FormItem/FormItem";
@@ -114,6 +115,7 @@ export { UserPositionTag } from "./ui/Tag/UserPositionTag";
 export { UserTag } from "./ui/Tag/UserTag";
 export { Timeline } from "./ui/Timeline/Timeline";
 export type { TimelineItemProps } from "./ui/Timeline/TimelineItem";
+export { Tooltip } from "./ui/Tooltip/Tooltip";
 export type { UserAvatarProps } from "./user/UserAvatar/UserAvatar";
 export { UserAvatar } from "./user/UserAvatar/UserAvatar";
 export type { UserAvatarGroupProps } from "./user/UserAvatar/UserAvatarGroup";
