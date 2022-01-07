@@ -121,11 +121,11 @@ export class Na3BatchId implements BatchId {
         return this.originalValue.replace(
           /*
            * $1: Department's two-letter ID (KA only)
-           * $2: Product's two-letter ID (NT or CI)
+           * $2: Product's two-letter ID (NT, CI or RN)
            * $3: Batch's sequential number
            * $4: Shift (A-G)
            */
-          /^(ka)(nt|ci)(\d{4})([a-g])$/i,
+          /^(ka)(nt|ci|rn)(\d{4})([a-g])$/i,
           "$1-$2-$3 $4"
         );
       case "commercial":
@@ -151,7 +151,7 @@ export class Na3BatchId implements BatchId {
   }
 
   private validateMexican(): boolean {
-    return /^(ka-((nt)|(ci))-\d{4} [a-g])$/i.test(this.value);
+    return /^(ka-((nt)|(ci)|(rn))-\d{4} [a-g])$/i.test(this.value);
   }
 
   private validateCommercial(): boolean {
