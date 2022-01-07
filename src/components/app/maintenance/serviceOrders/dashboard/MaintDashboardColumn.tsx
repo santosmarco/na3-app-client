@@ -36,7 +36,7 @@ export function MaintDashboardColumn({
       hideStatus: true,
       hideUrgencyRibbon: true,
       showDepartment: true,
-      showMachine: true
+      showMachine: true,
     }),
     []
   );
