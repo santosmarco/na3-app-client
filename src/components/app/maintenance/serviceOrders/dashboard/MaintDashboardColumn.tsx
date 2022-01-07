@@ -1,10 +1,14 @@
-import { Divider, Page } from "@components";
+import type { MaintServiceOrderCardRenderOptions } from "@components";
+import {
+  Divider,
+  MaintServiceOrdersList,
+  Page,
+  ServiceOrderStatusBadge,
+} from "@components";
 import type { Na3ServiceOrder } from "@modules/na3-types";
 import { Card, Col, Statistic } from "antd";
 import React, { useMemo } from "react";
 
-import { ServiceOrderStatusBadge } from "../card/ServiceOrderStatusBadge";
-import { MaintServiceOrdersList } from "../MaintServiceOrdersList";
 import classes from "./MaintDashboardColumn.module.css";
 
 type MaintDashboardColumnProps = {
@@ -28,7 +32,12 @@ export function MaintDashboardColumn({
   dividerClassName,
 }: MaintDashboardColumnProps): JSX.Element {
   const cardRenderOptions = useMemo(
-    () => ({ hideStatus: true, hideUrgencyRibbon: true }),
+    (): MaintServiceOrderCardRenderOptions => ({
+      hideStatus: true,
+      hideUrgencyRibbon: true,
+      showDepartment: true,
+      showMachine: true
+    }),
     []
   );
 

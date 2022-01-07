@@ -18,6 +18,7 @@ export { LabelsTransfManagePage } from "./labels/transf/LabelsTransfManage";
 export { LabelsTransfPrintPage } from "./labels/transf/LabelsTransfPrint";
 export { MaintDashboardHomePage } from "./maintenance/dashboard/MaintDashboardHome";
 export { MaintenanceHomePage } from "./maintenance/MaintenanceHome";
+export { MaintProjectsCalendarPage } from "./maintenance/projects/MaintProjectsCalendar";
 export { MaintProjectsCreatePage } from "./maintenance/projects/MaintProjectsCreate";
 export { MaintProjectsHomePage } from "./maintenance/projects/MaintProjectsHome";
 export { MaintReportsHomePage } from "./maintenance/reports/MaintReportsHome";

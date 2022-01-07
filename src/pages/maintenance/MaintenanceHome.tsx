@@ -1,10 +1,11 @@
-import { blue, cyan, geekblue, green, red } from "@ant-design/colors";
+import { blue, cyan, geekblue, green, lime, red } from "@ant-design/colors";
 import { SettingOutlined } from "@ant-design/icons";
 import { MenuPage } from "@components";
 import type { MenuPageAction } from "@types";
 import React from "react";
 import {
   IoBuildOutline,
+  IoCalendarOutline,
   IoDocumentTextOutline,
   IoGridOutline,
   IoHammerOutline,
@@ -30,11 +31,18 @@ const maintenancePageActions: MenuPageAction[] = [
     title: "Ordens de serviço",
   },
   {
-    colors: { background: green[2], foreground: green[8] },
+    colors: { background: lime[2], foreground: lime[8] },
     description: "Acessar o dashboard de ordens de serviço",
     href: "/manutencao/dashboard",
     icon: <IoGridOutline />,
     title: "Dashboard",
+  },
+  {
+    colors: { background: green[2], foreground: green[8] },
+    description: "Acessar o calendário de projetos da Manutenção",
+    href: "/manutencao/calendario",
+    icon: <IoCalendarOutline />,
+    title: "Calendário",
   },
   {
     colors: { background: cyan[2], foreground: cyan[8] },

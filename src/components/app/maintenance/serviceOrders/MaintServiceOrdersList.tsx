@@ -6,11 +6,15 @@ import React, { useCallback } from "react";
 
 import { MaintServiceOrderCard } from "./card/MaintServiceOrderCard";
 
+export type MaintServiceOrderCardRenderOptions = {
+  hideStatus?: boolean;
+  hideUrgencyRibbon?: boolean;
+  showDepartment?: boolean;
+  showMachine?: boolean;
+};
+
 type MaintServiceOrdersListProps = {
-  cardRenderOptions?: {
-    hideStatus?: boolean;
-    hideUrgencyRibbon?: boolean;
-  };
+  cardRenderOptions?: MaintServiceOrderCardRenderOptions;
   data: Na3ServiceOrder[];
   isSearchDisabled?: boolean;
   onSelectOrder: ((serviceOrder: Na3ServiceOrder) => void) | null;
@@ -31,6 +35,8 @@ export function MaintServiceOrdersList({
           data={order}
           isStatusHidden={cardRenderOptions?.hideStatus}
           onSelect={onSelectOrder}
+          showDepartment={cardRenderOptions?.showDepartment}
+          showMachine={cardRenderOptions?.showMachine}
         />
       );
 

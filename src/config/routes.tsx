@@ -24,6 +24,7 @@ import {
   LabelsTransfPrintPage,
   MaintDashboardHomePage,
   MaintenanceHomePage,
+  MaintProjectsCalendarPage,
   MaintProjectsCreatePage,
   MaintProjectsHomePage,
   MaintReportsHomePage,
@@ -67,6 +68,7 @@ export type AppRoutePath =
   | "/etiquetas/imprimir"
   | "/etiquetas/imprimir/transferencia"
   | "/manutencao"
+  | "/manutencao/calendario"
   | "/manutencao/dashboard"
   | "/manutencao/os"
   | "/manutencao/os/abrir-os"
@@ -266,6 +268,11 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     component: <MaintDashboardHomePage />,
     requiredPrivileges: ["service_orders_read_all"],
     title: "Dashboard",
+  },
+  "/manutencao/calendario": {
+    component: <MaintProjectsCalendarPage />,
+    requiredPrivileges: ["service_orders_read_all"],
+    title: "Calendário",
   },
   "/manutencao/os": {
     component: <MaintServiceOrdersHomePage />,
