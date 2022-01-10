@@ -44,6 +44,24 @@ export function LabelsTransfPreview({
 
   const breakpoint = Grid.useBreakpoint();
 
+  const labelLatestVersion = useMemo((): Na3ApiLabel<"transf"> | undefined => {
+    if (!label) {
+      return;
+    }
+
+    // Update #1
+    // Due to some problems with Delly and other clients, we were requested to
+    // move the Shift ID (A, B, C, ...) to the right of the label's date and
+    // off from the Batch ID.
+    const labelShift = label.batchId.slice(-1);
+    // Here, we move the Shift ID to the right of the date.
+    const labelDate = `${label.date} ${labelShift}`;
+    // Here, we remove the Shift ID from the Batch ID.
+    const labelBatchId = label.batchId.slice(0, -1);
+
+    return { ...label, date: labelDate, batchId: labelBatchId };
+  }, [label]);
+
   const handleMakeQrCode = useCallback(
     async (canvasEl: HTMLCanvasElement | null) => {
       if (!canvasEl || !label?.batchId) return;
@@ -76,14 +94,14 @@ export function LabelsTransfPreview({
   );
 
   const handlePrint = useCallback(() => {
-    if (!(label && copies && qrDataUrl && barcodeDataUrl)) return;
-    onPrint(label, { barcodeDataUrl, copies, qrDataUrl });
-  }, [onPrint, label, copies, qrDataUrl, barcodeDataUrl]);
+    if (!(labelLatestVersion && copies && qrDataUrl && barcodeDataUrl)) return;
+    onPrint(labelLatestVersion, { barcodeDataUrl, copies, qrDataUrl });
+  }, [onPrint, labelLatestVersion, copies, qrDataUrl, barcodeDataUrl]);
 
   const handleSave = useCallback(() => {
-    if (!(label && copies && qrDataUrl && barcodeDataUrl)) return;
-    onSave(label, { barcodeDataUrl, copies, qrDataUrl });
-  }, [onSave, label, copies, qrDataUrl, barcodeDataUrl]);
+    if (!(labelLatestVersion && copies && qrDataUrl && barcodeDataUrl)) return;
+    onSave(labelLatestVersion, { barcodeDataUrl, copies, qrDataUrl });
+  }, [onSave, labelLatestVersion, copies, qrDataUrl, barcodeDataUrl]);
 
   const qrCanvasStyle = useMemo(
     (): React.CSSProperties => ({
@@ -118,38 +136,38 @@ export function LabelsTransfPreview({
       }
       onClose={onCancel}
       title="Pré-visualização"
-      visible={!!label}
+      visible={!!labelLatestVersion}
     >
-      {label && (
+      {labelLatestVersion && (
         <>
           <div className={classes.LabelPreview}>
             <img alt="Layout impresso da etiqueta" src={labelLayout} />
 
             <PreviewData x="32.6%" y="19%">
-              {label.customerName.toUpperCase()}
+              {labelLatestVersion.customerName.toUpperCase()}
             </PreviewData>
 
             <PreviewData x="82%" y="19%">
-              {label.date.toUpperCase()}
+              {labelLatestVersion.date.toUpperCase()}
             </PreviewData>
 
             <PreviewData w="70%" x="4.9%" y="45.5%">
-              {label.productCode.toUpperCase()} —{" "}
-              {label.productName.toUpperCase()}
+              {labelLatestVersion.productCode.toUpperCase()} —{" "}
+              {labelLatestVersion.productName.toUpperCase()}
             </PreviewData>
 
             <PreviewData x="82%" y="45.5%">
-              {label.productQuantity}{" "}
-              {label.productUnitAbbreviation.toUpperCase()}
+              {labelLatestVersion.productQuantity}{" "}
+              {labelLatestVersion.productUnitAbbreviation.toUpperCase()}
             </PreviewData>
 
             <PreviewData x="4.9%" y="78%">
-              {label.batchId.toUpperCase()}
+              {labelLatestVersion.batchId.toUpperCase()}
             </PreviewData>
 
-            {label.invoiceNumber && (
+            {labelLatestVersion.invoiceNumber && (
               <PreviewData x="29%" y="78%">
-                {label.invoiceNumber.toUpperCase()}
+                {labelLatestVersion.invoiceNumber.toUpperCase()}
               </PreviewData>
             )}
 
