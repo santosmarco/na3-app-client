@@ -71,9 +71,10 @@ export function DocsCreateStdForm({
       title: editingDoc?.title || "",
       type: editingDoc?.type || "",
       nextRevisionAt: editingDoc?.nextRevisionAt || "",
-      versionNumber: version?.number
-        ? (upgrade ? version.number + 1 : version.number).toString()
-        : "",
+      versionNumber:
+        version?.number !== undefined
+          ? (upgrade ? version.number + 1 : version.number).toString()
+          : "",
       fileList: [],
       comment: "",
     },
@@ -108,7 +109,7 @@ export function DocsCreateStdForm({
             documento {`"${formValues.title.trim()}"`}{" "}
             <em>
               (
-              {editingDoc && upgrade && version?.number
+              {editingDoc && upgrade && version?.number !== undefined
                 ? `v.${version.number} → `
                 : ""}
               v.{formValues.versionNumber})
@@ -207,7 +208,7 @@ export function DocsCreateStdForm({
       onSubmit={handleSubmit}
       requiredPrivileges={["docs_std_write_new"]}
     >
-      {editingDoc && version?.number && (
+      {editingDoc && version?.number !== undefined && (
         <PageAlert title={`Modo ${upgrade ? "atualização" : "edição"}`}>
           {upgrade ? (
             <>
