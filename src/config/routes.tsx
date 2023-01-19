@@ -36,17 +36,6 @@ import {
 import React from "react";
 import type { SiderItem } from "src/components/layout/sider/Sider";
 
-type SiderChildConfig = {
-  path: string;
-  title: string;
-};
-
-export type SiderConfig = {
-  children?: SiderChildConfig[];
-  section?: Exclude<SiderItem["section"], "admin">;
-  title?: string;
-};
-
 export type AppRoutePath =
   | "/"
   | "/admin"
@@ -78,6 +67,17 @@ export type AppRoutePath =
   | "/manutencao/projetos/novo-projeto"
   | "/manutencao/relatorios"
   | "/usuarios";
+
+type SiderChildConfig = {
+  path: AppRoutePath;
+  title: string;
+};
+
+export type SiderConfig = {
+  children?: SiderChildConfig[];
+  section?: Exclude<SiderItem["section"], "admin">;
+  title?: string;
+};
 
 export type AppRoute = {
   component: React.ReactNode | null;
