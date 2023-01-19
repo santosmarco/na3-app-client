@@ -15,6 +15,7 @@ import classes from "./ListFormPage.module.css";
 type ListFormPageProps = {
   actions:
     | Array<{
+        alwaysVisible?: boolean;
         disabled?: boolean;
         icon?: React.ReactNode;
         label: React.ReactNode;
@@ -62,21 +63,22 @@ export function ListFormPage({
 
       {description && <PageDescription>{description}</PageDescription>}
 
-      {!breakpoint.lg && actions && (
-        <PageActionButtons>
-          {actions.map(({ onClick, ...action }) => (
-            <Button
-              disabled={action.disabled}
-              icon={action.icon || <PlusCircleOutlined />}
-              key={nanoid()}
-              onClick={onClick}
-              type={action.type || "primary"}
-            >
-              {action.label}
-            </Button>
-          ))}
-        </PageActionButtons>
-      )}
+      {actions &&
+        (!breakpoint.lg || actions.some((act) => act.alwaysVisible)) && (
+          <PageActionButtons>
+            {actions.map(({ onClick, ...action }) => (
+              <Button
+                disabled={action.disabled}
+                icon={action.icon || <PlusCircleOutlined />}
+                key={nanoid()}
+                onClick={onClick}
+                type={action.type || "primary"}
+              >
+                {action.label}
+              </Button>
+            ))}
+          </PageActionButtons>
+        )}
 
       <Row gutter={28} style={rowStyle}>
         <Col
