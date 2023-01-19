@@ -5,3 +5,6 @@ export type NullableDeep<T> = T extends Record<PropertyKey, unknown>
   : T | null | undefined;
 
 export type TypedChildren<Props> = MaybeArray<React.ReactElement<Props>>;
+
+declare const emptyObject: unique symbol;
+export type EmptyObject = { [emptyObject]?: never };
