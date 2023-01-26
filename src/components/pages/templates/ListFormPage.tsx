@@ -24,7 +24,7 @@ type ListFormPageProps = {
       }>
     | Falsy;
   description?: React.ReactNode;
-  form?: React.ReactNode;
+  form: React.ReactNode;
   formTitle: React.ReactNode;
   list: React.ReactNode;
   listTitle: React.ReactNode;
@@ -81,13 +81,7 @@ export function ListFormPage({
         )}
 
       <Row gutter={28} style={rowStyle}>
-        <Col
-          className={classes.PageGridCol}
-          lg={form ? 8 : 24}
-          xl={form ? 7 : 24}
-          xs={form ? 2 : 244}
-          xxl={form ? 6 : 24}
-        >
+        <Col className={classes.PageGridCol} lg={8} xl={7} xs={24} xxl={6}>
           <div className={classes.ListTitle}>
             <Divider>{listTitle}</Divider>
           </div>
@@ -95,7 +89,7 @@ export function ListFormPage({
           <Page>{list}</Page>
         </Col>
 
-        {form && breakpoint.lg && (
+        {breakpoint.lg && (
           <Col className={classes.PageGridCol} lg={16} xl={17} xs={0} xxl={18}>
             <Divider>{formTitle}</Divider>
 
