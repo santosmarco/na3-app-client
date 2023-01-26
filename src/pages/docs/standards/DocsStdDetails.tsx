@@ -281,8 +281,6 @@ export function DocsStdDetailsPage({
     );
   }, [setBreadcrumbExtra, doc, docVersion]);
 
-  console.log(docVersion);
-
   return doc && currentUser ? (
     userPermissions?.read ? (
       <PrintPrevent disabled={userPermissions.print}>
