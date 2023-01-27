@@ -8,6 +8,7 @@ import { Na3MainController } from "./controllers/MainController";
 import { Na3MaintenanceProjectsController } from "./controllers/MaintProjectsController";
 import { Na3PeopleController } from "./controllers/na3/Na3PeopleController";
 import { Na3ProductsController } from "./controllers/na3/Na3ProductsController";
+import { Na3NativeProductsController } from "./controllers/ProductsController";
 import { Na3ServiceOrdersController } from "./controllers/ServiceOrdersController";
 import { Na3StdDocsController } from "./controllers/StdDocsController";
 import { Na3TransfLabelTemplatesController } from "./controllers/TransfLabelTemplatesController";
@@ -53,6 +54,7 @@ export function Na3Provider({
       <Na3ServiceOrdersController />
       <Na3MaintenanceProjectsController />
       <Na3StdDocsController />
+      <Na3NativeProductsController />
 
       {/* App */}
       {children}
