@@ -40,6 +40,8 @@ export { MaintServiceOrderTimelineModal } from "./app/maintenance/serviceOrders/
 export { MaintCreateServiceOrderForm } from "./app/maintenance/serviceOrders/MaintCreateServiceOrderForm";
 export type { MaintServiceOrderCardRenderOptions } from "./app/maintenance/serviceOrders/MaintServiceOrdersList";
 export { MaintServiceOrdersList } from "./app/maintenance/serviceOrders/MaintServiceOrdersList";
+export { ProductsCreateForm } from "./app/products/ProductsCreateForm";
+export { ProductsList } from "./app/products/ProductsList";
 export { FormCollapse } from "./forms/components/FormCollapse/FormCollapse";
 export { FormItem } from "./forms/components/FormItem/FormItem";
 export type { AutoCompleteOptionBase } from "./forms/fields/AutoComplete/AutoComplete";
