@@ -1,4 +1,4 @@
-import { blue, green, magenta, red } from "@ant-design/colors";
+import { blue, cyan, green, magenta, red } from "@ant-design/colors";
 import { Divider, Logo, StaticListItem } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
 import type { MenuPageAction } from "@types";
@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 import React from "react";
 import {
   IoDocumentTextOutline,
+  IoGridOutline,
   IoPersonCircleOutline,
   IoPricetagsOutline,
   IoSettingsOutline,
@@ -72,6 +73,13 @@ const defaultQuickLinks: MenuPageAction[] = [
     href: "/manutencao",
     icon: <IoSettingsOutline />,
     title: "Manutenção",
+  },
+  {
+    colors: { background: cyan[2], foreground: cyan[8] },
+    description: "Visualize, edite e cadastre novos produtos",
+    href: "/produtos",
+    icon: <IoGridOutline />,
+    title: "Produtos",
   },
 ];
 
