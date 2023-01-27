@@ -24,5 +24,8 @@ export { MaintProjectsHomePage } from "./maintenance/projects/MaintProjectsHome"
 export { MaintReportsHomePage } from "./maintenance/reports/MaintReportsHome";
 export { MaintServiceOrdersCreatePage } from "./maintenance/serviceOrders/MaintServiceOrdersCreate";
 export { MaintServiceOrdersHomePage } from "./maintenance/serviceOrders/MaintServiceOrdersHome";
+export { ProductsCreatePage } from "./products/ProductsCreate";
+export { ProductsHomePage } from "./products/ProductsHome";
+export { ProductsManagePage } from "./products/ProductsManage";
 export { UserProfilePage } from "./users/UserProfile";
 export { UsersHomePage } from "./users/UsersHome";
