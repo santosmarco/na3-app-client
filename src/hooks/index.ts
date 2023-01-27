@@ -10,4 +10,6 @@ export { usePdf } from "./usePdf";
 export { useQuery } from "./useQuery";
 export type { ThemeMode } from "./useTheme";
 export { useTheme } from "./useTheme";
+export type { FieldNamesFn } from "./useValidatedForm";
+export { useValidatedForm } from "./useValidatedForm";
 export { useWindowSize } from "./useWindowSize";
