@@ -12,6 +12,8 @@ export type Na3UserPrivilegeId =
   | "maint_projects_read_all"
   | "maint_projects_write_all"
   | "maint_reports_full_access"
+  | "products_read_all"
+  | "products_write_all"
   | "service_orders_read_all"
   | "service_orders_read_own"
   | "service_orders_write_maintenance"
