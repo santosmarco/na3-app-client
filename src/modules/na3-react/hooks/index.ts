@@ -10,6 +10,7 @@ export * from "./useNa3Auth";
 export * from "./useNa3Departments";
 export * from "./useNa3MaintProjects";
 export * from "./useNa3MaintReports";
+export * from "./useNa3NativeProducts";
 export * from "./useNa3Positions";
 export * from "./useNa3ServiceOrders";
 export * from "./useNa3StdDocs";
