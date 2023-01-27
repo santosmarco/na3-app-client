@@ -10,6 +10,7 @@
       "@hooks": ["./src/hooks"],
       "@modules/*": ["./src/modules/*"],
       "@pages": ["./src/pages"],
+      "@schemas": ["./src/schemas"],
       "@themes": ["./src/themes"],
       "@types": ["./src/types"],
       "@utils": ["./src/utils"]
