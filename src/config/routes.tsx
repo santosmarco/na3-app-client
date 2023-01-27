@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   FileOutlined,
   HomeOutlined,
   SettingOutlined,
@@ -30,6 +31,9 @@ import {
   MaintReportsHomePage,
   MaintServiceOrdersCreatePage,
   MaintServiceOrdersHomePage,
+  ProductsCreatePage,
+  ProductsHomePage,
+  ProductsManagePage,
   UserProfilePage,
   UsersHomePage,
 } from "@pages";
@@ -66,6 +70,9 @@ export type AppRoutePath =
   | "/manutencao/projetos"
   | "/manutencao/projetos/novo-projeto"
   | "/manutencao/relatorios"
+  | "/produtos"
+  | "/produtos/criar"
+  | "/produtos/lista"
   | "/usuarios";
 
 type SiderChildConfig = {
@@ -311,6 +318,31 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     component: <MaintReportsHomePage />,
     requiredPrivileges: ["maint_reports_full_access"],
     title: "Relatórios",
+  },
+
+  "/produtos": {
+    component: <ProductsHomePage />,
+    icon: <AppstoreOutlined />,
+    requiredPrivileges: null,
+    isPublic: true,
+    siderConfig: {
+      children: [
+        { path: "/produtos/lista", title: "Gerenciar" },
+        { path: "/produtos/criar", title: "Criar" },
+      ],
+    },
+    title: "Produtos",
+  },
+  "/produtos/lista": {
+    component: <ProductsManagePage />,
+    requiredPrivileges: null,
+    isPublic: true,
+    title: "Gerenciar",
+  },
+  "/produtos/criar": {
+    component: <ProductsCreatePage />,
+    requiredPrivileges: ["products_write_all"],
+    title: "Novo Produto",
   },
 
   "/usuarios": {
