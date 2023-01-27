@@ -8,6 +8,7 @@ export * from "./store/MaintProjects";
 export * from "./store/Na3People";
 export * from "./store/Na3Products";
 export * from "./store/Na3Users";
+export * from "./store/Products";
 export * from "./store/Root";
 export * from "./store/ServiceOrders";
 export * from "./store/StdDocs";
