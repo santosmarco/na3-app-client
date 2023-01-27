@@ -7,5 +7,6 @@ export * from "./maintProjects";
 export * from "./na3/people";
 export * from "./na3/products";
 export * from "./na3/users";
+export * from "./nativeProducts";
 export * from "./serviceOrders";
 export * from "./stdDocs";

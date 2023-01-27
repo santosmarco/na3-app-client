@@ -9,6 +9,7 @@ import { maintProjectsReducer } from "./maintProjects";
 import { na3PeopleReducer } from "./na3/people";
 import { na3ProductsReducer } from "./na3/products";
 import { na3UsersReducer } from "./na3/users";
+import { nativeProductsReducer } from "./nativeProducts";
 import { serviceOrdersReducer } from "./serviceOrders";
 import { stdDocsReducer } from "./stdDocs";
 
@@ -24,4 +25,5 @@ export const rootReducer = combineReducers({
   na3Users: na3UsersReducer,
   serviceOrders: serviceOrdersReducer,
   stdDocs: stdDocsReducer,
+  products: nativeProductsReducer,
 });
