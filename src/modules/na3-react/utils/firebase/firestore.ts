@@ -9,6 +9,7 @@ import type {
   Na3TransfLabelTemplate,
   Na3User,
 } from "@modules/na3-types";
+import type { Product } from "@schemas";
 import type { CollectionReference } from "firebase/firestore";
 import { collection, getFirestore } from "firebase/firestore";
 import type { ConditionalKeys, Primitive } from "type-fest";
@@ -21,6 +22,7 @@ type CollectionIdDataMap = {
   departments: Na3Department;
   "docs-std": Na3StdDocument;
   "manut-projects": Na3MaintenanceProject;
+  products: Product & { id: string };
   tickets: Na3ServiceOrder;
   "transf-label-templates": Na3TransfLabelTemplate;
   users: Na3User;
