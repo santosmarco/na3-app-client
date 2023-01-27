@@ -94,6 +94,7 @@ type FormFieldBaseProps<Type extends FieldType, Value extends FieldValue> = {
   defaultHelp?: React.ReactNode;
   defaultValue?: Value | undefined;
   disabled?: boolean;
+  forceValidation?: boolean;
   helpWhenDisabled?: React.ReactNode;
   helpWhenLoading?: React.ReactNode;
   helpWhenValid?: React.ReactNode | ((value: Value) => React.ReactNode);
@@ -177,6 +178,7 @@ export function FormField<SelectValue extends string = string>(
     autoUpperCase,
     defaultHelp,
     disabled: disabledProp,
+    forceValidation,
     hidden,
     hideHelpWhenValid,
     hideOptionalMark,
@@ -336,7 +338,20 @@ export function FormField<SelectValue extends string = string>(
     []
   );
 
+  const disabled = useMemo(
+    (): boolean => disabledProp || isLoading || isSubmitting,
+    [disabledProp, isLoading, isSubmitting]
+  );
+
   useEffect(() => {
+    if (forceValidation) {
+      if (disabled) {
+        return;
+      }
+      onFieldBlur();
+      return;
+    }
+
     if (
       (isTouched || hasValue) &&
       (type === "autoComplete" ||
@@ -351,12 +366,17 @@ export function FormField<SelectValue extends string = string>(
       setPrevValue(value);
       onValueChange?.(value as never);
     }
-  }, [value, prevValue, type, isTouched, hasValue, onValueChange, onFieldBlur]);
-
-  const disabled = useMemo(
-    (): boolean => disabledProp || isLoading || isSubmitting,
-    [disabledProp, isLoading, isSubmitting]
-  );
+  }, [
+    forceValidation,
+    disabled,
+    value,
+    prevValue,
+    type,
+    isTouched,
+    hasValue,
+    onValueChange,
+    onFieldBlur,
+  ]);
 
   const placeholder = useMemo((): string => {
     if (placeholderProp) return placeholderProp;
