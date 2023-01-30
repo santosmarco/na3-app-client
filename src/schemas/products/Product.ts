@@ -55,7 +55,7 @@ export const ProductSchema = z.object({
     .string()
     .trim()
     .regex(/^\d{10}$/, "Deve possuir exatamente dez dígitos"),
-  description: z.string().trim().min(1, "Campo obrigatório"),
+  description: z.string().trim().optional(),
   packageType: ProductPackageTypeSchema,
   qtyPerPackage: makeStrToNumSchema(
     z.number().gt(0, "Deve ser maior que zero")

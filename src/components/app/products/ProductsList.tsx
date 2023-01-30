@@ -29,7 +29,7 @@ export function ProductsList({
         const formattedQuery = query.trim().toLowerCase();
         return (
           product.name.toLowerCase().includes(formattedQuery) ||
-          product.description.toLowerCase().includes(formattedQuery) ||
+          product.description?.toLowerCase().includes(formattedQuery) ||
           product.code.toLowerCase().includes(formattedQuery) ||
           product.variant.kind.toLowerCase().includes(formattedQuery)
         );
