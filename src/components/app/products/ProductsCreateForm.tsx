@@ -189,17 +189,6 @@ export function ProductsCreateForm({
 
           <Typography.Title level={5}>Informações básicas</Typography.Title>
           <Row gutter={16}>
-            <Col md={18} sm={16} xs={24}>
-              <FormField
-                autoUpperCase={true}
-                disabled={!!editingProduct && !isEditingEnabled}
-                forceValidation={!!editingProduct}
-                label="Nome"
-                name={form.fieldNames("name")}
-                rules={null}
-                type="input"
-              />
-            </Col>
             <Col md={6} sm={8} xs={24}>
               <FormField
                 autoUpperCase={true}
@@ -212,12 +201,24 @@ export function ProductsCreateForm({
                 type="mask"
               />
             </Col>
+            <Col md={18} sm={16} xs={24}>
+              <FormField
+                autoUpperCase={true}
+                disabled={!!editingProduct && !isEditingEnabled}
+                forceValidation={!!editingProduct}
+                label="Nome"
+                name={form.fieldNames("name")}
+                rules={null}
+                type="input"
+              />
+            </Col>
           </Row>
           <FormField
             disabled={!!editingProduct && !isEditingEnabled}
             forceValidation={!!editingProduct}
-            label="Descrição"
+            label="Descrição/Informações adicionais"
             name={form.fieldNames("description")}
+            required={false}
             rules={null}
             type="textArea"
           />
