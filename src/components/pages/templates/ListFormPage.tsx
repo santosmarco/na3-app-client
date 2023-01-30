@@ -63,22 +63,21 @@ export function ListFormPage({
 
       {description && <PageDescription>{description}</PageDescription>}
 
-      {actions &&
-        (!breakpoint.lg || actions.some((act) => act.alwaysVisible)) && (
-          <PageActionButtons>
-            {actions.map(({ onClick, ...action }) => (
-              <Button
-                disabled={action.disabled}
-                icon={action.icon || <PlusCircleOutlined />}
-                key={nanoid()}
-                onClick={onClick}
-                type={action.type || "primary"}
-              >
-                {action.label}
-              </Button>
-            ))}
-          </PageActionButtons>
-        )}
+      {actions && (!breakpoint.lg || actions.some((act) => act.alwaysVisible)) && (
+        <PageActionButtons>
+          {actions.map(({ onClick, ...action }) => (
+            <Button
+              disabled={action.disabled}
+              icon={action.icon || <PlusCircleOutlined />}
+              key={nanoid()}
+              onClick={onClick}
+              type={action.type || "primary"}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </PageActionButtons>
+      )}
 
       <Row gutter={28} style={rowStyle}>
         <Col
