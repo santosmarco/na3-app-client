@@ -6,7 +6,6 @@ import {
 } from "@components";
 import { useNa3NativeProducts } from "@modules/na3-react/hooks";
 import type { Product } from "@schemas";
-import { Modal } from "antd";
 import React, { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 

@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { EmptyObject } from "@types";
-import { useEffect } from "react";
 import type { FieldPath, UseFormProps, UseFormReturn } from "react-hook-form";
 import { useForm as useFormOriginal } from "react-hook-form";
 import type { Except } from "type-fest";
