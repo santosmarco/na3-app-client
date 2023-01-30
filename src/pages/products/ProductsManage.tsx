@@ -32,6 +32,7 @@ export function ProductsManagePage(): JSX.Element {
 
   const handleCloseModal = useCallback(() => {
     setSelectedProduct(undefined);
+    setIsCloningProduct(false);
   }, []);
 
   return (
