@@ -1,4 +1,5 @@
 import {
+  AppstoreAddOutlined,
   AppstoreOutlined,
   FileOutlined,
   HomeOutlined,
@@ -31,6 +32,7 @@ import {
   MaintReportsHomePage,
   MaintServiceOrdersCreatePage,
   MaintServiceOrdersHomePage,
+  ProductionOrdersHomePage,
   ProductsCreatePage,
   ProductsHomePage,
   ProductsManagePage,
@@ -70,6 +72,7 @@ export type AppRoutePath =
   | "/manutencao/projetos"
   | "/manutencao/projetos/novo-projeto"
   | "/manutencao/relatorios"
+  | "/ordens-de-producao"
   | "/produtos"
   | "/produtos/criar"
   | "/produtos/lista"
@@ -318,6 +321,17 @@ export const ROUTES: Record<AppRoutePath, AppRoute> = {
     component: <MaintReportsHomePage />,
     requiredPrivileges: ["maint_reports_full_access"],
     title: "Relatórios",
+  },
+
+  "/ordens-de-producao": {
+    component: <ProductionOrdersHomePage />,
+    icon: <AppstoreAddOutlined />,
+    requiredPrivileges: null,
+    isPublic: true,
+    siderConfig: {
+      children: [{ path: "/ordens-de-producao", title: "Home" }],
+    },
+    title: "Ordens de produção",
   },
 
   "/produtos": {

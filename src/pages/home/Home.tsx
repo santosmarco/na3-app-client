@@ -1,4 +1,4 @@
-import { blue, cyan, green, magenta, red } from "@ant-design/colors";
+import { blue, cyan, geekblue, green, magenta, red } from "@ant-design/colors";
 import { Divider, Logo, StaticListItem } from "@components";
 import { useCurrentUser } from "@modules/na3-react";
 import type { MenuPageAction } from "@types";
@@ -10,6 +10,7 @@ import {
   IoGridOutline,
   IoPersonCircleOutline,
   IoPricetagsOutline,
+  IoReaderOutline,
   IoSettingsOutline,
 } from "react-icons/io5";
 
@@ -80,6 +81,13 @@ const defaultQuickLinks: MenuPageAction[] = [
     href: "/produtos",
     icon: <IoGridOutline />,
     title: "Produtos",
+  },
+  {
+    colors: { background: geekblue[2], foreground: geekblue[8] },
+    description: "Visualize, edite e cadastre novas OPs",
+    href: "/ordens-de-producao",
+    icon: <IoReaderOutline />,
+    title: "Ordens de produção",
   },
 ];
 
