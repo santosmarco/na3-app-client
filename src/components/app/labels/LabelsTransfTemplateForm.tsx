@@ -275,7 +275,7 @@ export function LabelsTransfTemplateForm({
         mask={[
           /[\ds]/i,
           ...(productCodeMaskType === "dart"
-            ? ["-", /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/]
+            ? ["-", /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, / /, /[r]/i]
             : [/\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/]),
         ]}
         name="productCode"

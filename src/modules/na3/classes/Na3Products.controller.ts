@@ -55,7 +55,7 @@ export class Na3ProductsController
   isProductCode(testCode: unknown): testCode is `${number}` | `S-${number}` {
     if (typeof testCode !== "string") return false;
     const formatted = formatQueryInput(testCode);
-    return /^((\d{10})|(S-\d{7}))$/.test(formatted);
+    return /^((\d{10})|(S-\d{7}(?: [rR])?))$/.test(formatted);
   }
 
   isDartBagCode(testCode: unknown): testCode is `S-${number}` {
