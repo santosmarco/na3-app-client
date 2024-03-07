@@ -18,7 +18,7 @@
     "Marco Santos <marco@marcosantos.dev> (https://github.com/santosmarco)"
   ],
   "scripts": {
-    "build": "craco build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && craco build",
     "build:assets": "pwa-asset-generator public/icon.svg public/assets -m public/manifest.json -i public/index.html -a '%PUBLIC_URL%' -w",
     "deploy:prod": "yarn build && firebase deploy --only hosting",
     "deploy:test": "yarn build && firebase hosting:channel:deploy test",
